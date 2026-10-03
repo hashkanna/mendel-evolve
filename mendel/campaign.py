@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import time
@@ -156,8 +157,8 @@ def main(argv: list[str] | None = None) -> int:
         config.update(json.loads(Path(args.config).read_text()))
     if args.executor == "modal":
         from .backends.modal_backend import ModalExecutor
-        executor = ModalExecutor(max_cpu_hours=args.max_cpu_hours, function="run_batch_bg",
-                                 deploy=not args.no_deploy)
+        executor = ModalExecutor(max_cpu_hours=args.max_cpu_hours, deploy=not args.no_deploy,
+                                 function=os.environ.get("MENDEL_MODAL_BG_FUNCTION", "run_batch_bg_x16"))
     else:
         from .executor import LocalExecutor
         executor = LocalExecutor(workers=args.workers)

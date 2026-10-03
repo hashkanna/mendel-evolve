@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import threading
 import time
 from pathlib import Path
 
-from .modal_app import APP_NAME
+from .modal_app import APP_NAME, LANES
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 SKIP_NAMES = {"solver", "__pycache__", ".DS_Store"}
@@ -50,8 +51,10 @@ class ModalExecutor:
 
     def __init__(self, batch_cpu_seconds: float = 120.0, max_cpu_hours: float = 200.0,
                  iters_job_seconds: float = 5.0, overhead_per_job: float = 2.0, deploy: bool = True,
-                 function: str = "run_batch", network_retries: int = 6):
-        self.function_name = function  # "run_batch" for the engine, "run_batch_bg" for long campaigns
+                 function: str | None = None, network_retries: int = 6):
+        # The lane: an engine lane by default, overridable per process with MENDEL_MODAL_FUNCTION.
+        self.function_name = function or os.environ.get("MENDEL_MODAL_FUNCTION", "run_batch")
+        self.parallel = LANES.get(self.function_name, 1)  # jobs a container of this lane runs side by side
         self.network_retries = network_retries
         self.batch_cpu_seconds = batch_cpu_seconds
         self.max_cpu_seconds = max_cpu_hours * 3600.0
@@ -107,17 +110,24 @@ class ModalExecutor:
         # Keep every arm of the same (instance, seed) together so paired comparisons share hardware.
         order = sorted(range(len(jobs)),
                        key=lambda i: (json.dumps(jobs[i]["instance"], sort_keys=True), jobs[i]["seed"]))
+        # A batch should keep a container busy for about batch_cpu_seconds of wall time: on a lane that
+        # runs `parallel` jobs side by side that is `parallel` times as much CPU, and never fewer jobs
+        # than cores when the jobs are long.
         batches: list[list[int]] = []
         current: list[int] = []
         current_seconds = 0.0
+        longest = 0.0
         last_key = None
         for i in order:
             key = (json.dumps(jobs[i]["instance"], sort_keys=True), jobs[i]["seed"])
-            if current and current_seconds >= self.batch_cpu_seconds and key != last_key:
+            full = current_seconds >= max(self.batch_cpu_seconds, longest) * self.parallel
+            if current and full and key != last_key:
                 batches.append(current)
-                current, current_seconds = [], 0.0
+                current, current_seconds, longest = [], 0.0, 0.0
             current.append(i)
-            current_seconds += self._job_seconds(jobs[i])
+            seconds = self._job_seconds(jobs[i])
+            current_seconds += seconds
+            longest = max(longest, seconds)
             last_key = key
         if current:
             batches.append(current)
