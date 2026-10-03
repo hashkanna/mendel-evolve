@@ -45,6 +45,7 @@ gate    = [{ n = 12 }, { n = 16 }]
 # no point set for them was checked.
 [best_known]
 n16 = 28
+n27 = 48
 n32 = 56
 n64 = 112
 n100 = 164
