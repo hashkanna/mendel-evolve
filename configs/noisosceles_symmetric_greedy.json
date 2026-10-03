@@ -1,0 +1,12 @@
+{
+ "symmetric": true,
+ "greedy_victim": true,
+ "hollow": false,
+ "tabu_tenure": 3,
+ "patience": 20000,
+ "kick_fraction": 0.15,
+ "sym_fraction": 0.8,
+ "axis_shift_x": 0,
+ "axis_shift_y": 0,
+ "band_frac": 0.3
+}

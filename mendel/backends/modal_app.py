@@ -82,12 +82,12 @@ def _execute(payload: dict, parallel: int = 1) -> list[dict]:
 LANES = {"run_batch": 1, "run_batch_bg": 1, "run_batch_x8": 8, "run_batch_bg_x16": 16}
 
 
-@app.function(image=image, cpu=1.0, memory=1024, timeout=3600, max_containers=20)
+@app.function(image=image, cpu=1.0, memory=1024, timeout=3600, max_containers=4)
 def run_batch(payload: dict) -> list[dict]:
     return _execute(payload)
 
 
-@app.function(image=image, cpu=1.0, memory=1024, timeout=3 * 3600, max_containers=10)
+@app.function(image=image, cpu=1.0, memory=1024, timeout=3 * 3600, max_containers=1)
 def run_batch_bg(payload: dict) -> list[dict]:
     return _execute(payload)
 
@@ -98,7 +98,7 @@ def run_batch_x8(payload: dict) -> list[dict]:
     return _execute(payload, parallel=8)
 
 
-@app.function(image=image, cpu=16.0, memory=16384, timeout=3 * 3600, max_containers=25)
+@app.function(image=image, cpu=16.0, memory=16384, timeout=3 * 3600, max_containers=50)
 def run_batch_bg_x16(payload: dict) -> list[dict]:
     """The campaign lane: long record searches, sixteen at a time per container."""
     return _execute(payload, parallel=16)
