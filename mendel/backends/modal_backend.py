@@ -48,7 +48,9 @@ class ModalExecutor:
     """
 
     def __init__(self, batch_cpu_seconds: float = 120.0, max_cpu_hours: float = 200.0,
-                 iters_job_seconds: float = 5.0, overhead_per_job: float = 2.0, deploy: bool = True):
+                 iters_job_seconds: float = 5.0, overhead_per_job: float = 2.0, deploy: bool = True,
+                 function: str = "run_batch"):
+        self.function_name = function  # "run_batch" for the engine, "run_batch_bg" for long campaigns
         self.batch_cpu_seconds = batch_cpu_seconds
         self.max_cpu_seconds = max_cpu_hours * 3600.0
         self.iters_job_seconds = iters_job_seconds
@@ -81,7 +83,7 @@ class ModalExecutor:
         import modal
 
         if self._function is None:
-            self._function = modal.Function.from_name(APP_NAME, "run_batch")
+            self._function = modal.Function.from_name(APP_NAME, self.function_name)
 
         total = sum(self._job_seconds(j) for j in jobs)
         with self._lock:

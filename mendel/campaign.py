@@ -118,6 +118,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--executor", choices=["local", "modal"], default="local")
     p.add_argument("--workers", type=int, default=6)
     p.add_argument("--max-cpu-hours", type=float, default=100.0)
+    p.add_argument("--no-deploy", action="store_true", help="use the Modal app as already deployed")
     p.add_argument("--out", required=True)
     args = p.parse_args(argv)
 
@@ -127,7 +128,8 @@ def main(argv: list[str] | None = None) -> int:
         config.update(json.loads(Path(args.config).read_text()))
     if args.executor == "modal":
         from .backends.modal_backend import ModalExecutor
-        executor = ModalExecutor(max_cpu_hours=args.max_cpu_hours)
+        executor = ModalExecutor(max_cpu_hours=args.max_cpu_hours, function="run_batch_bg",
+                                 deploy=not args.no_deploy)
     else:
         from .executor import LocalExecutor
         executor = LocalExecutor(workers=args.workers)

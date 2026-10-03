@@ -1,0 +1,1572 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mendel</title>
+<link rel="icon" href="data:,">
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #090b0f;
+  --panel: #10141b;
+  --panel-2: #161b25;
+  --line: #1f2632;
+  --line-2: #2c3544;
+  --ink: #eef1f6;
+  --ink-2: #aeb6c4;
+  --ink-3: #737d8e;
+  --pos: #3987e5;        /* helps; also the one accent */
+  --neg: #e66767;        /* hurts */
+  --neu: #6b7484;        /* inconclusive */
+  --pos-soft: rgba(57,135,229,.16);
+  --neg-soft: rgba(230,103,103,.16);
+  --neu-soft: rgba(124,134,150,.16);
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: radial-gradient(1100px 460px at 18% -12%, rgba(57,135,229,.08), transparent 62%), var(--bg);
+  color: var(--ink); font: 13px/1.35 var(--font); -webkit-font-smoothing: antialiased;
+}
+h1 { margin: 0; font: inherit; }
+button, input, select { font: inherit; color: inherit; }
+.tnum { font-variant-numeric: tabular-nums; }
+.muted { color: var(--ink-3); }
+
+#app {
+  height: 100vh; min-height: 800px; min-width: 1240px; padding: 14px;
+  display: grid; grid-template-rows: 56px 218px minmax(0, 1fr); gap: 10px;
+}
+
+/* ---------- header */
+.hdr { display: flex; align-items: center; gap: 18px; min-width: 0; padding: 0 4px; }
+.brand { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+.hsep { width: 1px; height: 30px; background: var(--line-2); flex: 0 0 auto; }
+.titles { min-width: 0; }
+.title-line { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.title-line h1 { font-size: 17px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sub { font-size: 11px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.demo {
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
+  color: var(--ink); border: 1px dashed var(--ink-3); border-radius: 4px; padding: 2px 7px;
+}
+.grow { flex: 1 1 auto; }
+select {
+  background: var(--panel); border: 1px solid var(--line-2); border-radius: 6px; padding: 4px 8px; max-width: 240px;
+}
+.status {
+  display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; white-space: nowrap;
+  border: 1px solid var(--line-2); border-radius: 999px; padding: 5px 12px 5px 10px; color: var(--ink-2);
+}
+.status i { width: 8px; height: 8px; border-radius: 50%; background: var(--neu); }
+.status.live { color: var(--ink); }
+.status.live i { background: var(--pos); box-shadow: 0 0 0 0 rgba(57,135,229,.6); animation: pulse 1.8s infinite; }
+.status.done i { background: var(--ink-2); }
+.status.bad { color: var(--ink); border-color: var(--neg); }
+.status.bad i { background: var(--neg); }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(57,135,229,.55); } 70% { box-shadow: 0 0 0 7px rgba(57,135,229,0); } 100% { box-shadow: 0 0 0 0 rgba(57,135,229,0); } }
+.kpi { text-align: right; white-space: nowrap; }
+.kpi .k { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); }
+.kpi .v { font-size: 21px; font-weight: 650; line-height: 1.15; letter-spacing: -.01em; }
+
+/* ---------- panels */
+.row-top { display: flex; gap: 10px; min-height: 0; }
+.row-main { display: grid; grid-template-columns: minmax(0, 1fr) 440px; gap: 10px; min-height: 0; }
+.side { position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 0; min-width: 0; }
+.panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px 12px;
+  display: flex; flex-direction: column; min-width: 0; min-height: 0; position: relative;
+}
+#p-champ { flex: 0 0 432px; } #p-viewer { flex: 0 0 186px; } #p-timeline { flex: 1 1 0; } #p-water { flex: 0 0 308px; }
+#p-gen { flex: 1 1 0; min-height: 150px; } #p-int, #p-idea { flex: 0 0 auto; }
+.p-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; flex: 0 0 auto; min-width: 0; }
+.p-title { font-size: 11px; font-weight: 650; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
+.p-sub { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.p-note { font-size: 11px; color: var(--ink-3); margin-left: auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.p-body { flex: 1 1 auto; min-height: 0; position: relative; }
+.p-body > svg.fill { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--ink-3); font-size: 12px; padding: 6px 18px; }
+.scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line-2) transparent; }
+.legend { display: flex; align-items: center; gap: 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.sw { width: 8px; height: 8px; border-radius: 2px; display: inline-block; flex: 0 0 auto; }
+.sw.pos { background: var(--pos); } .sw.neg { background: var(--neg); } .sw.neu { background: var(--neu); }
+.sw.ring { background: none; border: 1.5px solid var(--neu); border-radius: 50%; } .sw.dot { border-radius: 50%; }
+.sw.hollow { background: var(--neu-soft); border: 1.3px solid var(--ink-3); width: 12px; }
+.whisk { width: 16px; height: 8px; border-left: 1.5px solid var(--ink); border-right: 1.5px solid var(--ink); position: relative; display: inline-block; }
+.whisk::after { content: ""; position: absolute; left: 0; right: 0; top: 3px; border-top: 1.5px solid var(--ink); }
+
+/* ---------- champion scoreboard */
+.groups { display: flex; gap: 14px; height: 100%; }
+.tgroup { display: flex; flex-direction: column; min-width: 0; }
+.tg-label { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); padding-bottom: 5px; border-bottom: 1px solid var(--line-2); margin-bottom: 8px; white-space: nowrap; }
+.tiles { display: flex; gap: 6px; flex: 1; min-height: 0; }
+.tile {
+  flex: 1 1 0; min-width: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 2px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: default; text-align: center;
+}
+.tile.pick { cursor: pointer; }
+.tile.pick:hover { border-color: var(--line-2); }
+.tile.shown { box-shadow: inset 0 -2px 0 var(--ink-3); }
+.tile.record { border-color: rgba(57,135,229,.75); background: linear-gradient(180deg, rgba(57,135,229,.24), rgba(57,135,229,.07)); }
+.t-key { font: 11px var(--mono); color: var(--ink-2); }
+.t-val { font-size: 34px; font-weight: 650; line-height: 1.08; letter-spacing: -.02em; }
+.t-bk { font-size: 11px; color: var(--ink-3); }
+.t-delta { margin-top: 6px; font-size: 12px; font-weight: 650; display: flex; align-items: center; gap: 4px; }
+.t-delta .g { font-size: 11px; }
+.t-delta .g.pos { color: var(--pos); } .t-delta .g.neg { color: var(--neg); } .t-delta .g.neu { color: var(--ink-3); }
+.t-cap { font-size: 10px; color: var(--ink-2); letter-spacing: .02em; white-space: nowrap; }
+.tile.record .t-cap { color: var(--ink); font-weight: 600; }
+
+/* ---------- viewer */
+#viewer { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+#viewer:active { cursor: grabbing; }
+.p-foot { font-size: 11px; color: var(--ink-3); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 0 0 auto; }
+.mini-select { margin-left: auto; padding: 1px 4px; font-size: 11px; font-family: var(--mono); }
+
+/* ---------- svg charts */
+svg text { font-family: var(--font); fill: var(--ink-3); font-size: 10.5px; font-variant-numeric: tabular-nums; }
+svg .grid { stroke: var(--line); stroke-width: 1; }
+svg .axis { stroke: var(--line-2); stroke-width: 1; }
+svg .zero { stroke: var(--line-2); stroke-width: 1; }
+svg .ref { stroke: var(--ink-3); stroke-width: 1; }
+svg .series { fill: none; stroke: var(--pos); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+svg .mk { fill: var(--pos); stroke: var(--panel); stroke-width: 2; }
+svg .mk-off { fill: var(--panel); stroke: var(--neu); stroke-width: 1.5; }
+svg text.lbl { fill: var(--ink-2); font-size: 11px; }
+svg text.strong { fill: var(--ink); font-weight: 650; }
+svg .leader { stroke: var(--ink-3); stroke-width: 1; }
+svg .cross { stroke: var(--ink-3); stroke-width: 1; }
+svg .bar.pos { fill: var(--pos); } svg .bar.neg { fill: var(--neg); } svg .bar.neu { fill: var(--neu); }
+svg .bar.hollow { fill-opacity: .14; stroke-width: 1.3; }
+svg .bar.hollow.pos { stroke: var(--pos); } svg .bar.hollow.neg { stroke: var(--neg); } svg .bar.hollow.neu { stroke: var(--neu); }
+svg .ci { stroke: var(--ink); stroke-width: 1.5; stroke-linecap: round; }
+svg .pt { fill: var(--ink); }
+.wf-cap { flex: 0 0 auto; font-size: 12px; color: var(--ink-2); margin: -2px 0 4px; }
+.wf-cap b { color: var(--ink); font-weight: 650; }
+.wf-cap div + div { font-size: 11px; color: var(--ink-3); }
+
+/* ---------- ledger */
+.lhead, .lrow { display: grid; grid-template-columns: 30px minmax(0, 1fr) 190px 126px 104px 92px; column-gap: 12px; align-items: center; padding: 0 6px; }
+.lhead { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); height: 34px; border-bottom: 1px solid var(--line-2); flex: 0 0 auto; }
+.lhead svg { display: block; }
+#ledger-list { flex: 1 1 auto; min-height: 0; position: relative; }
+/* two lines per idea: name and measurements on top, the hypothesis underneath at full width */
+.lrow { grid-template-rows: 24px auto; row-gap: 1px; padding-top: 4px; padding-bottom: 5px; border-bottom: 1px solid var(--line); cursor: pointer; outline: none; }
+.lrow > .c-sw { grid-column: 1; grid-row: 1 / span 2; }
+.lrow > .l1 { grid-column: 2; grid-row: 1; }
+.lrow > .c-bar { grid-column: 3; grid-row: 1; }
+.lrow > .c-val { grid-column: 4; grid-row: 1; }
+.lrow > .c-label { grid-column: 5; grid-row: 1; }
+.lrow > .c-act { grid-column: 6; grid-row: 1 / span 2; }
+.lrow > .hyp { grid-column: 2 / span 4; grid-row: 2; }
+.lrow:hover, .lrow:focus-visible { background: var(--panel-2); }
+.lrow.sel { background: var(--panel-2); box-shadow: inset 2px 0 0 var(--pos); }
+.lrow.dim { opacity: .6; }
+.lrow.dim:hover, .lrow.dim.sel { opacity: 1; }
+.switch { width: 26px; height: 14px; border-radius: 999px; border: 1.5px solid var(--neu); position: relative; display: block; }
+.switch::after { content: ""; position: absolute; top: 1.5px; left: 1.5px; width: 8px; height: 8px; border-radius: 50%; background: var(--neu); }
+.switch.on { background: var(--pos); border-color: var(--pos); }
+.switch.on::after { left: auto; right: 1.5px; background: #fff; }
+.switch.gone { border-style: dashed; }
+.c-bar svg { display: block; }
+.l1 { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.gname { font: 600 12.5px var(--mono); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gname.big { font-size: 15px; }
+.hyp { font-size: 12px; line-height: 1.3; color: var(--ink-2); min-width: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.author {
+  display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto; font-size: 10px; font-weight: 650; letter-spacing: .05em;
+  text-transform: uppercase; border: 1px solid var(--line-2); border-radius: 4px; padding: 1px 6px 1px 5px; color: var(--ink-3); white-space: nowrap;
+}
+.author svg { width: 10px; height: 10px; flex: 0 0 auto; }
+.author svg * { fill: currentColor; }
+.author.llm { color: var(--ink-2); }
+.author.human { color: var(--ink); background: var(--line); border-color: var(--ink-3); }
+.c-val { white-space: nowrap; display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+.v-eff { font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; flex: 0 0 44px; text-align: right; }
+.v-ci { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; border-radius: 999px;
+  padding: 2px 9px 2px 7px; border: 1px solid var(--line-2); color: var(--ink-2); white-space: nowrap;
+}
+.chip i { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; background: var(--neu); }
+.chip.pos { background: var(--pos-soft); border-color: transparent; color: var(--ink); } .chip.pos i { background: var(--pos); }
+.chip.half { color: var(--ink); } .chip.half i { background: linear-gradient(90deg, var(--pos) 50%, transparent 50%); border: 1.5px solid var(--pos); }
+.chip.neg { background: var(--neg-soft); border-color: transparent; color: var(--ink); } .chip.neg i { background: var(--neg); }
+.chip.neu i { background: var(--neu); }
+.chip.unk { border-style: dashed; } .chip.unk i { background: none; border: 1.5px solid var(--neu); }
+.chip.plain { font-weight: 500; padding-left: 9px; }
+.c-act { text-align: right; }
+.btn {
+  background: transparent; border: 1px solid var(--line-2); border-radius: 6px; padding: 5px 10px; font-size: 12px; font-weight: 600;
+  color: var(--ink); cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover:not(:disabled) { border-color: var(--pos); background: var(--pos-soft); }
+.btn:disabled { color: var(--ink-3); cursor: default; }
+.btn.primary { background: var(--pos); border-color: var(--pos); color: #fff; }
+.btn.primary:hover:not(:disabled) { background: #4a93ea; }
+.btn:focus-visible, select:focus-visible, input:focus-visible, .tile:focus-visible, .dimhead:focus-visible { outline: 2px solid var(--pos); outline-offset: 1px; }
+.spin { width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--line-2); border-top-color: var(--pos); animation: rot .8s linear infinite; display: inline-block; flex: 0 0 auto; }
+@keyframes rot { to { transform: rotate(360deg); } }
+.dimhead {
+  display: flex; align-items: center; gap: 10px; width: 100%; background: none; border: 0; border-bottom: 1px solid var(--line);
+  color: var(--ink-2); padding: 9px 6px; cursor: pointer; text-align: left;
+}
+.dimhead:hover { background: var(--panel-2); }
+.dimhead.stick { position: sticky; bottom: 0; z-index: 2; background: var(--panel); box-shadow: 0 -1px 0 var(--line-2); }
+.dimhead.stick:hover { background: var(--panel-2); }
+.dh-title { font-size: 11px; font-weight: 650; letter-spacing: .09em; text-transform: uppercase; white-space: nowrap; }
+.dh-sum { display: flex; gap: 6px; min-width: 0; overflow: hidden; font-size: 11px; color: var(--ink-3); white-space: nowrap; }
+.mini { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; font-family: var(--mono); font-size: 10.5px; }
+.mini b { color: var(--ink-2); font-weight: 600; font-family: var(--font); font-variant-numeric: tabular-nums; }
+
+/* live knockout strip */
+.strip {
+  display: grid; grid-template-columns: 232px minmax(0, 1fr) 20px; gap: 14px; align-items: center; cursor: default;
+  margin: 0 0 0 36px; padding: 8px 8px 8px 12px; border-bottom: 1px solid var(--line); border-left: 2px solid var(--neu); background: var(--panel-2);
+}
+.strip.v-pos { border-left-color: var(--pos); } .strip.v-neg { border-left-color: var(--neg); }
+.st-cap { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.st-big { font-size: 26px; font-weight: 650; line-height: 1.1; letter-spacing: -.01em; }
+.st-big small { font-size: 12px; font-weight: 500; color: var(--ink-3); letter-spacing: 0; margin-left: 6px; }
+.st-sub { font-size: 11px; color: var(--ink-2); }
+.st-plot svg { display: block; }
+.st-x { background: none; border: 0; color: var(--ink-3); font-size: 16px; cursor: pointer; padding: 0; line-height: 1; align-self: start; }
+.st-x:hover { color: var(--ink); }
+.strip.error { grid-template-columns: minmax(0, 1fr) 20px; border-left-color: var(--neg); }
+.st-err { font-size: 12px; color: var(--ink); }
+.st-err small { display: block; color: var(--ink-3); font: 11px var(--mono); margin-top: 2px; white-space: pre-wrap; max-height: 44px; overflow: hidden; }
+svg .pl.pos { stroke: var(--pos); } svg .pl.neg { stroke: var(--neg); } svg .pl.neu { stroke: var(--neu); }
+svg .pd.pos { fill: var(--pos); } svg .pd.neg { fill: var(--neg); } svg .pd.neu { fill: var(--neu); }
+svg .po { fill: var(--panel-2); stroke-width: 1.4; }
+svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.neu { stroke: var(--neu); }
+
+/* ---------- generality matrix */
+.gm { font-size: 11px; }
+#gen-body { overflow-x: hidden; }
+.gm-row { display: flex; align-items: center; height: 16px; margin-bottom: 2px; }
+.gm-row.head { height: 14px; margin-bottom: 2px; color: var(--ink-3); font-size: 10px; }
+.gm-row.keys { height: 15px; font-family: var(--mono); font-size: 10.5px; color: var(--ink-2); margin-bottom: 3px; }
+.gm-name { flex: 1 1 0; min-width: 0; font: 11.5px var(--mono); color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px; cursor: pointer; }
+.gm-name:hover { color: var(--ink); }
+.gm-cell { flex: 0 0 37px; width: 37px; height: 16px; margin-left: 2px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 650; font-variant-numeric: tabular-nums; color: var(--ink); }
+.gm-cell.gap { margin-left: 10px; }
+.gm-cell.neu { background: var(--neu-soft); color: var(--ink-3); font-weight: 500; }
+.gm-cell.none { color: var(--line-2); font-weight: 400; }
+.gm-cell.hd { background: none; height: auto; color: inherit; font-weight: 500; }
+.gm-grp { margin-left: 2px; text-transform: uppercase; letter-spacing: .09em; border-bottom: 1px solid var(--line-2); padding-bottom: 2px; white-space: nowrap; overflow: hidden; }
+.gm-grp.gap { margin-left: 10px; }
+.gm-lab { flex: 0 0 96px; width: 96px; padding-left: 10px; }
+.gm-lab .chip { font-size: 10.5px; padding: 1px 7px 1px 6px; }
+
+/* ---------- interactions */
+.int { display: flex; gap: 14px; align-items: flex-start; }
+.int svg { flex: 0 0 auto; display: block; }
+.int svg text.dl { fill: var(--ink-2); font-size: 11px; font-family: var(--mono); }
+.int svg text.dl.hl { fill: var(--ink); font-weight: 700; }
+.int svg .cell { stroke: transparent; stroke-width: 6; cursor: default; }
+.int svg .cell.none { fill: none; stroke: var(--line); stroke-width: 1; }
+.int svg .cell.neu { fill: var(--neu); fill-opacity: .3; }
+.int svg .cell.pos { fill: var(--pos); } .int svg .cell.neg { fill: var(--neg); }
+.int-notes { flex: 1 1 0; min-width: 0; font-size: 11px; color: var(--ink-3); display: flex; flex-direction: column; gap: 6px; }
+.int-cap { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; }
+.int-cap:only-child { text-transform: none; letter-spacing: 0; font-size: 11px; }
+.int-note { display: grid; grid-template-columns: 8px minmax(0, 1fr); column-gap: 7px; align-items: baseline; }
+.int-note b { color: var(--ink); font-weight: 650; font-variant-numeric: tabular-nums; }
+.int-note .who { color: var(--ink-2); font-family: var(--mono); font-size: 10.5px; overflow-wrap: anywhere; }
+
+/* ---------- idea box */
+.idea-form { display: flex; gap: 6px; }
+.idea-form input { background: var(--bg); border: 1px solid var(--line-2); border-radius: 6px; padding: 6px 9px; min-width: 0; }
+.idea-form input::placeholder { color: var(--ink-3); }
+#idea-text { flex: 1 1 auto; } #idea-author { flex: 0 0 92px; width: 92px; }
+.idea-msg { font-size: 11px; color: var(--ink-2); margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+.idea-msg:empty { display: none; }
+.idea-msg.bad { color: var(--ink); }
+.idea-list { display: flex; flex-direction: column; gap: 3px; margin-top: 8px; }
+.idea { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--ink-2); min-width: 0; }
+.idea .txt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1 1 auto; }
+.idea[data-more]::after { content: attr(data-more) " more"; flex: 0 0 auto; font-size: 10.5px; color: var(--ink-3); }
+.tag { flex: 0 0 auto; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--line-2); border-radius: 4px; padding: 0 5px; color: var(--ink-3); display: inline-flex; align-items: center; gap: 4px; line-height: 15px; }
+.tag.run { color: var(--ink); border-color: var(--pos); }
+.tag.run::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--pos); }
+
+/* ---------- drawer */
+.drawer {
+  position: absolute; inset: 0; z-index: 5; background: var(--panel); border: 1px solid var(--line-2); border-radius: 10px;
+  padding: 12px 16px 16px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line-2) transparent;
+  box-shadow: 0 18px 50px rgba(0,0,0,.55);
+}
+.d-head { display: flex; align-items: center; gap: 10px; }
+.d-head .d-name { display: flex; align-items: center; gap: 9px; min-width: 0; flex: 1 1 auto; }
+.d-x { background: none; border: 1px solid var(--line-2); border-radius: 6px; color: var(--ink-2); width: 26px; height: 26px; font-size: 16px; line-height: 1; cursor: pointer; flex: 0 0 auto; }
+.d-x:hover { color: var(--ink); border-color: var(--ink-3); }
+.d-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 8px; font-size: 11px; }
+.d-sec { margin-top: 13px; }
+.d-sec h3 { margin: 0 0 4px; font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); font-weight: 650; }
+.d-p { margin: 0; font-size: 13px; line-height: 1.4; color: var(--ink); }
+.d-p.muted { color: var(--ink-3); }
+.d-row { display: grid; grid-template-columns: 126px 150px minmax(0, 1fr); column-gap: 10px; align-items: center; min-height: 24px; font-size: 12px; }
+.d-row svg { display: block; }
+.d-k { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.d-k.mono { font-family: var(--mono); font-size: 11.5px; }
+.d-k small { color: var(--ink-3); font-family: var(--font); }
+.d-v { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.d-v b { font-weight: 650; }
+.d-v span { color: var(--ink-3); font-size: 11px; }
+.d-ev { display: grid; grid-template-columns: 42px minmax(0, 1fr); column-gap: 8px; font-size: 12px; padding: 2px 0; }
+.d-ev time { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.d-ev b { font-weight: 600; }
+.d-ev span { color: var(--ink-2); }
+
+/* ---------- tooltip */
+#tip {
+  position: fixed; z-index: 50; pointer-events: none; background: #1b212c; border: 1px solid var(--line-2); border-radius: 7px;
+  padding: 6px 9px; max-width: 320px; box-shadow: 0 8px 24px rgba(0,0,0,.5); font-size: 12px;
+}
+#tip .t1 { color: var(--ink); font-weight: 650; font-variant-numeric: tabular-nums; }
+#tip .t2 { color: var(--ink-2); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .status.live i, .spin { animation: none; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="hdr">
+    <div class="brand">
+      <svg width="30" height="26" viewBox="0 0 30 26" aria-hidden="true">
+        <circle cx="5" cy="13" r="3.6" fill="#3987e5"/><circle cx="15" cy="13" r="3" fill="none" stroke="#737d8e" stroke-width="1.5"/><circle cx="25" cy="13" r="3.6" fill="#3987e5"/>
+      </svg>
+      <span>Mendel</span>
+    </div>
+    <div class="hsep"></div>
+    <div class="titles">
+      <div class="title-line"><h1 id="h-title">Waiting for a run</h1><span id="h-demo" class="demo" hidden>Demo data</span></div>
+      <div class="sub" id="h-sub">No run found yet. Start one and this page picks it up within seconds.</div>
+    </div>
+    <select id="run-select" hidden aria-label="Run"></select>
+    <div class="grow"></div>
+    <div id="h-status" class="status"><i></i><span>No run</span></div>
+    <div class="kpi"><div class="k">Generation</div><div class="v" id="k-gen">–</div></div>
+    <div class="hsep"></div>
+    <div class="kpi"><div class="k">LLM calls</div><div class="v" id="k-calls">–</div></div>
+    <div class="kpi"><div class="k">LLM spend</div><div class="v" id="k-usd">–</div></div>
+    <div class="kpi"><div class="k">CPU-hours</div><div class="v" id="k-cpu">–</div></div>
+    <div class="kpi"><div class="k">Evaluations</div><div class="v" id="k-evals">–</div></div>
+  </header>
+
+  <section class="row-top">
+    <div class="panel" id="p-champ">
+      <div class="p-head"><div class="p-title">Champion vs best known</div><div class="p-note" id="champ-note"></div></div>
+      <div class="p-body" id="champ-body"></div>
+    </div>
+    <div class="panel" id="p-viewer" hidden>
+      <div class="p-head"><div class="p-title">Point set</div><select id="viewer-select" class="mini-select" aria-label="Instance shown"></select></div>
+      <div class="p-body"><canvas id="viewer" aria-label="Rotating 3D view of the champion's point set"></canvas></div>
+      <div class="p-foot" id="viewer-cap"></div>
+    </div>
+    <div class="panel" id="p-timeline">
+      <div class="p-head">
+        <div class="p-title">Champion over time</div>
+        <div class="p-note legend"><span><i class="sw dot pos"></i>idea joined the champion</span><span><i class="sw ring"></i>tried, not kept</span></div>
+      </div>
+      <div class="p-body" id="tl-body"></div>
+    </div>
+    <div class="panel" id="p-water">
+      <div class="p-head"><div class="p-title">Where the gain came from</div></div>
+      <div class="wf-cap" id="wf-cap"></div>
+      <div class="p-body" id="wf-body"></div>
+    </div>
+  </section>
+
+  <section class="row-main">
+    <div class="panel" id="p-ledger">
+      <div class="p-head">
+        <div class="p-title">Gene ledger</div>
+        <div class="p-sub" id="ledger-sub">Each idea is a switch. Its worth is what the solver loses with it switched off.</div>
+        <div class="p-note legend">
+          <span><i class="sw pos"></i>helps</span><span><i class="sw neg"></i>hurts</span><span><i class="sw neu"></i>inconclusive</span><span><i class="whisk"></i>95% interval</span>
+        </div>
+      </div>
+      <div class="lhead" id="ledger-head"></div>
+      <div id="ledger-list" class="scroll"></div>
+    </div>
+    <div class="side">
+      <div class="panel" id="p-gen">
+        <div class="p-head"><div class="p-title">Generality</div><div class="p-note">effect of each idea, instance by instance</div></div>
+        <div class="p-body scroll" id="gen-body"></div>
+      </div>
+      <div class="panel" id="p-int">
+        <div class="p-head">
+          <div class="p-title">Interactions</div>
+          <div class="p-note legend"><span><i class="sw pos"></i>stronger together</span><span><i class="sw neg"></i>overlap</span></div>
+        </div>
+        <div class="p-body" id="int-body" style="min-height:44px"></div>
+      </div>
+      <div class="panel" id="p-idea">
+        <div class="p-head"><div class="p-title">Idea box</div><div class="p-note">Mendel turns it into a gene and measures it</div></div>
+        <form class="idea-form" id="idea-form" autocomplete="off">
+          <input id="idea-text" type="text" maxlength="2000" placeholder="Suggest an idea in plain words" aria-label="Your idea">
+          <input id="idea-author" type="text" maxlength="80" placeholder="Your name" aria-label="Your name">
+          <button class="btn primary" type="submit" id="idea-send">Queue idea</button>
+        </form>
+        <div class="idea-msg" id="idea-msg" role="status"></div>
+        <div class="idea-list" id="idea-list"></div>
+      </div>
+      <aside class="drawer" id="drawer" hidden aria-label="Gene detail"></aside>
+    </div>
+  </section>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+'use strict';
+(() => {
+  // ------------------------------------------------------------------ helpers
+  const $ = (id) => document.getElementById(id);
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const MINUS = '−';
+
+  function setAttrs(el, attrs) {
+    if (!attrs) return;
+    for (const k of Object.keys(attrs)) {
+      const v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === 'text') el.textContent = String(v);
+      else if (k === 'tip') el.setAttribute('data-tip', String(v));
+      else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
+      else if (k === 'style' && typeof v === 'object') Object.assign(el.style, v);
+      else el.setAttribute(k, v === true ? '' : String(v));
+    }
+  }
+  function append(el, kids) {
+    for (const kid of kids) {
+      if (kid == null || kid === false) continue;
+      if (Array.isArray(kid)) append(el, kid);
+      else el.appendChild(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+    }
+  }
+  // All text from the state goes in through text nodes, never through innerHTML.
+  function h(tag, attrs, ...kids) { const el = document.createElement(tag); setAttrs(el, attrs); append(el, kids); return el; }
+  function s(tag, attrs, ...kids) { const el = document.createElementNS(SVGNS, tag); setAttrs(el, attrs); append(el, kids); return el; }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); return el; }
+  function empty(text) { return h('div', { class: 'empty', text }); }
+
+  const isNum = (x) => typeof x === 'number' && isFinite(x);
+  const num = (x) => (isNum(x) ? x : null);
+  const arr = (x) => (Array.isArray(x) ? x : []);
+  const obj = (x) => (x && typeof x === 'object' && !Array.isArray(x) ? x : {});
+  const str = (x) => (typeof x === 'string' ? x : x == null ? '' : String(x));
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+  function trimZeros(t) { return t.includes('.') ? t.replace(/0+$/, '').replace(/\.$/, '') : t; }
+  function fmtSigned(x, d = 2) {
+    if (!isNum(x)) return '–';
+    const t = Math.abs(x).toFixed(d);
+    return Number(t) === 0 ? t : (x < 0 ? MINUS : '+') + t;
+  }
+  function trimNum(x, d = 2) {
+    if (!isNum(x)) return '–';
+    const t = trimZeros(Math.abs(x).toFixed(d));
+    return (x < 0 && Number(t) !== 0 ? MINUS : '') + t;
+  }
+  function trimSigned(x, d = 2) {
+    if (!isNum(x)) return '–';
+    const t = trimZeros(Math.abs(x).toFixed(d));
+    return Number(t) === 0 ? '0' : (x < 0 ? MINUS : '+') + t;
+  }
+  const fmtInt = (x) => (isNum(x) ? Math.round(x).toLocaleString('en-US') : '–');
+  const plural = (n, word) => n + ' ' + word + (n === 1 ? '' : 's');
+  function fmtDur(sec) {
+    if (!isNum(sec)) return '';
+    const m = Math.round(sec / 60), hh = Math.floor(m / 60), mm = m % 60;
+    if (hh && mm) return hh + 'h' + String(mm).padStart(2, '0');
+    if (hh) return hh + 'h';
+    return mm + 'm';
+  }
+  function parseTime(t) {
+    if (isNum(t)) return new Date(t > 1e12 ? t : t * 1000);
+    if (typeof t === 'string' && t) { const d = new Date(t); if (!isNaN(d)) return d; }
+    return null;
+  }
+  function clock(t) {
+    const d = parseTime(t);
+    return d ? String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') : '';
+  }
+  function agoText(t) {
+    const d = parseTime(t);
+    if (!d) return '';
+    const sec = Math.round((Date.now() - d.getTime()) / 1000);
+    if (sec < 5) return 'just now';
+    if (sec < 90) return sec + ' s ago';
+    if (sec < 5400) return Math.round(sec / 60) + ' min ago';
+    if (sec < 172800) return Math.round(sec / 3600) + ' h ago';
+    return Math.round(sec / 86400) + ' days ago';
+  }
+  function niceTicks(lo, hi, n) {
+    const span = hi - lo;
+    if (!(span > 0)) return [lo];
+    const raw = span / Math.max(1, n), mag = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / mag;
+    const step = (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * mag;
+    const out = [];
+    for (let k = Math.ceil(lo / step - 1e-9); k * step <= hi + 1e-9; k++) out.push(+(k * step).toFixed(10));
+    return out;
+  }
+
+  // ------------------------------------------------------------- data shaping
+  function measure(m) {
+    m = obj(m);
+    const effect = num(m.effect);
+    if (effect == null) return null;
+    const ci = arr(m.ci);
+    let lo = num(ci[0]), hi = num(ci[1]);
+    if (lo != null && hi != null && lo > hi) { const t = lo; lo = hi; hi = t; }
+    if (lo == null || hi == null) { lo = null; hi = null; }
+    return { effect, lo, hi, runs: num(m.runs), generation: num(m.generation) };
+  }
+  // 'pos' helps, 'neg' hurts, 'neu' inconclusive (the 95% interval spans zero)
+  function verdict(m) {
+    if (!m) return 'neu';
+    if (m.lo != null) return m.lo > 0 ? 'pos' : m.hi < 0 ? 'neg' : 'neu';
+    return m.effect > 0 ? 'pos' : m.effect < 0 ? 'neg' : 'neu';
+  }
+  const ciText = (m) => (m && m.lo != null ? trimNum(m.lo) + ' to ' + trimNum(m.hi) : 'no interval');
+  function measureTip(title, m, extra) {
+    if (!m) return title + '\nnot measured';
+    const lines = [title + ': ' + fmtSigned(m.effect), '95% interval ' + ciText(m)];
+    const meta = [];
+    if (m.runs != null) meta.push(plural(m.runs, 'run'));
+    if (m.generation != null) meta.push('generation ' + m.generation);
+    if (meta.length) lines.push(meta.join(' · '));
+    if (verdict(m) === 'neu') lines.push('Interval spans zero: inconclusive');
+    if (extra) lines.push(extra);
+    return lines.join('\n');
+  }
+  function parseAuthor(a) {
+    a = str(a);
+    const i = a.indexOf(':'), kind = (i < 0 ? a : a.slice(0, i)).toLowerCase(), who = i < 0 ? '' : a.slice(i + 1);
+    if (kind === 'seed') return { kind: 'seed', text: 'seed', tip: 'Part of the seed solver' };
+    if (kind === 'llm') return { kind: 'llm', text: 'LLM', tip: 'Invented by ' + (who || 'a language model') };
+    if (kind === 'human') return { kind: 'human', text: who || 'human', tip: 'Suggested by ' + (who || 'a person') };
+    return { kind: 'other', text: a || 'unknown', tip: 'Author: ' + (a || 'unknown') };
+  }
+  const DIM = new Set(['rejected', 'pruned', 'failed-gate', 'failed_gate']);
+  const STATUS = {
+    active: ['on in the champion', 'In the solver and switched on in the champion'],
+    inactive: ['off in champion', 'In the solver, switched off in the champion'],
+    rejected: ['rejected', 'Failed screening and was not merged'],
+    pruned: ['pruned', 'Removed from the solver after repeated null knockouts'],
+    'failed-gate': ['failed gate', 'Broke the invariance rule or crashed, so it was never measured'],
+    failed_gate: ['failed gate', 'Broke the invariance rule or crashed, so it was never measured'],
+  };
+  const LABELS = {
+    general: ['pos', 'Helps on held-out instances too'],
+    specific: ['half', 'Helps on training instances only'],
+    neutral: ['neu', 'No measurable effect'],
+    harmful: ['neg', 'Makes the solver worse'],
+    inconclusive: ['unk', 'The 95% interval spans zero'],
+  };
+  function prepGenes(st) {
+    const cfg = obj(obj(st.champion).config);
+    return arr(st.genes).filter((g) => g && typeof g === 'object' && typeof g.name === 'string' && g.name).map((g) => {
+      const kind = str(g.kind) || 'switch';
+      const ko = measure(g.knockout), sc = measure(g.screen);
+      return {
+        raw: g, name: g.name, kind, isIdea: kind !== 'int' && kind !== 'float',
+        author: parseAuthor(g.author), status: str(g.status), ko, sc, m: ko || sc, src: ko ? 'knockout' : sc ? 'screen' : null,
+        label: str(g.label), hypothesis: str(g.hypothesis), predicted: str(g.predicted), addedGen: num(g.added_gen),
+        generality: obj(g.generality), value: cfg[g.name] !== undefined ? cfg[g.name] : g.value, of: typeof g.of === 'string' ? g.of : null,
+      };
+    });
+  }
+  const byEffect = (a, b) => (b.m ? b.m.effect : -Infinity) - (a.m ? a.m.effect : -Infinity) || a.name.localeCompare(b.name);
+  function instanceList(st) {
+    const out = [], seen = new Set(), inst = obj(st.instances);
+    const add = (k, split) => { if (typeof k !== 'string' || !k || seen.has(k)) return; seen.add(k); out.push({ key: k, split }); };
+    arr(inst.train).forEach((k) => add(k, 'train'));
+    arr(inst.heldout).forEach((k) => add(k, 'heldout'));
+    for (const name of Object.keys(inst)) if (name !== 'train' && name !== 'heldout') arr(inst[name]).forEach((k) => add(k, name));
+    Object.keys(obj(obj(st.champion).scores)).forEach((k) => add(k, 'other'));
+    arr(st.records).forEach((r) => add(obj(r).instance, 'other'));
+    return out;
+  }
+  const splitName = (sp) => (sp === 'train' ? 'Train' : sp === 'heldout' ? 'Held-out' : sp === 'other' ? 'Other' : sp);
+
+  // ------------------------------------------------------------------- state
+  const S = {
+    runs: [], run: null, wanted: new URLSearchParams(location.search).get('run'),
+    state: null, stateText: '', bodyKey: '', genes: [],
+    live: {}, liveText: '{}', pending: null, localError: null, dismissed: null, liveTimer: 0, stripKey: '',
+    ideas: [], drawer: null, collapsed: true, online: true, tick: 0,
+  };
+  const V = { pts: [], n: 1, key: null, yaw: 0.7, pitch: 0.42, drag: null, last: 0, sols: {} };
+
+  async function getJSON(url) {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }
+  async function postJSON(url, body) {
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    let data = {};
+    try { data = await res.json(); } catch (e) { /* not JSON */ }
+    if (!res.ok) throw new Error(str(obj(data).error) || 'The server answered ' + res.status);
+    return obj(data);
+  }
+
+  // ------------------------------------------------------------------ tooltip
+  const tipEl = $('tip');
+  function showTip(text, x, y) {
+    clear(tipEl);
+    str(text).split('\n').forEach((line, i) => tipEl.appendChild(h('div', { class: i ? 't2' : 't1', text: line })));
+    tipEl.hidden = false;
+    placeTip(x, y);
+  }
+  function placeTip(x, y) {
+    const r = tipEl.getBoundingClientRect();
+    let left = x + 14, top = y + 16;
+    if (left + r.width > innerWidth - 8) left = x - r.width - 12;
+    if (top + r.height > innerHeight - 8) top = y - r.height - 12;
+    tipEl.style.left = Math.max(6, left) + 'px';
+    tipEl.style.top = Math.max(6, top) + 'px';
+  }
+  function hideTip() { tipEl.hidden = true; }
+  let tipOwner = null;
+  document.addEventListener('mouseover', (e) => {
+    const t = e.target instanceof Element ? e.target.closest('[data-tip]') : null;
+    if (t) { tipOwner = t; showTip(t.getAttribute('data-tip'), e.clientX, e.clientY); }
+    else if (tipOwner) { tipOwner = null; hideTip(); }
+  });
+  document.addEventListener('mousemove', (e) => { if (tipOwner && !tipEl.hidden) placeTip(e.clientX, e.clientY); });
+  document.addEventListener('focusin', (e) => {
+    const t = e.target instanceof Element ? e.target.closest('[data-tip]') : null;
+    if (t) { const r = t.getBoundingClientRect(); tipOwner = t; showTip(t.getAttribute('data-tip'), r.left + r.width / 2, r.bottom - 6); }
+  });
+  document.addEventListener('focusout', () => { if (tipOwner) { tipOwner = null; hideTip(); } });
+
+  // ------------------------------------------------------------- small parts
+  function icon(kind) {
+    if (kind === 'llm') return s('svg', { viewBox: '0 0 12 12' }, s('path', { d: 'M6 0l1.5 4.5L12 6 7.5 7.5 6 12 4.5 7.5 0 6l4.5-1.5z' }));
+    if (kind === 'human') return s('svg', { viewBox: '0 0 12 12' }, s('circle', { cx: 6, cy: 3.4, r: 2.6 }), s('path', { d: 'M1 12a5 5 0 0110 0z' }));
+    return s('svg', { viewBox: '0 0 12 12' }, s('circle', { cx: 6, cy: 6, r: 2.6 }));
+  }
+  const authorBadge = (a) => h('span', { class: 'author ' + a.kind, tip: a.tip }, icon(a.kind), a.text);
+  function labelChip(label) {
+    if (!label) return h('span', { class: 'muted', text: '–', tip: 'Not tested for generality yet' });
+    const def = LABELS[label];
+    return h('span', { class: 'chip ' + (def ? def[0] : 'neu'), tip: def ? def[1] : 'Label: ' + label }, h('i'), label);
+  }
+  function statusChip(g) {
+    const def = STATUS[g.status];
+    return h('span', { class: 'chip plain', tip: def ? def[1] : 'Status: ' + (g.status || 'not set yet') }, def ? def[0] : g.status || 'proposed');
+  }
+  function makeScale(ms, w) {
+    let lo = 0, hi = 0;
+    for (const m of ms) {
+      if (!m) continue;
+      lo = Math.min(lo, m.effect, m.lo != null ? m.lo : m.effect);
+      hi = Math.max(hi, m.effect, m.hi != null ? m.hi : m.effect);
+    }
+    if (hi - lo < 1e-9) hi = lo + 1;
+    const span = hi - lo;
+    lo -= span * 0.05; hi += span * 0.07;
+    const x = (v) => Math.round(((clamp(v, lo, hi) - lo) / (hi - lo)) * w * 10) / 10;
+    return { lo, hi, w, x, ticks: niceTicks(lo, hi, 4) };
+  }
+  function barPath(x0, x1, y, bh, r) {
+    const w = Math.abs(x1 - x0);
+    if (w < 0.6) return '';
+    r = Math.min(r, w, bh / 2);
+    const d = x1 > x0 ? 1 : -1;
+    return `M${x0},${y}H${x1 - d * r}Q${x1},${y} ${x1},${y + r}V${y + bh - r}Q${x1},${y + bh} ${x1 - d * r},${y + bh}H${x0}Z`;
+  }
+  function effectBar(m, sc, opts) {
+    opts = opts || {};
+    const H = opts.h || 30, mid = H / 2, bh = opts.bh || 10;
+    const svg = s('svg', { width: sc.w, height: H, viewBox: `0 0 ${sc.w} ${H}`, role: 'img', 'aria-label': m ? 'effect ' + fmtSigned(m.effect) + ', 95% interval ' + ciText(m) : 'not measured' });
+    for (const t of sc.ticks) svg.appendChild(s('line', { x1: sc.x(t), x2: sc.x(t), y1: 0, y2: H, class: t === 0 ? 'zero' : 'grid' }));
+    if (!m) return svg;
+    const v = verdict(m), x0 = sc.x(0), x1 = sc.x(m.effect);
+    const d = barPath(x0, x1, mid - bh / 2, bh, 4);
+    if (d) svg.appendChild(s('path', { d, class: 'bar ' + v + (opts.hollow ? ' hollow' : '') }));
+    if (m.lo != null) {
+      const a = sc.x(m.lo), b = sc.x(m.hi);
+      svg.append(s('line', { x1: a, x2: b, y1: mid, y2: mid, class: 'ci' }),
+        s('line', { x1: a, x2: a, y1: mid - 3.5, y2: mid + 3.5, class: 'ci' }),
+        s('line', { x1: b, x2: b, y1: mid - 3.5, y2: mid + 3.5, class: 'ci' }));
+    }
+    svg.appendChild(s('circle', { cx: x1, cy: mid, r: 2.6, class: 'pt' }));
+    return svg;
+  }
+
+  // ------------------------------------------------------------------ header
+  function renderHeader() {
+    const st = S.state || {}, run = obj(st.run), spend = obj(run.spend);
+    $('h-title').textContent = S.state ? (str(run.title) || str(run.problem) || S.run || 'Untitled run') : S.run || 'Waiting for a run';
+    const bits = [];
+    if (S.state) {
+      if (run.problem) bits.push(str(run.problem));
+      if (run.direction) bits.push(run.direction === 'min' ? 'lower is better' : 'higher is better');
+      const sv = obj(st.champion).solver_version;
+      if (sv) bits.push('solver ' + str(sv));
+      const ago = agoText(run.updated);
+      if (ago) bits.push('updated ' + ago);
+      $('h-sub').textContent = bits.join('  ·  ');
+    } else {
+      $('h-sub').textContent = !S.online ? 'The dashboard server is not answering. Retrying.'
+        : S.run ? 'Waiting for this run to write its first state.'
+        : 'No run found yet. Start one and this page picks it up within seconds.';
+    }
+    $('h-demo').hidden = S.run !== 'demo';
+    const pill = $('h-status'), status = str(run.status).toLowerCase();
+    let cls = '', text = status ? status.charAt(0).toUpperCase() + status.slice(1) : S.run ? 'Starting' : 'No run';
+    if (!S.online) { cls = 'bad'; text = 'Server offline'; }
+    else if (/run|search|evolv|progress/.test(status)) cls = 'live';
+    else if (/done|finish|complete|stopp/.test(status)) cls = 'done';
+    else if (/err|fail|crash/.test(status)) cls = 'bad';
+    pill.className = 'status ' + cls;
+    pill.lastElementChild.textContent = text;
+    $('k-gen').textContent = isNum(run.generation) ? String(run.generation) : '–';
+    $('k-calls').textContent = fmtInt(spend.llm_calls);
+    $('k-usd').textContent = isNum(spend.llm_usd) ? '$' + spend.llm_usd.toFixed(2) : '–';
+    $('k-cpu').textContent = isNum(spend.cpu_seconds) ? (spend.cpu_seconds / 3600).toFixed(spend.cpu_seconds < 36000 ? 2 : 1) : '–';
+    $('k-evals').textContent = fmtInt(spend.evaluations);
+    document.title = (S.state && str(run.title) ? str(run.title) + ' · ' : '') + 'Mendel';
+  }
+  function renderRunSelect() {
+    const sel = $('run-select');
+    sel.hidden = S.runs.length < 2;
+    const key = S.runs.join('\n');
+    if (sel.dataset.key !== key) {
+      sel.dataset.key = key;
+      clear(sel);
+      S.runs.forEach((id) => sel.appendChild(h('option', { value: id, text: id })));
+    }
+    if (S.run) sel.value = S.run;
+  }
+
+  // ---------------------------------------------------- champion vs best known
+  function renderChampion() {
+    const st = S.state || {}, body = clear($('champ-body')), note = $('champ-note');
+    const insts = instanceList(st), scores = obj(obj(st.champion).scores), bk = obj(st.best_known);
+    const records = arr(st.records).map(obj), minimise = obj(st.run).direction === 'min';
+    note.textContent = '';
+    if (!insts.length) { body.appendChild(empty('Scores appear here once the champion has been evaluated.')); return; }
+    let nRec = 0, nEq = 0, nBehind = 0;
+    const groups = [];
+    let longest = 1;
+    for (const it of insts) {
+      let grp = groups.find((x) => x.split === it.split);
+      if (!grp) { grp = { split: it.split, items: [] }; groups.push(grp); }
+      grp.items.push(it);
+      it.sc = obj(scores[it.key]);
+      it.rec = records.find((r) => r.instance === it.key);
+      it.ours = num(it.sc.best) != null ? num(it.sc.best) : num(it.sc.mean);
+      if (it.rec && isNum(it.rec.value) && (it.ours == null || (minimise ? it.rec.value < it.ours : it.rec.value > it.ours))) it.ours = it.rec.value;
+      it.text = it.ours != null ? trimNum(it.ours) : '–';
+      longest = Math.max(longest, it.text.length);
+    }
+    // the big numerals shrink together when there are many instances or long values
+    const tileW = (body.clientWidth - 14 * (groups.length - 1) - 6 * (insts.length - groups.length)) / insts.length;
+    const fontSize = clamp(Math.floor((tileW - 8) / (0.6 * longest)), 13, 34) + 'px';
+    const wrap = h('div', { class: 'groups' });
+    for (const grp of groups) {
+      const tiles = h('div', { class: 'tiles' });
+      for (const it of grp.items) {
+        const sc = it.sc, rec = it.rec, ours = it.ours;
+        const known = num(bk[it.key]) != null ? num(bk[it.key]) : rec ? num(rec.best_known) : null;
+        const delta = ours != null && known != null ? ours - known : null;
+        const better = delta != null && (minimise ? delta < 0 : delta > 0);
+        let glyph = '', gcls = 'neu', dtext = '', cap = '';
+        if (ours == null) cap = 'pending';
+        else if (known == null) cap = 'no reference';
+        else if (better) {
+          nRec++; glyph = '★'; gcls = 'pos'; dtext = trimSigned(delta);
+          cap = rec && rec.verified === false ? 'unverified' : 'new record';
+        } else if (delta === 0) { nEq++; glyph = '='; dtext = ''; cap = 'matched'; }
+        else { nBehind++; glyph = minimise ? '▲' : '▼'; gcls = 'neg'; dtext = trimSigned(delta); cap = 'behind'; }
+        const tipLines = [it.key + ' (' + splitName(it.split).toLowerCase() + '): ' + (ours != null ? trimNum(ours) : 'no result yet')];
+        if (known != null) tipLines.push('best published ' + trimNum(known));
+        if (isNum(sc.mean)) tipLines.push('mean ' + trimNum(sc.mean) + (isNum(sc.runs) ? ' over ' + plural(sc.runs, 'run') : ''));
+        if (sc.budget) tipLines.push('budget ' + str(sc.budget));
+        if (rec) tipLines.push(rec.verified === true ? 'Record verified by the exact evaluator' : rec.verified === false ? 'Record not verified yet' : 'Record');
+        if (rec && rec.certificate) tipLines.push(str(rec.certificate));
+        const canShow = !!V.sols[it.key];
+        if (canShow) tipLines.push('Click to show this point set');
+        const tile = h('div', {
+          class: 'tile' + (better ? ' record' : '') + (canShow ? ' pick' : '') + (canShow && V.key === it.key ? ' shown' : ''),
+          tip: tipLines.join('\n'), tabindex: canShow ? 0 : null, role: canShow ? 'button' : null,
+          onclick: canShow ? () => pickInstance(it.key) : null,
+          onkeydown: canShow ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickInstance(it.key); } } : null,
+        },
+          h('div', { class: 't-key', text: it.key }),
+          h('div', { class: 't-val', style: { fontSize }, text: it.text }),
+          h('div', { class: 't-bk', text: known != null ? 'vs ' + trimNum(known) : ' ' }),
+          h('div', { class: 't-delta' }, glyph ? h('span', { class: 'g ' + gcls, text: glyph }) : null, dtext),
+          h('div', { class: 't-cap', text: cap }));
+        tiles.appendChild(tile);
+      }
+      wrap.appendChild(h('div', { class: 'tgroup', style: { flex: grp.items.length + ' 1 0' } },
+        h('div', { class: 'tg-label', text: splitName(grp.split) + (grp.split === 'heldout' ? ' · never tuned on' : '') }), tiles));
+    }
+    body.appendChild(wrap);
+    const parts = [];
+    if (nRec) parts.push(plural(nRec, 'new record'));
+    if (nEq) parts.push(nEq + ' matched');
+    if (nBehind) parts.push(nBehind + ' behind');
+    note.textContent = parts.length ? parts.join(' · ') : 'our best vs best published';
+  }
+
+  // ----------------------------------------------------------- point-set viewer
+  function validPoints(v) {
+    if (!Array.isArray(v) || !v.length) return null;
+    for (const p of v) if (!Array.isArray(p) || p.length !== 3 || !p.every(isNum)) return null;
+    return v;
+  }
+  function renderViewer() {
+    const st = S.state || {}, sols = obj(obj(st.champion).solutions), panel = $('p-viewer'), sel = $('viewer-select');
+    V.sols = {};
+    for (const k of Object.keys(sols)) { const pts = validPoints(sols[k]); if (pts) V.sols[k] = pts; }
+    const order = instanceList(st).map((i) => i.key).filter((k) => V.sols[k]);
+    for (const k of Object.keys(V.sols)) if (!order.includes(k)) order.push(k);
+    panel.hidden = !order.length;
+    if (!order.length) { V.key = null; V.pts = []; return; }
+    if (!V.key || !V.sols[V.key]) {
+      const rec = arr(st.records).map(obj).find((r) => V.sols[r.instance]);
+      V.key = rec ? rec.instance : order[order.length - 1];
+    }
+    const sig = order.join('\n');
+    if (sel.dataset.key !== sig) {
+      sel.dataset.key = sig;
+      clear(sel);
+      order.forEach((k) => sel.appendChild(h('option', { value: k, text: k })));
+    }
+    sel.value = V.key;
+    loadPoints();
+  }
+  function loadPoints() {
+    const pts = V.sols[V.key] || [];
+    let n = 0;
+    const m = /^n(\d+)$/.exec(V.key || '');
+    if (m) n = Number(m[1]);
+    let max = 0;
+    for (const p of pts) max = Math.max(max, p[0], p[1], p[2]);
+    if (!(n > max)) n = max + 1;
+    V.n = Math.max(2, n);
+    V.pts = pts;
+    $('viewer-cap').textContent = plural(pts.length, 'point') + ' in a ' + V.n + '×' + V.n + '×' + V.n + ' grid';
+    paintViewer(0);   // first frame now; the animation loop takes over from here
+  }
+  function pickInstance(key) {
+    if (!V.sols[key]) return;
+    V.key = key;
+    $('viewer-select').value = key;
+    loadPoints();
+    renderChampion();
+  }
+  $('viewer-select').addEventListener('change', (e) => pickInstance(e.target.value));
+  (function viewerInput() {
+    const cv = $('viewer');
+    cv.addEventListener('pointerdown', (e) => { V.drag = { x: e.clientX, y: e.clientY, yaw: V.yaw, pitch: V.pitch }; cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener('pointermove', (e) => {
+      if (!V.drag) return;
+      V.yaw = V.drag.yaw + (e.clientX - V.drag.x) * 0.012;
+      V.pitch = clamp(V.drag.pitch + (e.clientY - V.drag.y) * 0.012, -1.3, 1.3);
+    });
+    const end = () => { V.drag = null; };
+    cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+  })();
+  const CUBE_EDGES = [[0, 1], [1, 3], [3, 2], [2, 0], [4, 5], [5, 7], [7, 6], [6, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
+  function drawViewer(ts) {
+    requestAnimationFrame(drawViewer);
+    const dt = Math.min(0.05, Math.max(0, (ts - V.last) / 1000)) || 0;
+    V.last = ts;
+    paintViewer(dt);
+  }
+  function paintViewer(dt) {
+    const cv = $('viewer');
+    if ($('p-viewer').hidden) return;
+    if (!V.drag) V.yaw += dt * 0.32;
+    const w = cv.clientWidth, hgt = cv.clientHeight, dpr = window.devicePixelRatio || 1;
+    if (!w || !hgt) return;
+    if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(hgt * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(hgt * dpr); }
+    const ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, hgt);
+    const size = Math.min(w, hgt), cx = w / 2, cy = hgt / 2, D = 3.4, k = size * 0.52;
+    const cyw = Math.cos(V.yaw), syw = Math.sin(V.yaw), cp = Math.cos(V.pitch), sp = Math.sin(V.pitch);
+    const proj = (x, y, z) => {
+      const x1 = x * cyw + z * syw, z1 = -x * syw + z * cyw;
+      const y2 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
+      const f = D / (D + z2);
+      return [cx + x1 * f * k, cy - y2 * f * k, z2, f];
+    };
+    const corners = [];
+    for (let i = 0; i < 8; i++) corners.push(proj(i & 1 ? 0.5 : -0.5, i & 2 ? 0.5 : -0.5, i & 4 ? 0.5 : -0.5));
+    ctx.lineWidth = 1;
+    for (const [a, b] of CUBE_EDGES) {
+      const depth = (corners[a][2] + corners[b][2]) / 2;
+      ctx.strokeStyle = 'rgba(174,182,196,' + (0.34 - depth * 0.22).toFixed(3) + ')';
+      ctx.beginPath(); ctx.moveTo(corners[a][0], corners[a][1]); ctx.lineTo(corners[b][0], corners[b][1]); ctx.stroke();
+    }
+    const span = V.n - 1;
+    const pts = V.pts.map((p) => proj(p[0] / span - 0.5, p[2] / span - 0.5, p[1] / span - 0.5)).sort((a, b) => b[2] - a[2]);
+    for (const p of pts) {
+      const near = clamp(0.5 - p[2] / 1.74, 0, 1);            // 0 far .. 1 near
+      ctx.fillStyle = `rgba(${Math.round(57 + 70 * near)},${Math.round(125 + 60 * near)},${Math.round(215 + 35 * near)},${(0.42 + 0.58 * near).toFixed(3)})`;
+      ctx.beginPath(); ctx.arc(p[0], p[1], (1.5 + 1.7 * near) * p[3], 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  // ---------------------------------------------------------------- timeline
+  function renderTimeline() {
+    const st = S.state || {}, body = clear($('tl-body'));
+    const pts = arr(st.timeline).map(obj).map((p) => ({ t: num(p.t), g: num(p.generation), y: num(p.score) })).filter((p) => p.y != null);
+    if (!pts.length) { body.appendChild(empty('The champion’s score is drawn here after the first generation.')); return; }
+    const useT = pts.every((p) => p.t != null) && Math.max(...pts.map((p) => p.t)) > Math.min(...pts.map((p) => p.t));
+    pts.forEach((p, i) => { p.x = useT ? p.t : i; });
+    pts.sort((a, b) => a.x - b.x);
+    const W = body.clientWidth, H = body.clientHeight;
+    if (W < 60 || H < 60) return;
+    const m = { l: 40, r: 50, t: 16, b: 20 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
+    const x0 = pts[0].x, x1 = pts[pts.length - 1].x > x0 ? pts[pts.length - 1].x : x0 + 1;
+    let ylo = Math.min(1, ...pts.map((p) => p.y)), yhi = Math.max(1, ...pts.map((p) => p.y));
+    if (yhi - ylo < 1e-6) { ylo -= 0.05; yhi += 0.05; }
+    const pad = (yhi - ylo) * 0.08;
+    ylo -= pad; yhi += pad * 0.6;
+    const X = (v) => m.l + ((v - x0) / (x1 - x0)) * pw, Y = (v) => m.t + (1 - (v - ylo) / (yhi - ylo)) * ph;
+    const svg = s('svg', { class: 'fill', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Champion score over time' });
+    // axes
+    const yt = niceTicks(ylo, yhi, 4), stepY = yt.length > 1 ? yt[1] - yt[0] : 0.1;
+    const pct = (v) => (v * 100).toFixed(stepY < 0.01 ? 1 : 0) + '%';
+    for (const t of yt) {
+      if (Math.abs(t - 1) < 1e-9) continue;
+      svg.append(s('line', { x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t), class: 'grid' }), s('text', { x: m.l - 7, y: Y(t) + 3.5, 'text-anchor': 'end', text: pct(t) }));
+    }
+    svg.append(s('line', { x1: m.l, x2: W - m.r, y1: Y(1), y2: Y(1), class: 'ref' }),
+      s('text', { x: m.l - 7, y: Y(1) + 3.5, 'text-anchor': 'end', class: 'lbl', text: '100%' }),
+      s('text', { x: m.l + 4, y: Y(1) - 5, text: 'best known' }),
+      s('line', { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, class: 'axis' }));
+    if (useT) {
+      const steps = [60, 120, 300, 600, 900, 1800, 3600, 7200, 14400, 28800, 86400];
+      const step = steps.find((sp) => (x1 - x0) / sp <= 6) || 172800;
+      for (let t = Math.ceil(x0 / step) * step; t <= x1 + 1e-6; t += step) {
+        svg.appendChild(s('text', { x: X(t), y: H - 6, 'text-anchor': 'middle', text: t === 0 ? 'start' : fmtDur(t) }));
+      }
+    } else {
+      pts.forEach((p, i) => { if (pts.length <= 12 || i % Math.ceil(pts.length / 12) === 0) svg.appendChild(s('text', { x: X(p.x), y: H - 6, 'text-anchor': 'middle', text: p.g != null ? 'gen ' + p.g : String(i) })); });
+    }
+    // step line: the champion holds its score until the next improvement
+    let d = `M${X(pts[0].x).toFixed(1)},${Y(pts[0].y).toFixed(1)}`;
+    for (let i = 1; i < pts.length; i++) d += `H${X(pts[i].x).toFixed(1)}V${Y(pts[i].y).toFixed(1)}`;
+    svg.appendChild(s('path', { d, class: 'series' }));
+    // markers: where each gene joined
+    const placed = [];
+    const last = pts[pts.length - 1], lx = X(last.x), ly = Y(last.y);
+    placed.push({ x1: lx + 4, x2: W, y1: ly - 9, y2: ly + 9 }, { x1: m.l, x2: m.l + 66, y1: Y(1) - 17, y2: Y(1) + 2 });
+    const joins = new Map();
+    for (const g of S.genes) {
+      if (!g.isIdea || g.addedGen == null || g.addedGen <= 0) continue;
+      const idx = pts.findIndex((p) => p.g != null && p.g >= g.addedGen);
+      if (idx < 0) continue;
+      if (!joins.has(idx)) joins.set(idx, { kept: [], other: [] });
+      joins.get(idx)[g.status === 'active' ? 'kept' : 'other'].push(g);
+    }
+    pts.forEach((p, i) => { p.join = joins.get(i) || null; });
+    const labelLayer = s('g'), markLayer = s('g');
+    const idxs = [...joins.keys()].sort((a, b) => a - b);
+    for (const idx of idxs) {
+      const p = pts[idx], j = joins.get(idx), px = X(p.x), py = Y(p.y);
+      j.other.forEach((g, n) => markLayer.appendChild(s('circle', { cx: px + n * 9, cy: H - m.b, r: 3.5, class: 'mk-off' })));
+      if (!j.kept.length) continue;
+      markLayer.appendChild(s('circle', { cx: px, cy: py, r: 4.5, class: 'mk' }));
+      // Label under the curve, just right of the step (that area is empty while the score climbs);
+      // if it would run off the plot or hit another label, try above-left of the marker instead.
+      const text = j.kept.map((g) => g.name).join(' + '), tw = text.length * 5.9 + 6;
+      const cands = [];
+      for (let k = 0; k < 5; k++) cands.push({ x1: px + 7, x2: px + 7 + tw, y1: py + 5 + k * 13, y2: py + 18 + k * 13, anchor: 'start', tx: px + 7, k });
+      for (let k = 0; k < 4; k++) cands.push({ x1: px - 8 - tw, x2: px - 8, y1: py - 19 - k * 13, y2: py - 6 - k * 13, anchor: 'end', tx: px - 8, k });
+      const hits = (c) => placed.some((q) => !(c.x2 < q.x1 - 3 || c.x1 > q.x2 + 3 || c.y2 <= q.y1 + 2 || c.y1 >= q.y2 - 2));
+      // a label moved away from its marker gets a leader line, which must not cross another label
+      const leaderBox = (c) => ({ x1: px - 1, x2: px + 1, y1: Math.min(py, (c.y1 + c.y2) / 2), y2: Math.max(py, (c.y1 + c.y2) / 2) });
+      const spot = cands.find((c) => c.x1 >= m.l + 2 && c.x2 <= W - m.r + 6 && c.y1 >= 10 && c.y2 <= H - m.b - 7 && !hits(c) && (c.k === 0 || !hits(leaderBox(c))));
+      if (!spot) continue;
+      placed.push(spot);
+      if (spot.k > 0) {
+        const ey = (spot.y1 + spot.y2) / 2 + 1;
+        placed.push(leaderBox(spot));
+        labelLayer.appendChild(s('path', { d: `M${px},${py}V${ey}H${spot.anchor === 'end' ? spot.x2 + 3 : spot.x1 - 3}`, class: 'leader', fill: 'none' }));
+      }
+      labelLayer.appendChild(s('text', { x: spot.tx, y: spot.y2 - 3, 'text-anchor': spot.anchor, class: 'lbl', style: { fontSize: '10.5px' }, text }));
+    }
+    svg.append(labelLayer, markLayer);
+    svg.append(s('circle', { cx: lx, cy: ly, r: 3, class: 'pt' }), s('text', { x: lx + 8, y: ly + 4, class: 'lbl strong', style: { fontSize: '13px' }, text: (last.y * 100).toFixed(1) + '%' }));
+    // hover: crosshair that snaps to the nearest step
+    const cross = s('line', { y1: m.t, y2: H - m.b, class: 'cross', visibility: 'hidden' }), dot = s('circle', { r: 4, class: 'pt', visibility: 'hidden' });
+    const hit = s('rect', { x: m.l, y: 0, width: pw + 8, height: H, fill: 'transparent' });
+    hit.addEventListener('pointermove', (e) => {
+      const r = svg.getBoundingClientRect(), mx = (e.clientX - r.left) * (W / r.width);
+      let best = pts[0];
+      for (const p of pts) if (Math.abs(X(p.x) - mx) < Math.abs(X(best.x) - mx)) best = p;
+      const bx = X(best.x), by = Y(best.y);
+      setAttrs(cross, { x1: bx, x2: bx, visibility: 'visible' }); setAttrs(dot, { cx: bx, cy: by, visibility: 'visible' });
+      const lines = [(best.y * 100).toFixed(1) + '% of best known'];
+      const meta = [];
+      if (best.g != null) meta.push('generation ' + best.g);
+      if (useT) meta.push(best.t === 0 ? 'start' : fmtDur(best.t) + ' in');
+      if (meta.length) lines.push(meta.join(' · '));
+      if (best.join && best.join.kept.length) lines.push('joined: ' + best.join.kept.map((g) => g.name).join(', '));
+      if (best.join && best.join.other.length) lines.push('tried, not kept: ' + best.join.other.map((g) => g.name).join(', '));
+      showTip(lines.join('\n'), e.clientX, e.clientY);
+    });
+    hit.addEventListener('pointerleave', () => { setAttrs(cross, { visibility: 'hidden' }); setAttrs(dot, { visibility: 'hidden' }); hideTip(); });
+    svg.append(cross, dot, hit);
+    body.appendChild(svg);
+  }
+
+  // --------------------------------------------------------------- waterfall
+  function renderWaterfall() {
+    const st = S.state || {}, body = clear($('wf-body')), cap = clear($('wf-cap'));
+    const dcm = obj(st.decomposition), seed = num(dcm.seed), order = ['tuning', 'ideas', 'compute'];
+    const steps = order.filter((k) => isNum(dcm[k])).map((k) => ({ key: k, v: dcm[k] }));
+    for (const k of Object.keys(dcm)) if (!order.includes(k) && k !== 'seed' && k !== 'unit' && k !== 'total' && isNum(dcm[k])) steps.push({ key: k, v: dcm[k] });
+    if (seed == null && !steps.length) { body.appendChild(empty('The split into seed, tuning, ideas and compute appears once it has been measured.')); return; }
+    let cum = 0;
+    const levels = [0];
+    for (const sp of steps) { sp.from = cum; cum += sp.v; sp.to = cum; levels.push(cum); }
+    const gain = cum, ideas = steps.find((x) => x.key === 'ideas');
+    if (ideas && gain > 0 && ideas.v > 0) cap.appendChild(h('div', null, 'Ideas gave ', h('b', { text: Math.round((ideas.v / gain) * 100) + '%' }), ' of the ', h('b', { text: trimSigned(gain) }), ' gain over the seed'));
+    else cap.appendChild(h('div', null, 'Gain over the seed solver: ', h('b', { text: trimSigned(gain) })));
+    if (dcm.unit) cap.appendChild(h('div', { text: str(dcm.unit) }));
+    const W = body.clientWidth, H = body.clientHeight;
+    if (W < 60 || H < 60) return;
+    const cols = steps.length + 2, cw = W / cols, top = 26, bottom = H - 24;
+    const lo = Math.min(...levels), hi = Math.max(...levels), span = hi - lo || 1;
+    const Y = (v) => bottom - ((v - lo) / span) * (bottom - top);
+    const svg = s('svg', { class: 'fill', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Decomposition of the gain' });
+    const bw = Math.min(40, cw - 14), name = (k) => k.charAt(0).toUpperCase() + k.slice(1);
+    const xl = (i) => cw * i + (cw - bw) / 2;
+    svg.appendChild(s('line', { x1: 0, x2: W, y1: Y(0), y2: Y(0), class: 'grid' }));
+    // seed level
+    svg.append(s('line', { x1: xl(0), x2: xl(0) + bw, y1: Y(0), y2: Y(0), stroke: 'var(--ink-3)', 'stroke-width': 2.5, 'stroke-linecap': 'round' }),
+      s('text', { x: cw / 2, y: Y(0) - 8, 'text-anchor': 'middle', class: 'lbl', style: { fontSize: '15px', fontWeight: 650 }, text: seed != null ? trimNum(seed) : '' }),
+      s('text', { x: cw / 2, y: H - 6, 'text-anchor': 'middle', class: 'lbl', text: 'Seed' }));
+    let prevX = xl(0) + bw, prevY = Y(0);
+    steps.forEach((sp, i) => {
+      const x = xl(i + 1), y1 = Y(Math.max(sp.from, sp.to)), y2 = Y(Math.min(sp.from, sp.to)), up = sp.v >= 0;
+      svg.appendChild(s('line', { x1: prevX, x2: x, y1: prevY, y2: prevY, class: 'axis' }));
+      const hh = Math.max(2, y2 - y1), r = Math.min(4, hh / 2);
+      const dpath = up
+        ? `M${x},${y1 + hh}V${y1 + r}Q${x},${y1} ${x + r},${y1}H${x + bw - r}Q${x + bw},${y1} ${x + bw},${y1 + r}V${y1 + hh}Z`
+        : `M${x},${y1}V${y1 + hh - r}Q${x},${y1 + hh} ${x + r},${y1 + hh}H${x + bw - r}Q${x + bw},${y1 + hh} ${x + bw},${y1 + hh - r}V${y1}Z`;
+      const main = sp.key === 'ideas';
+      let tipText = name(sp.key) + ': ' + trimSigned(sp.v) + (gain > 0 ? '\n' + Math.round((sp.v / gain) * 100) + '% of the gain' : '');
+      if (sp.key === 'tuning') {
+        const consts = S.genes.filter((c) => !c.isIdea && c.value != null);
+        if (consts.length) tipText += '\nTuned constants: ' + consts.map((c) => c.name + ' = ' + str(c.value)).join(', ');
+      }
+      svg.appendChild(s('path', { d: dpath, class: 'bar ' + (up ? 'pos' : 'neg'), 'fill-opacity': main ? 1 : 0.42, tip: tipText }));
+      svg.append(s('text', { x: x + bw / 2, y: up ? y1 - 6 : y1 + hh + 14, 'text-anchor': 'middle', class: 'lbl strong', style: { fontSize: main ? '15px' : '12px' }, text: trimSigned(sp.v) }),
+        s('text', { x: x + bw / 2, y: H - 6, 'text-anchor': 'middle', class: main ? 'lbl strong' : 'lbl', text: name(sp.key) }));
+      prevX = x + bw; prevY = Y(sp.to);
+    });
+    const cxl = xl(cols - 1);
+    svg.append(s('line', { x1: prevX, x2: cxl, y1: prevY, y2: prevY, class: 'axis' }),
+      s('line', { x1: cxl, x2: cxl + bw, y1: Y(gain), y2: Y(gain), stroke: 'var(--ink)', 'stroke-width': 2.5, 'stroke-linecap': 'round' }),
+      s('text', { x: cxl + bw / 2, y: Y(gain) + 22, 'text-anchor': 'middle', class: 'lbl strong', style: { fontSize: '19px' }, text: seed != null ? trimNum(seed + gain) : trimSigned(gain) }),
+      s('text', { x: cxl + bw / 2, y: H - 6, 'text-anchor': 'middle', class: 'lbl', text: 'Champion' }));
+    body.appendChild(svg);
+  }
+
+  // ------------------------------------------------------------------ ledger
+  const BAR_W = 190;
+  function stripInfo(name) {
+    const live = S.live;
+    if (S.pending && S.pending.gene === name) {
+      const mine = live.gene === name && live.status === 'running';
+      return { status: 'running', pairs: mine ? arr(live.pairs) : [], effect: mine ? num(live.effect) : null, ci: mine ? live.ci : null,
+        runs: mine ? num(live.runs) : null, total: mine ? num(live.total_runs) : null, wasOn: true };
+    }
+    if (S.localError && S.localError.gene === name) return { status: 'error', error: S.localError.error };
+    if (live.gene === name && live.status && S.dismissed !== S.liveText) {
+      return { status: str(live.status), pairs: arr(live.pairs), effect: num(live.effect), ci: live.ci, runs: num(live.runs), total: num(live.total_runs),
+        wasOn: live.was_on !== false, t: live.t, error: str(live.error || live.message), detail: str(live.detail) };
+    }
+    return null;
+  }
+  const knockoutBusy = () => !!S.pending || S.live.status === 'running';
+
+  function normPairs(list, dir) {
+    const out = [];
+    for (const p of arr(list)) {
+      let on, off, inst = '', seed = null, d = null;
+      if (Array.isArray(p)) { on = p[0]; off = p[1]; }                       // [on, off]
+      else { const q = obj(p); on = q.on; off = q.off; d = num(q.diff); inst = typeof q.instance === 'string' ? q.instance : ''; seed = q.seed; }
+      if (isNum(on) && isNum(off)) out.push({ on, off, inst, seed, d: d != null ? d : (on - off) * dir });
+    }
+    const order = [...new Set(out.map((p) => p.inst))];                      // instances stay together
+    return out.map((p, i) => ({ p, i })).sort((a, b) => order.indexOf(a.p.inst) - order.indexOf(b.p.inst) || a.i - b.i).map((e) => e.p);
+  }
+  function pairsPlot(pairs, m, W) {
+    const H = 66, svg = s('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Paired seeds: score with the idea on minus score with it off' });
+    if (!pairs.length) { svg.appendChild(s('text', { x: 4, y: H / 2 + 4, text: 'Waiting for the first pair of runs…' })); return svg; }
+    // One column per pair of runs on the same seed; the dot is "idea on minus idea off".
+    let lo = Math.min(0, ...pairs.map((p) => p.d)), hi = Math.max(0, ...pairs.map((p) => p.d));
+    if (m && m.lo != null) { lo = Math.min(lo, m.lo); hi = Math.max(hi, m.hi); }
+    if (hi - lo < 1e-9) { lo -= 1; hi += 1; }
+    const top = 8, bottom = H - 18, left = 36;
+    const Y = (v) => bottom - ((v - lo) / (hi - lo)) * (bottom - top);
+    const groups = [];
+    for (const p of pairs) {
+      let grp = groups[groups.length - 1];
+      if (!grp || grp.inst !== p.inst) { grp = { inst: p.inst, items: [] }; groups.push(grp); }
+      grp.items.push(p);
+    }
+    const gap = groups.length > 1 ? 10 : 0;
+    const pitch = clamp((W - left - 84 - gap * (groups.length - 1)) / Math.max(pairs.length, 12), 5, 14);
+    const right = left + pitch * pairs.length + gap * (groups.length - 1);
+    const yl = (v, text) => s('text', { x: left - 7, y: Y(v) + 3.5, 'text-anchor': 'end', text });
+    svg.appendChild(yl(0, '0'));
+    if (Y(0) - Y(hi) > 10) svg.appendChild(yl(hi, trimSigned(hi, 1)));
+    if (Y(lo) - Y(0) > 10) svg.appendChild(yl(lo, trimSigned(lo, 1)));
+    if (m) {
+      if (m.lo != null) svg.appendChild(s('rect', { x: left, y: Y(m.hi), width: right - left, height: Math.max(1, Y(m.lo) - Y(m.hi)), fill: 'var(--ink)', 'fill-opacity': 0.09, tip: '95% interval ' + ciText(m) }));
+      svg.append(s('line', { x1: left, x2: right, y1: Y(m.effect), y2: Y(m.effect), stroke: 'var(--ink)', 'stroke-width': 1.5 }),
+        s('text', { x: right + 6, y: Y(m.effect) + 3.5, class: 'lbl', text: 'mean ' + fmtSigned(m.effect) }));
+    }
+    svg.appendChild(s('line', { x1: left - 3, x2: right, y1: Y(0), y2: Y(0), class: 'axis' }));
+    let x = left;
+    for (const grp of groups) {
+      const gx = x;
+      for (const p of grp.items) {
+        const cx = x + pitch / 2, c = p.d > 0 ? 'pos' : p.d < 0 ? 'neg' : 'neu';
+        const g = s('g', { tip: (p.inst ? p.inst + ' · ' : '') + (p.seed != null ? 'seed ' + p.seed + ': ' : '') + trimSigned(p.d) + '\nidea on ' + trimNum(p.on) + ' · idea off ' + trimNum(p.off) });
+        g.append(s('rect', { x, y: 0, width: pitch, height: bottom + 4, fill: 'transparent' }),
+          s('line', { x1: cx, x2: cx, y1: Y(0), y2: Y(p.d), class: 'pl ' + c, 'stroke-width': 1.5 }),
+          s('circle', { cx, cy: Y(p.d), r: Math.min(3, pitch / 2 - 0.5), class: 'pd ' + c }));
+        svg.appendChild(g);
+        x += pitch;
+      }
+      if (grp.inst) svg.appendChild(s('text', { x: (gx + x) / 2, y: H - 4, 'text-anchor': 'middle', style: { fontFamily: 'var(--mono)' }, text: grp.inst }));
+      x += gap;
+    }
+    if (W - right > 200) svg.appendChild(s('text', { x: W - 2, y: H - 4, 'text-anchor': 'end', text: 'each dot: one seed, on minus off' }));
+    return svg;
+  }
+  function liveStrip(g, info, plotW) {
+    const stop = (e) => e.stopPropagation();
+    const close = h('button', { class: 'st-x', 'aria-label': 'Dismiss', tip: 'Dismiss', onclick: (e) => { e.stopPropagation(); S.dismissed = S.liveText; S.localError = null; renderLedger(); } }, '×');
+    if (info.status === 'error') {
+      return h('div', { class: 'strip error', 'data-gene': g.name, onclick: stop },
+        h('div', { class: 'st-err' }, 'The knockout of ' + g.name + ' did not finish. ', info.error || 'No result came back.', info.detail ? h('small', { text: info.detail }) : null), close);
+    }
+    const running = info.status === 'running', dir = obj(obj(S.state).run).direction === 'min' ? -1 : 1;
+    const pairs = normPairs(info.pairs, dir);
+    // no estimate is shown until the first pair is in (the engine writes 0 as a placeholder)
+    const m = info.effect != null && pairs.length ? measure({ effect: info.effect, ci: info.ci }) : null, v = m ? verdict(m) : 'neu';
+    const act = info.wasOn === false ? 'on' : 'off';
+    let sub;
+    if (running) {
+      sub = pairs.length ? plural(pairs.length, 'paired run') + ' so far' : 'Starting the solver with the idea switched ' + act;
+      if (info.runs != null && info.total) sub = info.runs + ' of ' + info.total + ' solver runs done';
+    } else if (!m) sub = 'Finished without an effect estimate';
+    else if (v === 'neu') sub = 'No clear effect: the interval spans zero';
+    else if (act === 'off') sub = 'Switching it off ' + (v === 'pos' ? 'costs ' : 'gains ') + trimNum(Math.abs(m.effect)) + ' points';
+    else sub = 'Switching it on ' + (v === 'pos' ? 'gains ' : 'costs ') + trimNum(Math.abs(m.effect)) + ' points';
+    const cap = running ? 'Knocking out ' + g.name
+      : 'Live knockout' + (pairs.length ? ' · ' + plural(pairs.length, 'paired run') : '') + (clock(info.t) ? ' · ' + clock(info.t) : '');
+    return h('div', { class: 'strip v-' + (running ? 'neu' : v), 'data-gene': g.name, onclick: stop },
+      h('div', null,
+        h('div', { class: 'st-cap' }, running ? h('span', { class: 'spin' }) : null, cap),
+        h('div', { class: 'st-big' }, m ? fmtSigned(m.effect) : '…', m && m.lo != null ? h('small', { text: ciText(m) }) : null),
+        h('div', { class: 'st-sub', text: sub })),
+      h('div', { class: 'st-plot' }, pairsPlot(pairs, m, plotW)),
+      running ? h('span') : close);
+  }
+  function ledgerRow(g, sc, dim, plotW) {
+    const info = stripInfo(g.name), busy = knockoutBusy();
+    const on = g.status === 'active';
+    let action;
+    if (dim || DIM.has(g.status)) action = statusChip(g);
+    else if (on) {
+      const mine = info && info.status === 'running';
+      action = h('button', { class: 'btn', disabled: busy, tip: mine ? null : 'Switch this idea off and re-run the solver on paired seeds, live',
+        onclick: (e) => { e.stopPropagation(); knockOut(g.name); } }, mine ? [h('span', { class: 'spin' }), 'Running'] : 'Knock out');
+    } else action = h('span', { class: 'muted', style: { fontSize: '11px' }, tip: (STATUS[g.status] || [])[1] || null, text: (STATUS[g.status] || [g.status || 'proposed'])[0] });
+    const val = g.m
+      ? [h('span', { class: 'v-eff', text: fmtSigned(g.m.effect) }), h('span', { class: 'v-ci', text: ciText(g.m) })]
+      : h('span', { class: 'v-ci', text: 'not measured' });
+    const row = h('div', {
+      class: 'lrow' + (dim ? ' dim' : '') + (S.drawer === g.name ? ' sel' : ''), tabindex: 0, role: 'button', 'aria-label': 'Details for ' + g.name,
+      onclick: () => openDrawer(g.name), onkeydown: (e) => { if (e.target === row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openDrawer(g.name); } },
+    },
+      h('div', { class: 'c-sw' }, h('span', { class: 'switch' + (on ? ' on' : '') + (dim ? ' gone' : ''), tip: (STATUS[g.status] || [])[1] || 'Status: ' + (g.status || 'not set yet') })),
+      h('div', { class: 'l1' }, h('span', { class: 'gname', text: g.name }), authorBadge(g.author),
+        g.kind === 'choice' && g.value != null ? h('span', { class: 'muted', style: { fontSize: '11px' }, text: '= ' + str(g.value) }) : null),
+      h('div', { class: 'c-bar', tip: measureTip(g.src === 'screen' ? 'Screening effect' : 'Knockout effect', g.m, g.src === 'screen' ? 'Measured at screening only: never knocked out' : null) },
+        effectBar(g.m, sc, { hollow: g.src === 'screen', h: 24 })),
+      h('div', { class: 'c-val' }, val),
+      h('div', { class: 'c-label' }, labelChip(g.label)),
+      h('div', { class: 'c-act' }, action),
+      h('div', { class: 'hyp', text: g.hypothesis || 'No hypothesis recorded.', tip: g.hypothesis ? g.hypothesis + (g.predicted ? '\nPredicted: ' + g.predicted : '') : null }));
+    return info ? [row, liveStrip(g, info, plotW)] : row;
+  }
+  function renderLedger() {
+    const head = clear($('ledger-head')), list = $('ledger-list'), keep = list.scrollTop;
+    clear(list);
+    const ideas = S.genes.filter((g) => g.isIdea);
+    // One shared scale for the rows on screen: the collapsed "did not work" rows join it when opened.
+    const sc = makeScale(ideas.filter((g) => !S.collapsed || !DIM.has(g.status)).map((g) => g.m), BAR_W);
+    const axis = s('svg', { width: BAR_W, height: 34, viewBox: `0 0 ${BAR_W} 34` });
+    axis.appendChild(s('text', { x: 0, y: 12, style: { fontSize: '10px', letterSpacing: '.09em' }, text: 'KNOCKOUT EFFECT' }));
+    let lastX = -99;
+    for (const t of sc.ticks) {
+      const x = sc.x(t);
+      if (x < 8 || x > BAR_W - 8 || x - lastX < 26) continue;
+      lastX = x;
+      axis.append(s('text', { x, y: 27, 'text-anchor': 'middle', style: { letterSpacing: '0' }, text: trimSigned(t) }), s('line', { x1: x, x2: x, y1: 30, y2: 34, class: 'axis' }));
+    }
+    head.append(h('div'), h('div', { text: 'Idea and hypothesis' }), h('div', null, axis),
+      h('div', { text: 'Effect · interval' }), h('div', { text: 'Generality' }), h('div'));
+    if (!ideas.length) { list.appendChild(empty(S.state ? 'No ideas yet. The first ones appear as soon as the inventor proposes them.' : 'Waiting for a run.')); return; }
+    const main = ideas.filter((g) => !DIM.has(g.status)).sort(byEffect), dim = ideas.filter((g) => DIM.has(g.status)).sort(byEffect);
+    const plotW = Math.max(220, list.clientWidth - 36 - 232 - 20 - 28 - 26);
+    for (const g of main) append(list, [ledgerRow(g, sc, false, plotW)]);
+    if (dim.length) {
+      const mini = (g) => h('span', { class: 'mini' }, g.m ? h('i', { class: 'sw ' + verdict(g.m) }) : null, g.name, h('b', { text: g.m ? fmtSigned(g.m.effect) : (STATUS[g.status] || [g.status])[0] }));
+      list.appendChild(h('button', { class: 'dimhead' + (S.collapsed ? ' stick' : ''), type: 'button', 'aria-expanded': String(!S.collapsed), onclick: () => { S.collapsed = !S.collapsed; renderLedger(); } },
+        h('span', { text: S.collapsed ? '▸' : '▾' }),
+        h('span', { class: 'dh-title', text: 'What did not work (' + dim.length + ')' }),
+        h('span', { class: 'dh-sum' }, S.collapsed ? dim.map(mini) : 'rejected at screening, failed the invariance gate, or pruned after null knockouts')));
+      if (!S.collapsed) for (const g of dim) append(list, [ledgerRow(g, sc, true, plotW)]);
+    }
+    list.scrollTop = keep;
+    S.stripKey = stripKey();
+    // bring a freshly opened knockout strip into view
+    const stripGene = (S.pending ? S.pending.gene : S.live.gene) || '';
+    const strip = [...list.querySelectorAll('.strip')].find((el) => el.dataset.gene === stripGene);
+    if (strip && stripGene !== S.stripGene) {
+      const lr = list.getBoundingClientRect(), sr = strip.getBoundingClientRect(), foot = list.querySelector('.dimhead.stick');
+      const limit = lr.bottom - (foot ? foot.getBoundingClientRect().height : 0);
+      if (sr.bottom > limit) list.scrollTop += sr.bottom - limit + 4;
+    }
+    S.stripGene = strip ? stripGene : '';
+  }
+  const stripKey = () => [S.pending ? S.pending.gene : '', S.live.gene || '', S.live.status || '', arr(S.live.pairs).length, S.live.t || '', S.dismissed === S.liveText, S.localError ? S.localError.gene : ''].join('|');
+
+  async function knockOut(name) {
+    if (knockoutBusy() || !S.run) return;
+    S.pending = { gene: name, since: Date.now(), prevT: S.live.gene === name ? S.live.t : undefined, saw: false };
+    S.dismissed = S.liveText;      // fold away the previous result; this run's updates will differ
+    S.localError = null;
+    renderLedger();
+    try { await postJSON('/api/knockout', { run: S.run, gene: name }); }
+    catch (e) { S.pending = null; S.localError = { gene: name, error: e.message }; renderLedger(); return; }
+    pollLive();
+  }
+  function onLive(live) {
+    const text = JSON.stringify(live), p = S.pending;
+    if (p) {
+      if (live.gene === p.gene) {
+        if (live.status === 'running') p.saw = true;
+        else if ((live.status === 'done' || live.status === 'error') && (p.saw || live.t !== p.prevT)) S.pending = null;
+      }
+      if (S.pending && Date.now() - p.since > 20 * 60 * 1000) { S.pending = null; S.localError = { gene: p.gene, error: 'No result after 20 minutes.' }; }
+    }
+    S.live = live; S.liveText = text;
+    // A result that was already there when the page opened stays folded away; new ones show.
+    if (!S.liveSeen) { S.liveSeen = true; if (live.status !== 'running') S.dismissed = text; }
+    if (stripKey() !== S.stripKey) renderLedger();
+  }
+  async function pollLive() {
+    clearTimeout(S.liveTimer);
+    const run = S.run;
+    if (run) {
+      try {
+        const live = obj(await getJSON('/api/live?run=' + encodeURIComponent(run)));
+        if (run === S.run) onLive(live);
+      } catch (e) { /* keep the last result */ }
+    }
+    S.liveTimer = setTimeout(pollLive, knockoutBusy() ? 450 : 2000);
+  }
+
+  // -------------------------------------------------------------- generality
+  function renderGenerality() {
+    const st = S.state || {}, body = clear($('gen-body'));
+    const rows = S.genes.filter((g) => g.isIdea && Object.keys(g.generality).some((k) => measure(g.generality[k]))).sort(byEffect);
+    if (!rows.length) { body.appendChild(empty('Per-instance effects appear after the first generality test.')); return; }
+    const insts = instanceList(st), known = new Set(insts.map((i) => i.key));
+    for (const g of rows) for (const k of Object.keys(g.generality)) if (!known.has(k)) { known.add(k); insts.push({ key: k, split: 'other' }); }
+    const cols = insts.filter((i) => rows.some((g) => measure(g.generality[i.key])));
+    let max = 0;
+    for (const g of rows) for (const c of cols) { const m = measure(g.generality[c.key]); if (m) max = Math.max(max, Math.abs(m.effect)); }
+    max = max || 1;
+    const gapAt = (i) => i > 0 && cols[i].split !== cols[i - 1].split;
+    const wrap = h('div', { class: 'gm' });
+    // group header
+    const hd = h('div', { class: 'gm-row head' }, h('div', { class: 'gm-name', style: { cursor: 'default' } }));
+    let i = 0;
+    while (i < cols.length) {
+      let j = i;
+      while (j + 1 < cols.length && cols[j + 1].split === cols[i].split) j++;
+      const n = j - i + 1;
+      hd.appendChild(h('div', { class: 'gm-grp' + (i > 0 ? ' gap' : ''), style: { flex: '0 0 ' + (n * 37 + (n - 1) * 2) + 'px' }, text: splitName(cols[i].split) }));
+      i = j + 1;
+    }
+    const keys = h('div', { class: 'gm-row keys' }, h('div', { class: 'gm-name', style: { cursor: 'default' } }),
+      cols.map((c, n) => h('div', { class: 'gm-cell hd' + (gapAt(n) ? ' gap' : ''), text: c.key })));
+    wrap.append(hd, keys);
+    for (const g of rows) {
+      const lab = LABELS[g.label];
+      const row = h('div', { class: 'gm-row' }, h('div', { class: 'gm-name', text: g.name, onclick: () => openDrawer(g.name),
+        tip: g.name + (g.label ? ': ' + g.label : '') + (lab ? '\n' + lab[1] : '') + '\nClick for details' }));
+      cols.forEach((c, n) => {
+        const m = measure(g.generality[c.key]), cls = 'gm-cell' + (gapAt(n) ? ' gap' : '');
+        if (!m) { row.appendChild(h('div', { class: cls + ' none', text: '·', tip: g.name + ' on ' + c.key + '\nnot measured' })); return; }
+        const v = verdict(m), a = (0.2 + 0.62 * Math.min(1, Math.abs(m.effect) / max)).toFixed(2);
+        row.appendChild(h('div', {
+          class: cls + (v === 'neu' ? ' neu' : ''), text: trimSigned(m.effect, 1),
+          style: v === 'neu' ? null : { background: v === 'pos' ? `rgba(57,135,229,${a})` : `rgba(230,103,103,${a})` },
+          tip: measureTip(g.name + ' on ' + c.key + ' (' + splitName(c.split).toLowerCase() + ')', m),
+        }));
+      });
+      wrap.appendChild(row);
+    }
+    body.appendChild(wrap);
+  }
+
+  // ------------------------------------------------------------ interactions
+  function interactionList(st) {
+    return arr(st.interactions).map(obj).map((x) => {
+      const m = measure({ effect: x.synergy, ci: x.ci, runs: x.runs });
+      return m && typeof x.a === 'string' && typeof x.b === 'string' ? { a: x.a, b: x.b, m } : null;
+    }).filter(Boolean);
+  }
+  const synergyWords = (m) => { const v = verdict(m); return v === 'pos' ? 'stronger together than apart' : v === 'neg' ? 'overlap: together less than the sum' : 'inconclusive'; };
+  function renderInteractions() {
+    const st = S.state || {}, body = clear($('int-body')), list = interactionList(st);
+    if (!list.length) { body.appendChild(empty('Pairwise knockouts have not run yet.')); return; }
+    const involved = new Set();
+    list.forEach((p) => { involved.add(p.a); involved.add(p.b); });
+    const order = S.genes.filter((g) => involved.has(g.name)).sort(byEffect).map((g) => g.name);
+    for (const n of involved) if (!order.includes(n)) order.push(n);
+    const top = order.slice(0, 6), N = top.length, c = 20;
+    const find = (a, b) => list.find((p) => (p.a === a && p.b === b) || (p.a === b && p.b === a));
+    const maxAbs = Math.max(...list.map((p) => Math.abs(p.m.effect))) || 1;
+    const labelW = Math.max(...top.map((n) => n.length)) * 6.7 + 8, W = Math.ceil((N - 1) * c + labelW + 4), H = N * c;
+    const svg = s('svg', { width: Math.min(W, 262), height: H, viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Pairwise synergy between the top genes' });
+    const labels = top.map((name, i) => s('text', { x: i * c + 5, y: i * c + c / 2 + 4, class: 'dl', text: name }));
+    for (let i = 1; i < N; i++) for (let j = 0; j < i; j++) {
+      const p = find(top[i], top[j]), v = p ? verdict(p.m) : 'none';
+      const rect = s('rect', {
+        x: j * c + 1, y: i * c + 1, width: c - 2, height: c - 2, rx: 3, class: 'cell ' + v,
+        'fill-opacity': p && v !== 'neu' ? (0.3 + 0.7 * Math.min(1, Math.abs(p.m.effect) / maxAbs)).toFixed(2) : null,
+        tip: top[j] + ' + ' + top[i] + '\n' + (p ? 'synergy ' + fmtSigned(p.m.effect) + ' · 95% interval ' + ciText(p.m) + '\n' + synergyWords(p.m) : 'not measured'),
+      });
+      rect.addEventListener('mouseenter', () => { labels[i].classList.add('hl'); labels[j].classList.add('hl'); });
+      rect.addEventListener('mouseleave', () => { labels[i].classList.remove('hl'); labels[j].classList.remove('hl'); });
+      svg.appendChild(rect);
+    }
+    labels.forEach((l) => svg.appendChild(l));
+    const strong = list.filter((p) => verdict(p.m) !== 'neu').sort((a, b) => Math.abs(b.m.effect) - Math.abs(a.m.effect)).slice(0, 3);
+    const notes = h('div', { class: 'int-notes' });
+    notes.appendChild(h('div', { class: 'int-cap', text: strong.length ? 'Clearest pairs' : 'No pair shows a clear interaction yet: every interval spans zero.' }));
+    for (const p of strong) {
+      notes.appendChild(h('div', { class: 'int-note', tip: p.a + ' + ' + p.b + '\nsynergy ' + fmtSigned(p.m.effect) + ' · 95% interval ' + ciText(p.m) + '\n' + synergyWords(p.m) },
+        h('i', { class: 'sw ' + verdict(p.m) }),
+        h('div', null, h('b', { text: fmtSigned(p.m.effect) }), ' ', h('span', { class: 'who', text: p.a + ' + ' + p.b }))));
+    }
+    body.appendChild(h('div', { class: 'int' }, svg, notes));
+  }
+
+  // ---------------------------------------------------------------- idea box
+  function ideaEntries() {
+    const st = S.state || {}, out = [], seen = new Map();
+    for (const ev of arr(st.history).map(obj)) {
+      const name = str(ev.event).toLowerCase(), text = str(ev.detail).trim();
+      if (!/idea/.test(name) || !text) continue;
+      const state = /start|progress|implement|screen|work|running/.test(name) ? 'run' : /queue|submit|receiv|new/.test(name) ? 'queued' : 'done';
+      if (seen.has(text)) seen.get(text).state = state;
+      else { const item = { text, state, author: '' }; seen.set(text, item); out.push(item); }
+    }
+    // The queue itself (ideas.jsonl). The engine counts how many it has handed to the inventor so far.
+    const taken = num(obj(st.engine).ideas_taken);
+    S.ideas.forEach((idea, i) => {
+      const text = str(obj(idea).text).trim();
+      if (!text) return;
+      const low = text.toLowerCase();
+      if (out.some((o) => o.text.toLowerCase().includes(low))) return;
+      out.push({ text, state: taken != null && i < taken ? 'taken' : 'queued', author: str(obj(idea).author) });
+    });
+    return out.filter((o) => o.state !== 'done');
+  }
+  const IDEA_TAGS = { queued: 'queued', run: 'in progress', taken: 'picked up' };
+  function renderIdeas() {
+    const list = clear($('idea-list')), items = ideaEntries().reverse();   // newest first
+    const rank = { queued: 0, run: 1, taken: 2 };
+    const show = items.map((it, i) => ({ it, i })).sort((a, b) => rank[a.it.state] - rank[b.it.state] || a.i - b.i).slice(0, 3).map((x) => x.it);
+    for (const it of show) {
+      list.appendChild(h('div', { class: 'idea', tip: it.text + (it.author ? '\nfrom ' + it.author : '') + (it.state === 'taken' ? '\nHanded to the inventor' : it.state === 'queued' ? '\nWaiting for the next generation' : '') },
+        h('span', { class: 'tag' + (it.state === 'run' ? ' run' : ''), text: IDEA_TAGS[it.state] }),
+        h('span', { class: 'txt', text: (it.author ? it.author + ': ' : '') + it.text })));
+    }
+    if (items.length > show.length) list.lastChild.setAttribute('data-more', '+' + (items.length - show.length));
+    if (!show.length) list.appendChild(h('div', { class: 'idea muted', text: 'No ideas waiting. Yours could be next.' }));
+  }
+  async function refreshIdeas() {
+    if (!S.run) return;
+    const run = S.run;
+    try {
+      const ideas = arr(await getJSON('/api/ideas?run=' + encodeURIComponent(run)));
+      if (run !== S.run) return;
+      S.ideas = ideas;
+      renderIdeas();
+    } catch (e) { /* optional endpoint */ }
+  }
+  $('idea-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = $('idea-text').value.trim(), author = $('idea-author').value.trim(), msg = $('idea-msg'), btn = $('idea-send');
+    msg.className = 'idea-msg';
+    if (!text) { msg.textContent = 'Write the idea first.'; msg.classList.add('bad'); $('idea-text').focus(); return; }
+    if (!S.run) { msg.textContent = 'There is no run to send it to yet.'; msg.classList.add('bad'); return; }
+    btn.disabled = true;
+    try {
+      await postJSON('/api/idea', { run: S.run, text, author });
+      $('idea-text').value = '';
+      try { localStorage.setItem('mendel-author', author); } catch (err) { /* private mode */ }
+      clear(msg).append(h('i', { class: 'sw dot pos' }), 'Queued. Mendel will turn it into a gene and measure it in the next generation.');
+      S.ideas = S.ideas.concat([{ text, author }]);
+      renderIdeas();
+      refreshIdeas();
+    } catch (err) {
+      clear(msg).append(h('i', { class: 'sw dot neg' }), 'Not queued: ' + err.message);
+      msg.classList.add('bad');
+    }
+    btn.disabled = false;
+  });
+  try { $('idea-author').value = localStorage.getItem('mendel-author') || ''; } catch (e) { /* private mode */ }
+
+  // ------------------------------------------------------------------ drawer
+  function openDrawer(name) { S.drawer = S.drawer === name ? null : name; renderDrawer(); renderLedger(); }
+  function closeDrawer() { if (!S.drawer) return; S.drawer = null; renderDrawer(); renderLedger(); }
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+  function renderDrawer() {
+    const el = $('drawer'), g = S.drawer ? S.genes.find((x) => x.name === S.drawer) : null;
+    if (!g) { el.hidden = true; clear(el); return; }
+    const st = S.state || {}, keep = el.scrollTop;
+    el.hidden = false;
+    clear(el);
+    const sec = (title, ...kids) => h('div', { class: 'd-sec' }, h('h3', { text: title }), kids);
+    const row = (key, m, sc, opts) => h('div', { class: 'd-row', tip: measureTip(opts && opts.tip ? opts.tip : str(key), m) },
+      h('span', { class: 'd-k' + (opts && opts.mono ? ' mono' : '') }, key, opts && opts.small ? h('small', { text: ' ' + opts.small }) : null),
+      effectBar(m, sc, { h: 22, bh: 8 }),
+      h('span', { class: 'd-v' }, h('b', { text: fmtSigned(m.effect) }), ' ', h('span', { text: ciText(m) })));
+    el.append(
+      h('div', { class: 'd-head' }, h('div', { class: 'd-name' }, h('span', { class: 'gname big', text: g.name }), authorBadge(g.author)),
+        h('button', { class: 'd-x', 'aria-label': 'Close', onclick: closeDrawer }, '×')),
+      h('div', { class: 'd-meta' }, statusChip(g), g.label ? labelChip(g.label) : null,
+        g.addedGen != null ? h('span', { class: 'muted', text: g.addedGen === 0 ? 'in the seed solver' : 'added in generation ' + g.addedGen }) : null),
+      sec('Hypothesis', h('p', { class: 'd-p', text: g.hypothesis || 'None recorded.' })),
+      g.predicted ? sec('Predicted before measuring', h('p', { class: 'd-p', text: g.predicted })) : null);
+    const ms = [['Screening', g.sc], ['Knockout', g.ko]].filter((r) => r[1]);
+    if (ms.length) {
+      const sc = makeScale(ms.map((r) => r[1]), 150);
+      el.appendChild(sec('Measured', ms.map(([name, m]) => row(name, m, sc, { small: m.runs != null ? m.runs + ' runs' : '', tip: name + ' effect' }))));
+    } else {
+      el.appendChild(sec('Measured', h('p', { class: 'd-p muted', text: /failed/.test(g.status)
+        ? 'Never measured. It failed the invariance gate, so switching it off would not have been a clean test.' : 'Not measured yet.' })));
+    }
+    const insts = instanceList(st), gen = insts.map((i) => ({ i, m: measure(g.generality[i.key]) })).filter((x) => x.m);
+    for (const k of Object.keys(g.generality)) if (!insts.some((i) => i.key === k) && measure(g.generality[k])) gen.push({ i: { key: k, split: 'other' }, m: measure(g.generality[k]) });
+    if (gen.length) {
+      const sc = makeScale(gen.map((x) => x.m), 150);
+      el.appendChild(sec('Effect by instance', gen.map((x) => row(x.i.key, x.m, sc, { mono: true, small: splitName(x.i.split).toLowerCase(), tip: g.name + ' on ' + x.i.key }))));
+    }
+    const pairs = interactionList(st).filter((p) => p.a === g.name || p.b === g.name).sort((a, b) => Math.abs(b.m.effect) - Math.abs(a.m.effect));
+    if (pairs.length) {
+      const sc = makeScale(pairs.map((p) => p.m), 150);
+      el.appendChild(sec('Synergy with other ideas', pairs.map((p) => row(p.a === g.name ? p.b : p.a, p.m, sc, { mono: true, tip: p.a + ' + ' + p.b + ' synergy' }))));
+    }
+    const consts = S.genes.filter((c) => !c.isIdea && c.of === g.name);
+    if (consts.length) el.appendChild(sec('Tuned constants', consts.map((c) => h('p', { class: 'd-p', text: c.name + (c.value != null ? ' = ' + str(c.value) : '') }))));
+    const events = arr(st.history).map(obj).filter((ev) => ev.gene === g.name);
+    if (events.length) {
+      el.appendChild(sec('History', events.map((ev) => h('div', { class: 'd-ev' }, h('time', { text: clock(ev.t) }),
+        h('div', null, h('b', { text: str(ev.event).replace(/_/g, ' ') }), ev.detail ? h('span', { text: '  ' + str(ev.detail) }) : null)))));
+    }
+    el.scrollTop = keep;
+  }
+
+  // --------------------------------------------------------------- main loop
+  function renderPanels() {
+    S.genes = prepGenes(S.state || {});
+    renderViewer();
+    renderChampion();
+    renderTimeline();
+    renderWaterfall();
+    renderLedger();
+    renderGenerality();
+    renderInteractions();
+    renderIdeas();
+    renderDrawer();
+  }
+  function selectRun(id) {
+    if (id === S.run) return;
+    S.run = id; S.state = null; S.stateText = ''; S.bodyKey = ''; S.live = {}; S.liveText = '{}';
+    S.pending = null; S.localError = null; S.dismissed = null; S.liveSeen = false; S.ideas = []; S.drawer = null; V.key = null;
+    const url = new URL(location.href);
+    if (id) url.searchParams.set('run', id); else url.searchParams.delete('run');
+    history.replaceState(null, '', url);
+    renderHeader(); renderPanels();
+  }
+  $('run-select').addEventListener('change', async (e) => { selectRun(e.target.value); await refreshState(); refreshIdeas(); pollLive(); });
+  async function refreshRuns() {
+    try {
+      S.runs = arr(await getJSON('/api/runs')).filter((x) => typeof x === 'string');
+      S.online = true;
+      let want = S.run && S.runs.includes(S.run) ? S.run : null;
+      if (!want && S.wanted && S.runs.includes(S.wanted)) want = S.wanted;
+      if (!want) want = S.runs[0] || null;
+      if (want !== S.run) { selectRun(want); pollLive(); }
+      renderRunSelect();
+    } catch (e) { S.online = false; }
+  }
+  async function refreshState() {
+    if (!S.run) { renderHeader(); return; }
+    const run = S.run;
+    try {
+      const res = await fetch('/api/state?run=' + encodeURIComponent(run), { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      if (run !== S.run) return;                 // the viewer switched runs while this was in flight
+      S.online = true;
+      if (text !== S.stateText) {
+        const st = obj(JSON.parse(text));        // a half-written file throws: keep the previous state
+        S.stateText = text; S.state = st;
+        const key = JSON.stringify(Object.assign({}, st, { run: Object.assign({}, obj(st.run), { updated: null }) }));
+        if (key !== S.bodyKey) { S.bodyKey = key; renderPanels(); }
+      }
+    } catch (e) { if (e instanceof TypeError) S.online = false; }
+    renderHeader();
+  }
+  async function loop() {
+    S.tick++;
+    if (S.tick % 5 === 1 || !S.run) await refreshRuns();
+    await refreshState();
+    if (S.tick % 3 === 1) refreshIdeas();
+    setTimeout(loop, 2000);
+  }
+  let resizeTimer = 0;
+  addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { renderTimeline(); renderWaterfall(); renderLedger(); }, 120); });
+
+  renderHeader();
+  renderPanels();
+  requestAnimationFrame(drawViewer);
+  loop().then(() => pollLive());
+})();
+</script>
+</body>
+</html>

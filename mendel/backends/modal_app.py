@@ -21,8 +21,7 @@ image = (
 )
 
 
-@app.function(image=image, cpu=1.0, memory=1024, timeout=3600, max_containers=100)
-def run_batch(payload: dict) -> list[dict]:
+def _execute(payload: dict) -> list[dict]:
     """payload = {"dirs": {ref: {relative path: bytes}}, "jobs": [job with solver_ref / problem_ref]}"""
     import pathlib
 
@@ -49,3 +48,15 @@ def run_batch(payload: dict) -> list[dict]:
             results.append({"ok": False, "valid": False, "score": None, "stats": {}, "wall": 0.0,
                             "error": f"worker raised: {exc!r}", "solution": None})
     return results
+
+
+# Two entry points over the same code, so that a long record campaign cannot starve the engine's
+# short paired experiments of containers.
+@app.function(image=image, cpu=1.0, memory=1024, timeout=3600, max_containers=100)
+def run_batch(payload: dict) -> list[dict]:
+    return _execute(payload)
+
+
+@app.function(image=image, cpu=1.0, memory=1024, timeout=3 * 3600, max_containers=100)
+def run_batch_bg(payload: dict) -> list[dict]:
+    return _execute(payload)
