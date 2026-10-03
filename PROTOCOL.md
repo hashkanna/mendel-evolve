@@ -25,6 +25,7 @@ statement = """plain-text statement shown to the idea inventor"""
 [instances]                  # each instance is a table of parameters
 train   = [{ n = 10 }, { n = 12 }, { n = 14 }]
 heldout = [{ n = 16 }, { n = 18 }, { n = 20 }]
+gate    = [{ n = 8 }]        # optional: small instances for the invariance gate (default: first two of train)
 
 [best_known]                 # instance key -> best published value
 n10 = 28

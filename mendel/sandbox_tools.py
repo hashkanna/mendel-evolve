@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -103,8 +104,13 @@ def cmd_try(args) -> int:
     jobs = [(arm, key, seed, {"solver_dir": str(solver), "problem_dir": str(problem), "config": cfg,
                               "instance": inst, "seed": seed, "budget": budget})
             for arm, cfg in arms.items() for key, inst in instances for seed in seeds]
-    with ThreadPoolExecutor(MAX_PARALLEL) as pool:
-        results = list(pool.map(lambda j: run_job(j[3]), jobs))
+    if os.environ.get("MENDEL_SANDBOX_EXECUTOR") == "modal":
+        # Many inventors share one laptop; sending their trial runs to Modal keeps timings meaningful.
+        from .backends.modal_backend import ModalExecutor
+        results = ModalExecutor(deploy=False, batch_cpu_seconds=20, max_cpu_hours=2).run([j[3] for j in jobs])
+    else:
+        with ThreadPoolExecutor(MAX_PARALLEL) as pool:
+            results = list(pool.map(lambda j: run_job(j[3]), jobs))
 
     table: dict[tuple[str, str], list[float]] = {}
     for (arm, key, seed, _), res in zip(jobs, results):

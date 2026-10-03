@@ -97,7 +97,7 @@ def check(old_dir, new_dir, new_genes: list[str], *, executor, problem, configs:
 
     configs: contexts in which invariance is checked (old-solver configs; default: the old defaults).
              The last one is the context for the smoke test (pass the champion config last).
-    instances: default: the first two training instances."""
+    instances: default: the pack's "gate" instances if it lists any, else the first two training instances."""
     old_dir, new_dir = Path(old_dir), Path(new_dir)
     verdict = GateVerdict(ok=False)
 
@@ -121,7 +121,8 @@ def check(old_dir, new_dir, new_genes: list[str], *, executor, problem, configs:
     idea = by_name(new_registry)[new_genes[0]]
     seeds = list(seeds)
     if instances is None:
-        instances = problem.instances.get("train", [])[:2]
+        # A pack may name small, fast instances for the gate; invariance is about code paths, not size.
+        instances = problem.instances.get("gate") or problem.instances.get("train", [])[:2]
     contexts = [complete_config(old_genes, c) for c in (configs or [defaults(old_genes)])]
     budget = {"kind": "iters", "value": int(iters)}
 

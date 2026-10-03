@@ -29,8 +29,11 @@ The original statement uses {1, ..., n}^3; coordinates here are shifted to start
 """
 
 [instances]
-train   = [{ n = 10 }, { n = 12 }, { n = 14 }, { n = 16 }]
-heldout = [{ n = 18 }, { n = 20 }, { n = 22 }, { n = 24 }]
+# Ideas are selected where the open records are, and tested for generality on sizes they never saw.
+train   = [{ n = 17 }, { n = 20 }, { n = 23 }, { n = 26 }]
+heldout = [{ n = 18 }, { n = 21 }, { n = 24 }, { n = 28 }]
+# Small instances for the invariance gate, where thousands of iterations take about a second.
+gate    = [{ n = 8 }, { n = 12 }]
 
 # Best published lower bounds, each re-verified with evaluate.py against the published point set
 # (see records.json for sources and published/ for the certificates).
