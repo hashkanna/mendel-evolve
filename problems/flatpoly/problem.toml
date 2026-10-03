@@ -1,0 +1,57 @@
+name = "flatpoly"
+title = "Flat polynomials with +-1 coefficients (Tao et al. problem 6.28; EinsteinArena problem 12)"
+direction = "min"
+# The arena accepts a new best only if it is lower by at least this much (field minImprovement);
+# mendel.campaign reads this key so that a tie is not announced as a record.
+min_improvement = 1e-6
+statement = """Choose n coefficients c_0, ..., c_(n-1), each +1 or -1, for the polynomial
+
+    g(z) = c_0 z^(n-1) + c_1 z^(n-2) + ... + c_(n-1)          (highest power first, as numpy.poly1d)
+
+so that g is as flat as possible on the unit circle: minimise
+
+    score = max_{|z| = 1} |g(z)| / sqrt(n + 1).
+
+A solution is the list [c_0, ..., c_(n-1)] of n integers, each 1 or -1. Lower is better.
+
+The score is computed exactly as the public EinsteinArena verifier computes it (float64):
+
+    zs    = exp(1j * linspace(0, 2 pi, 10**6))          (10^6 points; the first and last coincide)
+    score = max(abs(poly1d(c)(zs))) / sqrt(len(c) + 1)
+
+Two details matter:
+  * the normalisation is sqrt(n + 1) (sqrt(71) for the arena's n = 70), not sqrt(n) = ||g||_2, so a
+    perfectly flat g would score sqrt(n / (n + 1)) = 0.9929 at n = 70, and the score is always at least that;
+  * the maximum is taken over 999999 equally spaced points, not the whole circle. For n = 70 the true
+    supremum is larger than the sampled maximum by at most about 1.2e-8 relative (Bernstein's inequality),
+    which is below the arena's minimum improvement of 1e-6, so the two are interchangeable in practice.
+
+Useful facts:
+  * |g(e^{it})|^2 = n + 2 sum_{k>=1} a_k cos(k t), with a_k = sum_j c_j c_(j+k) the aperiodic
+    autocorrelations (integers). Flat polynomials and low-autocorrelation (high merit factor) sequences
+    are related but not the same: the published best at n = 70 has merit factor 6.14, the second 8.09.
+  * The score is unchanged by negating g, reversing the coefficients, and alternating their signs
+    (z -> -z), so every solution comes in a family of up to 8.
+  * For n + 1 = p prime (71 is prime), the Fekete polynomial sum_{k=1}^{p-1} (k/p) z^(k-1), with (k/p) the
+    Legendre symbol, and its cyclic shifts are classical candidates for flat +-1 polynomials.
+
+An instance { n = N } asks for N coefficients. Only n = 70 is on the leaderboard; the other sizes have no
+published value and are used to test whether ideas generalise. The leaderboard value for n = 70 is in
+[best_known] and in records.json.
+
+Source: Georgiev, Gomez-Serrano, Tao, Wagner, "Mathematical exploration and discovery at scale",
+arXiv:2511.02864, problem 6.28; https://einsteinarena.com/api/problems/flat-polynomials"""
+
+[instances]
+# n + 1 is prime for 70 and 60; it is composite for the held-out 50 (51 = 3 * 17) and 90 (91 = 7 * 13),
+# so a construction that relies on n + 1 being prime is tested where it cannot apply directly.
+train   = [{ n = 70 }, { n = 60 }]
+heldout = [{ n = 50 }, { n = 90 }]
+# Small instances for `mendel gate` (the engine itself uses the first two training instances).
+gate    = [{ n = 30 }, { n = 70 }]
+
+# Best value on the EinsteinArena leaderboard for problem 12, read 2026-10-03T21:40:22Z (see
+# records.json): 1.2807274949642549, by "white" (solution id 2475). A new best must be at most
+# 1.2807264949642549 (minImprovement 1e-6).
+[best_known]
+n70 = 1.2807274949642549
