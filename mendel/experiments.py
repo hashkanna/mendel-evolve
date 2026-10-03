@@ -8,7 +8,8 @@ from __future__ import annotations
 
 import json
 
-from mendel.genes import active_ideas, by_name, complete_config, defaults, knockout, load_genes, on_values
+from mendel.genes import (active_ideas, by_name, complete_config, defaults, is_idea, is_on, knockout, load_genes,
+                          on_values)
 from mendel.stats import label_gene, paired_bootstrap, summarise
 from mendel.types import budget_label, make_job, usable
 
@@ -78,7 +79,8 @@ def score_config(executor, problem, solver_dir, config: dict, instances: list[di
     """Per-instance mean, best and run count, plus the best solution per instance.
 
     Returns {"scores": {key: {"mean", "best", "runs", "budget"}}, "solutions": {key: solution},
-             "normalised": {key: mean normalised score, failures counted as 0}, "normalised_mean", "failed"}."""
+             "normalised": {key: mean normalised score, failures counted as 0}, "normalised_mean", "failed",
+             "errors": up to three distinct error strings from failed runs}."""
     seeds = list(seeds)
     runs = run_arms(executor, problem, {"c": (solver_dir, config)}, instances, seeds, budget)["c"]
     scores, solutions, normalised = {}, {}, {}
@@ -93,8 +95,9 @@ def score_config(executor, problem, solver_dir, config: dict, instances: list[di
         if good:
             solutions[key] = max(good, key=lambda r: problem.sign * r["score"])["solution"]
     mean = sum(normalised.values()) / len(normalised) if normalised else 0.0
+    errors = sorted({str(r.get("error")) for r in runs.values() if not usable(r)})[:3]
     return {"scores": scores, "solutions": solutions, "normalised": normalised, "normalised_mean": mean,
-            "failed": failed}
+            "failed": failed, "errors": errors}
 
 
 def compare(executor, problem, solver_dir, config_a: dict, config_b: dict, instances: list[dict], seeds,
@@ -154,6 +157,35 @@ def knockouts(executor, problem, solver_dir, champion_config: dict, instances: l
     for name in names:
         pair = {"on": runs["champion"], "off": runs[f"ko:{name}"]}
         out[name] = contrast(problem, pair, {"on": 1.0, "off": -1.0}, keys, seeds)
+    return out
+
+
+def knockins(executor, problem, solver_dir, champion_config: dict, instances: list[dict], seeds, budget: dict,
+             *, skip=()) -> dict:
+    """The mirror image of knockouts(), for every idea that is off in the champion (except `skip`):
+    the champion with that idea switched on, minus the champion. So the effect is still 'gene on
+    minus gene off' in the champion's context. Same shape as knockouts(), plus "value" (the on-value
+    measured; for a choice gene, the variant with the largest effect)."""
+    seeds = list(seeds)
+    genes = load_genes(solver_dir)
+    champion = complete_config(genes, champion_config)
+    off = [g for g in genes if is_idea(g) and not is_on(g, champion[g["name"]]) and g["name"] not in skip]
+    arms = {"champion": (solver_dir, champion)}
+    for g in off:
+        for value in on_values(g):
+            arms[f"in:{g['name']}:{json.dumps(value)}"] = (solver_dir, {**champion, g["name"]: value})
+    runs = run_arms(executor, problem, arms, instances, seeds, budget)
+    keys = [problem.key(i) for i in instances]
+    out = {}
+    for g in off:
+        best = None
+        for value in on_values(g):
+            pair = {"on": runs[f"in:{g['name']}:{json.dumps(value)}"], "off": runs["champion"]}
+            res = contrast(problem, pair, {"on": 1.0, "off": -1.0}, keys, seeds)
+            res["value"] = value
+            if best is None or res["effect"] > best["effect"]:
+                best = res
+        out[g["name"]] = best
     return out
 
 

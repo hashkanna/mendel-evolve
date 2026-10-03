@@ -53,7 +53,7 @@ def run(pool, tmp_path_factory):
     cfg = EngineConfig(problem_dir=str(TOY_PROBLEM), solver_dir=str(TOY_SOLVER), runs_dir=str(runs),
                        run_id="toyrun", generations=2, proposals=3, budget={"kind": "iters", "value": 150},
                        seeds=3, heldout_seeds=2, tune_every=2, tune_trials=16, tune_batch=8, tune_seeds=1,
-                       pairwise_top=2, gate_iters=100)
+                       pairwise_top=2, gate_iters=100, gate_retries=0)
     run_dir = run_engine(cfg, inventor=inventor, executor=pool)
     state = json.loads((run_dir / "state.json").read_text())
     events = [json.loads(line) for line in (run_dir / "events.jsonl").read_text().splitlines()]
@@ -116,6 +116,8 @@ def test_engine_state_matches_the_protocol(run):
     assert champion["scores"]["n4"]["budget"] == "iters=150" and champion["solver_version"]
     assert len(champion["solutions"]["n4"]) == 4
     assert {"extra1", "doubling", "boost", "step"} <= set(champion["config"])
+    # the flip pass after tuning keeps every idea that measurably helps switched on
+    assert all(champion["config"][name] is True for name in ("extra1", "doubling", "boost", "small_trick"))
 
     timeline = state["timeline"]
     assert timeline[0]["generation"] == 0 and timeline[-1]["generation"] == 2

@@ -146,7 +146,7 @@ def cmd_knockout(args) -> int:
     if args.quick and args.time is None and args.iters is None and budget["kind"] == "time":
         budget["value"] = min(float(budget["value"]), 1.0)
     n_seeds = args.seeds or (4 if args.quick else int(settings.get("seeds", 8)))
-    base = args.seed_base if args.seed_base is not None else random.randrange(1000, 1_000_000)
+    base = args.seed_base if args.seed_base is not None else random.randrange(10_000, 1_000_000)
     seeds = [base + i for i in range(n_seeds)]
     instances = problem.instances.get("train", [])
     keys = [problem.key(i) for i in instances]
@@ -184,14 +184,15 @@ def _options(items: list[str] | None) -> dict:
 
 
 def cmd_run(args) -> int:
-    from mendel.engine import EngineConfig, run_engine
+    from mendel.engine import EngineConfig, ResumeError, load_run_config, run_engine
     from mendel.problem import find_problem_dir
 
     given = {
         "runs_dir": args.runs, "run_id": args.run_id, "generations": args.generations, "proposals": args.k,
         "inventor": args.inventor, "executor": args.executor, "workers": args.workers, "seeds": args.seeds,
         "heldout_seeds": args.heldout_seeds, "tune_every": args.tune_every, "tune_trials": args.tune_trials,
-        "pairwise_top": args.pairwise_top, "gate_iters": args.gate_iters,
+        "pairwise_top": args.pairwise_top, "gate_iters": args.gate_iters, "gate_retries": args.gate_retries,
+        "prune_after": args.prune_after, "attribution_seed_base": args.attribution_seed_base,
     }
     settings = {k: v for k, v in given.items() if v is not None}
     if args.time is not None or args.iters is not None:
@@ -206,10 +207,38 @@ def cmd_run(args) -> int:
         settings["decomposition"] = False
     if args.significant:
         settings["require_significant"] = True
-    cfg = EngineConfig(problem_dir=str(find_problem_dir(args.solver, args.problem)), solver_dir=args.solver,
-                       **settings)
-    run_dir = run_engine(cfg)
+    if args.no_flip_pass:
+        settings["flip_pass"] = False
+    if args.resume:   # the saved configuration, with any flags given now on top
+        if not args.run_id:
+            print("--resume needs --run-id", file=sys.stderr)
+            return 2
+        try:
+            cfg = load_run_config(Path(args.runs or "runs") / args.run_id)
+        except FileNotFoundError as e:
+            print(e, file=sys.stderr)
+            return 2
+        for key, value in settings.items():
+            setattr(cfg, key, value)
+    else:
+        if not args.solver:
+            print("--solver is required (unless --resume)", file=sys.stderr)
+            return 2
+        cfg = EngineConfig(problem_dir=str(find_problem_dir(args.solver, args.problem)), solver_dir=args.solver,
+                           **settings)
+    try:
+        run_dir = run_engine(cfg, resume=args.resume, overwrite=args.overwrite)
+    except ResumeError as e:
+        print(e, file=sys.stderr)
+        return 2
+    except KeyboardInterrupt:
+        print(f"interrupted; continue with: mendel run --resume --run-id {cfg.run_id}", file=sys.stderr)
+        return 130
+    status = json.loads((run_dir / "state.json").read_text())["run"]["status"]
     print(run_dir)
+    if status != "finished":   # e.g. "stopped: budget"
+        print(f"run status: {status}; continue with: mendel run --resume --run-id {cfg.run_id}", file=sys.stderr)
+        return 3
     return 0
 
 
@@ -272,10 +301,14 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(func=cmd_knockout)
 
     p = sub.add_parser("run", help="run the generation loop")
-    p.add_argument("--solver", required=True, help="the seed solver directory")
+    p.add_argument("--solver", help="the seed solver directory (not needed with --resume)")
     p.add_argument("--problem")
     p.add_argument("--runs", help="runs directory (default: runs)")
     p.add_argument("--run-id")
+    p.add_argument("--resume", action="store_true",
+                   help="continue --run-id from the end of its last completed generation, with its saved "
+                        "configuration; other flags given now override it (--generations is the total)")
+    p.add_argument("--overwrite", action="store_true", help="start an existing run id over from scratch")
     p.add_argument("--generations", type=int)
     p.add_argument("--k", type=int, help="proposals per generation")
     p.add_argument("--inventor", help="inventor kind for mendel.inventor.make_inventor")
@@ -291,6 +324,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--tune-trials", type=int)
     p.add_argument("--pairwise-top", type=int)
     p.add_argument("--gate-iters", type=int)
+    p.add_argument("--gate-retries", type=int, help="inventor retries after a gate failure (0 or 1; default 1)")
+    p.add_argument("--prune-after", type=int,
+                   help="mark an idea pruned after this many neutral attribution rounds while off (0: never)")
+    p.add_argument("--attribution-seed-base", type=int,
+                   help="first seed of the block used for knockouts and reported scores (default 1000)")
+    p.add_argument("--no-flip-pass", action="store_true", help="skip the single-flip pass after tuning")
     p.add_argument("--no-generality", action="store_true")
     p.add_argument("--no-decomposition", action="store_true")
     p.add_argument("--significant", action="store_true",

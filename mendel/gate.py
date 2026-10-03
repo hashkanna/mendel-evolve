@@ -25,6 +25,7 @@ class GateVerdict:
     reasons: list[str] = field(default_factory=list)    # why it failed; fed back to the inventor
     warnings: list[str] = field(default_factory=list)   # suspicious but not disqualifying
     checks: list[dict] = field(default_factory=list)    # [{"name", "ok", "detail"}] in the order they ran
+    infra: bool = False   # True when the trunk itself failed to run: says nothing about the proposal
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -150,6 +151,7 @@ def check(old_dir, new_dir, new_genes: list[str], *, executor, problem, configs:
     trunk_errors = [results[p[3]]["error"] for p in pairs if not results[p[3]]["ok"]]
     new_errors = [results[p[4]]["error"] for p in pairs if not results[p[4]]["ok"]]
     if trunk_errors:
+        verdict.infra = True
         broken.append(f"the trunk solver itself failed to run (not caused by the proposal): {trunk_errors[0]}")
     elif new_errors:
         broken.append(f"the candidate solver failed to run with the new gene at its default: {new_errors[0]}")

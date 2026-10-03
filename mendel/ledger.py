@@ -1,5 +1,10 @@
 """The run ledger: state.json (PROTOCOL.md section 3), written atomically after every step, plus an
-append-only events.jsonl. Tracks spend: LLM calls, dollars, CPU seconds, evaluations."""
+append-only events.jsonl. Tracks spend: LLM calls, dollars, CPU seconds, evaluations.
+
+Two files written by other processes are folded in on every state write, if they exist:
+  runs/<id>/records.json   a list of {"instance", "value", "best_known", "verified", "certificate"}
+  runs/<id>/compute.json   {"compute": number}, used for decomposition.compute
+"""
 from __future__ import annotations
 
 import copy
@@ -42,10 +47,24 @@ def write_json_atomic(path, obj) -> None:
     os.replace(tmp, path)
 
 
+def read_json(path):
+    """A JSON file that another process may be writing: None when it is missing or unreadable."""
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return None
+
+
+def _record_key(record: dict) -> str:
+    return json.dumps([record.get("instance"), record.get("value")], default=str)
+
+
 class Ledger:
     def __init__(self, run_dir, state: dict):
         self.run_dir = Path(run_dir)
         self.state = state
+        self.own_records: list[dict] = []   # records the engine found itself; merged with records.json
         self._lock = threading.RLock()
         self._t0 = time.time()
 
@@ -88,9 +107,34 @@ class Ledger:
     def elapsed(self) -> float:
         return time.time() - self._t0
 
+    def set_elapsed(self, seconds: float) -> None:
+        """Continue the run clock from `seconds` (used when a run is resumed)."""
+        self._t0 = time.time() - float(seconds)
+
+    def _merge_external(self) -> None:
+        """Fold in records.json and compute.json. Anything missing, half-written or malformed is
+        ignored and the previous values stay."""
+        path = self.run_dir / "records.json"
+        external: list | None = []
+        if path.exists():
+            data = read_json(path)
+            external = None if not isinstance(data, list) else [
+                r for r in data if isinstance(r, dict) and "instance" in r and "value" in r]
+        if external is None:   # unreadable right now: keep what we had, but never lose our own records
+            external = [r for r in self.state.get("records") or [] if isinstance(r, dict)]
+        seen = {_record_key(r) for r in external}
+        self.state["records"] = external + [r for r in self.own_records if _record_key(r) not in seen]
+
+        compute = read_json(self.run_dir / "compute.json")
+        value = compute.get("compute") if isinstance(compute, dict) else None
+        if (isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+                and isinstance(self.state.get("decomposition"), dict)):
+            self.state["decomposition"]["compute"] = value
+
     def save(self) -> None:
         with self._lock:
             self.state["run"]["updated"] = now()
+            self._merge_external()
             write_json_atomic(self.run_dir / "state.json", self.state)
 
     def snapshot(self) -> dict:

@@ -57,6 +57,6 @@ def run_batch(payload: dict) -> list[dict]:
     return _execute(payload)
 
 
-@app.function(image=image, cpu=1.0, memory=1024, timeout=3 * 3600, max_containers=100)
+@app.function(image=image, cpu=1.0, memory=1024, timeout=3 * 3600, max_containers=70)
 def run_batch_bg(payload: dict) -> list[dict]:
     return _execute(payload)
