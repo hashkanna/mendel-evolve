@@ -15,6 +15,8 @@ new relative to the public sources we found, with no claim of optimality or guar
 
 | n | ours | published | certificate |
 |---|---|---|---|
+| 15 | **41** | 40 | [n15_41.json](results/no5sphere/certificates/n15_41.json) |
+| 16 | **43** | 42 | [n16_43.json](results/no5sphere/certificates/n16_43.json) |
 | 21 | **56** | 55 | [n21_56.json](results/no5sphere/certificates/n21_56.json) |
 | 23 | **60** | 59 | [n23_60.json](results/no5sphere/certificates/n23_60.json) |
 | 26 | **68** | 67 | [n26_68.json](results/no5sphere/certificates/n26_68.json) |
@@ -29,10 +31,11 @@ Reproduce: `python results/no5sphere/third_check.py results/no5sphere/certificat
 
 ### How they were found, stated plainly
 
-These three came from the **seed solver** (a from-scratch C ruin-and-recreate search written at the start of
-the hackathon) before any idea had been evolved: 24 seeds per size at 120 CPU-seconds each, with the
-`centrosymmetric` seed switch off (n = 23) or on (n = 21, 23, 26). The two searches cost about $0.90 of
-Modal compute in total.
+All five came from the **seed solver** (a from-scratch C ruin-and-recreate search written at the start of
+the hackathon) before any idea had been evolved. n = 21, 23 and 26: 24 seeds per size at 120 CPU-seconds
+each, with the `centrosymmetric` seed switch off (n = 23) or on (n = 21, 23, 26); the two searches cost
+about $0.90 of Modal compute. n = 15 and 16: 100 seeds per size at 90 CPU-seconds with the switch on. Larger
+searches at every size from 13 to 40 are reported below as they finish.
 
 First record search, best of 24 seeds per size:
 
