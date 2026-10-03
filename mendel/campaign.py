@@ -41,6 +41,13 @@ def run_campaign(*, solver_dir: Path, problem_dir: Path, config: dict, instances
     ev = _load_evaluator(problem_dir)
     better = (lambda a, b: a > b) if direction == "max" else (lambda a, b: a < b)
 
+    def beats_published(value: float, known: float) -> bool:
+        # Published values are rounded decimals, so a tie must not be announced as a record.
+        if float(value).is_integer() and float(known).is_integer():
+            return better(value, known)
+        margin = 1e-9 * max(1.0, abs(known))
+        return value > known + margin if direction == "max" else value < known - margin
+
     jobs = [{"solver_dir": str(solver_dir), "problem_dir": str(problem_dir), "config": config,
              "instance": inst, "seed": seed, "budget": {"kind": "time", "value": time_s}}
             for inst in instances for seed in seeds]
@@ -75,7 +82,7 @@ def run_campaign(*, solver_dir: Path, problem_dir: Path, config: dict, instances
             row["value"] = check.get("score") if check.get("valid") else None
             row["verified"] = bool(check.get("valid")) and check.get("score") == res["score"]
             if row["verified"]:
-                score_text = f"{res['score']:g}".replace(".", "p")
+                score_text = repr(res["score"]).replace(".", "p")  # full precision, so names never collide
                 path = certs / f"{key}_{score_text}.json"
                 path.write_text(json.dumps({
                     "problem": meta.get("name"), "instance": inst, "score": res["score"],
@@ -89,7 +96,8 @@ def run_campaign(*, solver_dir: Path, problem_dir: Path, config: dict, instances
                     row["independent_check"] = "pass" if done.returncode == 0 else f"FAIL: {(done.stdout + done.stderr)[-300:]}"
                     row["verified"] = row["verified"] and done.returncode == 0
         known = row["best_known"]
-        row["record"] = bool(row["verified"] and row["value"] is not None and (known is None or better(row["value"], known)))
+        row["record"] = bool(row["verified"] and row["value"] is not None
+                             and (known is None or beats_published(row["value"], known)))
         summary.append(row)
 
     (out_dir / "campaign_summary.json").write_text(json.dumps(

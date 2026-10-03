@@ -131,7 +131,8 @@ class ModalExecutor:
             payloads.append({"dirs": batch_dirs, "jobs": batch_jobs})
 
         results: list[dict | None] = [None] * len(jobs)
-        outputs = self._function.map(payloads, order_outputs=True, return_exceptions=True)
+        # Materialise the generator: leaving it half-consumed makes Modal's event loop complain at exit.
+        outputs = list(self._function.map(payloads, order_outputs=True, return_exceptions=True))
         for batch, output in zip(batches, outputs):
             if isinstance(output, Exception):
                 for i in batch:

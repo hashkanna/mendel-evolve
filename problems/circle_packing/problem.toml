@@ -1,0 +1,33 @@
+name = "circle_packing"
+title = "Circles in the unit square, maximum sum of radii (AlphaEvolve B.12)"
+direction = "max"
+statement = """Place n circles inside the unit square [0, 1] x [0, 1] so that no two of them overlap, and make
+the sum of their radii as large as possible. The circles may have different radii.
+
+A solution is a list of n triples [x, y, r]: the centre and radius of each circle.
+
+It is valid when, for every circle, r > 0 and the circle lies inside the square
+(x - r >= 0, x + r <= 1, y - r >= 0, y + r <= 1), and for every pair of circles
+(xi - xj)^2 + (yi - yj)^2 >= (ri + rj)^2. Circles may touch each other and the sides.
+
+The check is exact: each number is read as the exact rational value of its double and the
+inequalities are tested in rational arithmetic with no tolerance at all. An overlap of 1e-15 is
+an overlap, so a packing that is only feasible "up to rounding" is invalid and scores nothing.
+
+The score is the sum of the radii. This is the n = 26 benchmark of the AlphaEvolve paper
+(2.635) and of OpenEvolve; the instances here are n = 26 for training and n = 24, 28, 30, 32
+held out."""
+
+[instances]
+train   = [{ n = 26 }]
+heldout = [{ n = 24 }, { n = 28 }, { n = 30 }, { n = 32 }]
+
+# Best known sums of radii from Packomania (E. Specht, "The best known packings of unequal circles
+# in a square", table as updated 30-Sep-2026). The table gives 12 decimals, so a result that
+# exceeds one of these by less than 1e-12 is a tie with the table, not a new record.
+[best_known]
+n24 = 2.530311586971
+n26 = 2.635983084919
+n28 = 2.737739985536
+n30 = 2.842668747462
+n32 = 2.939572771205

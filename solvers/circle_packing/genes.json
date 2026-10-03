@@ -1,0 +1,44 @@
+{
+  "genes": [
+    {
+      "name": "inner_count",
+      "kind": "int", "default": 8, "low": 1, "high": 16, "log": false,
+      "of": null,
+      "hypothesis": "Number of circles in the ring around the central circle (8 in OpenEvolve's initial program).",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "inner_radius",
+      "kind": "float", "default": 0.3, "low": 0.1, "high": 0.45, "log": false,
+      "of": null,
+      "hypothesis": "Distance of the inner ring from the centre of the square (0.3 in OpenEvolve's initial program).",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "outer_count",
+      "kind": "int", "default": 16, "low": 1, "high": 32, "log": false,
+      "of": null,
+      "hypothesis": "Number of circles in the outer ring (16 in OpenEvolve's initial program). Circles beyond the last ring slot are left at the origin, as the 26th is there.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "outer_radius",
+      "kind": "float", "default": 0.7, "low": 0.3, "high": 0.75, "log": false,
+      "of": null,
+      "hypothesis": "Distance of the outer ring from the centre of the square (0.7 in OpenEvolve's initial program, which is outside the square, so the clip flattens the ring onto the sides).",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "clip_margin",
+      "kind": "float", "default": 0.01, "low": 0.001, "high": 0.2, "log": true,
+      "of": null,
+      "hypothesis": "Centres are clipped into [margin, 1 - margin] (0.01 in OpenEvolve's initial program); it is the radius available to a circle pushed against a side.",
+      "author": "seed",
+      "added_gen": 0
+    }
+  ]
+}

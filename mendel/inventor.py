@@ -237,7 +237,8 @@ class ClaudeCLIInventor:
             "build.sh": f'exec "{py}" -m mendel.sandbox_tools build --solver "{sandbox / "solver"}" "$@"',
             "try.sh": f'exec "{py}" -m mendel.sandbox_tools try --solver "{sandbox / "solver"}" '
                       f'--problem "{problem_dir}" "$@"',
-            "check.sh": f'exec "{py}" -m mendel.cli gate "{trunk}" "{sandbox / "solver"}" "$@"',
+            "check.sh": f'exec "{py}" -m mendel.cli gate "{trunk}" "{sandbox / "solver"}" '
+                        f'--problem "{problem_dir}" "$@"',
         }
         for name, body in scripts.items():
             path = tools / name

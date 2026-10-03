@@ -1,0 +1,5 @@
+# OpenEvolve clone and its private virtual environment (created by openevolve/setup.sh)
+openevolve/vendor/
+# outputs of baseline runs (programs, logs, usage)
+openevolve/runs/
+__pycache__/
