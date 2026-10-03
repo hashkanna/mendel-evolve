@@ -82,6 +82,7 @@ select {
   display: flex; flex-direction: column; min-width: 0; min-height: 0; position: relative;
 }
 #p-champ { flex: 0 0 432px; } #p-viewer { flex: 0 0 186px; } #p-timeline { flex: 1 1 0; } #p-water { flex: 0 0 308px; }
+#p-viewer.wide { flex-basis: 256px; }
 #p-gen { flex: 1 1 0; min-height: 150px; } #p-int, #p-idea { flex: 0 0 auto; }
 .p-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; flex: 0 0 auto; min-width: 0; }
 .p-title { font-size: 11px; font-weight: 650; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
@@ -103,7 +104,7 @@ select {
 /* ---------- champion scoreboard */
 .groups { display: flex; gap: 14px; height: 100%; }
 .tgroup { display: flex; flex-direction: column; min-width: 0; }
-.tg-label { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); padding-bottom: 5px; border-bottom: 1px solid var(--line-2); margin-bottom: 8px; white-space: nowrap; }
+.tg-label { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); padding-bottom: 5px; border-bottom: 1px solid var(--line-2); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tiles { display: flex; gap: 6px; flex: 1; min-height: 0; }
 .tile {
   flex: 1 1 0; min-width: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 2px;
@@ -113,7 +114,13 @@ select {
 .tile.pick:hover { border-color: var(--line-2); }
 .tile.shown { box-shadow: inset 0 -2px 0 var(--ink-3); }
 .tile.record { border-color: rgba(57,135,229,.75); background: linear-gradient(180deg, rgba(57,135,229,.24), rgba(57,135,229,.07)); }
-.t-key { font: 11px var(--mono); color: var(--ink-2); }
+.t-key { font: 11px var(--mono); color: var(--ink-2); max-width: 100%; }
+.t-key.long { font-size: 9.5px; line-height: 1.15; letter-spacing: -.02em; }
+.groups.narrow .t-bk { font-size: 9.5px; line-height: 1.2; }
+.groups.narrow .t-delta { font-size: 10.5px; margin-top: 3px; gap: 2px; }
+.groups.narrow .t-delta .g { font-size: 9px; }
+.groups.narrow .t-cap { font-size: 9px; }
+.groups.narrow { gap: 10px; } .groups.narrow .tiles { gap: 4px; }
 .t-val { font-size: 34px; font-weight: 650; line-height: 1.08; letter-spacing: -.02em; }
 .t-bk { font-size: 11px; color: var(--ink-3); }
 .t-delta { margin-top: 6px; font-size: 12px; font-weight: 650; display: flex; align-items: center; gap: 4px; }
@@ -151,7 +158,7 @@ svg .pt { fill: var(--ink); }
 .wf-cap div + div { font-size: 11px; color: var(--ink-3); }
 
 /* ---------- ledger */
-.lhead, .lrow { display: grid; grid-template-columns: 30px minmax(0, 1fr) 190px 126px 104px 92px; column-gap: 12px; align-items: center; padding: 0 6px; }
+.lhead, .lrow { display: grid; grid-template-columns: 30px minmax(0, 1fr) 190px var(--valw, 126px) 104px 92px; column-gap: 12px; align-items: center; padding: 0 6px; }
 .lhead { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); height: 34px; border-bottom: 1px solid var(--line-2); flex: 0 0 auto; }
 .lhead svg { display: block; }
 #ledger-list { flex: 1 1 auto; min-height: 0; position: relative; }
@@ -187,7 +194,7 @@ svg .pt { fill: var(--ink); }
 .author.llm { color: var(--ink-2); }
 .author.human { color: var(--ink); background: var(--line); border-color: var(--ink-3); }
 .c-val { white-space: nowrap; display: flex; align-items: baseline; gap: 7px; min-width: 0; }
-.v-eff { font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; flex: 0 0 44px; text-align: right; }
+.v-eff { font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; flex: 0 0 var(--effw, 44px); text-align: right; }
 .v-ci { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .chip {
   display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; border-radius: 999px;
@@ -258,6 +265,8 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
 .gm-cell.neu { background: var(--neu-soft); color: var(--ink-3); font-weight: 500; }
 .gm-cell.none { color: var(--line-2); font-weight: 400; }
 .gm-cell.hd { background: none; height: auto; color: inherit; font-weight: 500; }
+.gm-row.keys.two { height: 22px; font-size: 9.5px; }
+.gm-row.keys.two .gm-cell.hd { white-space: pre; line-height: 1.1; text-align: center; }
 .gm-grp { margin-left: 2px; text-transform: uppercase; letter-spacing: .09em; border-bottom: 1px solid var(--line-2); padding-bottom: 2px; white-space: nowrap; overflow: hidden; }
 .gm-grp.gap { margin-left: 10px; }
 .gm-lab { flex: 0 0 96px; width: 96px; padding-left: 10px; }
@@ -332,7 +341,7 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
 #tip .t2 { color: var(--ink-2); font-size: 11.5px; font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .status.live i, .spin { animation: none; } }
 /* ---------- now line, records strip, research efficiency, newer engine states */
-.now { flex: 1 1 0; min-width: 0; text-align: right; padding-left: 8px; }
+.now { flex: 1 1 340px; min-width: 0; text-align: right; padding-left: 8px; }
 .now-1 { font-size: 12px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .now-2 { font-size: 11px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
 .now time { color: var(--ink-3); font-variant-numeric: tabular-nums; margin-right: 6px; }
@@ -416,8 +425,8 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       <div class="p-body" id="champ-body"></div>
     </div>
     <div class="panel" id="p-viewer" hidden>
-      <div class="p-head"><div class="p-title">Point set</div><select id="viewer-select" class="mini-select" aria-label="Instance shown"></select></div>
-      <div class="p-body"><canvas id="viewer" aria-label="Rotating 3D view of the champion's point set"></canvas></div>
+      <div class="p-head"><div class="p-title" id="viewer-title">Solution</div><select id="viewer-select" class="mini-select" aria-label="Instance shown"></select></div>
+      <div class="p-body"><canvas id="viewer" aria-label="The champion's solution"></canvas></div>
       <div class="p-foot" id="viewer-cap"></div>
     </div>
     <div class="panel" id="p-timeline">
@@ -475,7 +484,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
 </div>
 <div id="tip" hidden></div>
 
-<script>window.MENDEL_SNAPSHOT = {"run":"cp-haiku-3","taken":"2026-10-03T20:28:05","state":{"run":{"id":"cp-haiku-3","problem":"circle_packing","title":"Circles in the unit square, maximum sum of radii (AlphaEvolve B.12)","direction":"max","started":"2026-10-03T20:05:45","updated":"2026-10-03T20:27:30","status":"running","generation":2,"spend":{"llm_calls":8,"llm_usd":0.884691,"cpu_seconds":1218.385,"evaluations":200}},"instances":{"train":["n26"],"heldout":["n24","n28","n30","n32"]},"best_known":{"n24":2.530311586971,"n26":2.635983084919,"n28":2.737739985536,"n30":2.842668747462,"n32":2.939572771205},"champion":{"config":{"inner_count":5,"inner_radius":0.1507665541420377,"outer_count":21,"outer_radius":0.6012032370376277,"clip_margin":0.024323774497423817,"enable_local_improve":true,"perturb_distance":0.05256864299037408},"solver_version":"a814dc193e020d04","scores":{"n26":{"mean":2.3261198161615027,"best":2.3385616903030493,"runs":4,"budget":"time=10"},"n24":{"mean":2.2209688400622176,"best":2.251900163087574,"runs":3,"budget":"time=10"},"n28":{"mean":2.376596113702579,"best":2.3899053222739024,"runs":3,"budget":"time=10"},"n30":{"mean":2.4163457948168934,"best":2.4384913040741307,"runs":3,"budget":"time=10"},"n32":{"mean":2.393526749311505,"best":2.4262471658151594,"runs":3,"budget":"time=10"}},"solutions":{"n26":[[0.46784344161437247,0.4498201027966962,0.014746579689736743],[0.7384700790473084,0.5469567903940312,0.08181899007890532],[0.5611982489750765,0.703859351296037,0.14034490339132957],[0.32092430418886414,0.5654635109061602,0.10482527806308005],[0.30985569026687915,0.3008518143833575,0.1528894794296961],[0.6188622472230147,0.33633931492985186,0.15814816288538266],[0.9052831865768954,0.4950891864319328,0.0907637496496162],[0.9297323740296698,0.6526398519467208,0.06748008691511512],[0.8856320718767425,0.8270114472832166,0.1102738251045879],[0.9560588477129536,0.9594840932614618,0.03975594756457726],[0.6918055027908985,0.9025400242896129,0.09742024243641938],[0.5156835325526832,0.9212244344663897,0.07804195339242564],[0.4021819766817223,0.9582616414898215,0.037345839922135145],[0.2728060427866171,0.8279103232840688,0.14631035635016065],[0.0729205480444681,0.9205677445927509,0.07292054804446808],[0.06759736712563186,0.7661892747050871,0.06759736712563184],[0.10868611143259442,0.5929413432675841,0.10868611143259439],[0.08425948903798855,0.3986931585817348,0.08425948903798854],[0.08287303352941716,0.23090628084641507,0.08287303352941715],[0.06557204166070067,0.07619837970674023,0.06557204166070066],[0.2146081958365979,0.08356296913800676,0.08344309984575647],[0.3717441300443859,0.07408470679439355,0.07360569484892013],[0.5265718965116053,0.08182786198245312,0.08141557376121027],[0.7069892175782734,0.09679320186230998,0.09679320186230995],[0.8961025280474028,0.08867451103804246,0.0883746116099178],[0.8867615018783563,0.28968772496392325,0.11285552267096643]],"n24":[[0.47961793174412104,0.4938086251856139,0.01690124571277531],[0.7381865051897117,0.4907818525570499,0.07853611510138638],[0.6015811744714965,0.6738629985202925,0.13444113149861922],[0.28593684953910514,0.633850924907485,0.12614735196183086],[0.30166622293455947,0.38428536834331084,0.11943324417936321],[0.5711870572138252,0.316112157147251,0.15765284460854898],[0.9000242935000823,0.40567099526250133,0.09997570649991769],[0.8679766983154611,0.6557791150646433,0.1313914697144709],[0.9271594582060976,0.8512532586802379,0.07250611631596664],[0.8660234281347567,0.953317857356631,0.046172046602740706],[0.7230620530588956,0.8879696032700434,0.11101684955645452],[0.5733802653711948,0.9507043277035688,0.049251514266442045],[0.4126100174013286,0.8686216902026586,0.13126062386115894],[0.21098849784736468,0.9230162344987033,0.0769837655012967],[0.06694487853857449,0.9279219114374362,0.06694487853857448],[0.09992255921741727,0.762154493105276,0.09982415468483996],[0.07974448143380046,0.5815177897965383,0.07944260960692211],[0.09223386193714174,0.41116284888803895,0.09136954018721741],[0.06300429311510683,0.2593506950936541,0.06300429311510682],[0.10460473273477025,0.10043086424700687,0.10043086424700684],[0.21692507646524814,0.030267031064493143,0.03016142233339032],[0.34334951956905146,0.134144706086968,0.133465321147563],[0.5496296819546819,0.07971127719963766,0.07971127719963765],[0.8424385756795633,0.15587577664634336,0.15587577664634333]],"n28":[[0.46124670258676803,0.40765999842671014,0.014816384051339386],[0.7392948505352006,0.5241680268425103,0.073796275353827],[0.5991582369307855,0.6765831274198804,0.11932356143578646],[0.3210300216691519,0.6000483425158498,0.1580134192074101],[0.32363424595026485,0.3078829852238066,0.12973352170742042],[0.620307387647146,0.3171706983996269,0.16240914903657108],[0.9046452925448558,0.49695736001837243,0.08264696379936212],[0.8583954226270214,0.7024901771501717,0.12621336771115005],[0.9648617298797834,0.8237794461021024,0.03443513404266603],[0.8969625246752277,0.9172967524949861,0.08113211331743522],[0.7030059563429507,0.8851420471732425,0.11359403804391222],[0.4769597803756899,0.8875986874768538,0.11180229889173786],[0.3046113707809282,0.9331737356363943,0.06647013112644574],[0.16800292550794824,0.9305759092207183,0.06889952358885136],[0.05049286066689556,0.9117352690696391,0.05011133751319618],[0.10773374735379125,0.7631326001382654,0.10773374735379122],[0.082319393690915,0.5721396935975755,0.08171691111528762],[0.10602884071605559,0.39001127115850803,0.10028064588042088],[0.07782281894144334,0.21544484862182917,0.07547619525689028],[0.04978118092104469,0.09314701672907393,0.04836246691550805],[0.18595072608174645,0.09045288476027157,0.08737991598018464],[0.3637172222888148,0.09096497701483675,0.09038731781787732],[0.5475421682691024,0.08298214591603333,0.08282350634499851],[0.7169420946228542,0.08604480305744655,0.08604480305744654],[0.9021231685127239,0.09867437550069304,0.09534570162373313],[0.9530389153978401,0.23025947944473088,0.04574665416081127],[0.9277339806113151,0.34516992389806384,0.07088646344241806],[0.024323774497423817,0.024323774497423817,0.02432377449742381]],"n30":[[0.4255024870988704,0.5099314146362816,0.01846682040720829],[0.6545923650461736,0.45873156809262833,0.03819002388930125],[0.6571844286934009,0.6638813805969589,0.1345133900247203],[0.36311378861409804,0.705654681113137,0.15415233178780968],[0.29566693439982744,0.3713419443313201,0.16496329853280045],[0.5825373544137589,0.3082136918589846,0.12768124737719103],[0.8460397208137138,0.4454719163096489,0.15121388302242325],[0.926114782694488,0.6566322182029305,0.07112271392321715],[0.9115815322958812,0.8128592542965903,0.08547536402878951],[0.8835291723123657,0.9476303819219616,0.05218433138733016],[0.7320313473417,0.8953415020164212,0.10455537522640823],[0.5341411092779693,0.9062711846936489,0.09349694796754444],[0.37398317615743953,0.9282396758137453,0.06816064741087827],[0.21617232296931102,0.909535335914345,0.090464664085655],[0.06393138385159286,0.9352679276793434,0.06393138385159285],[0.07970895041180788,0.7811080194929853,0.0790235145610605],[0.11761086109877557,0.5898809680066587,0.11592350402059685],[0.06649545382471958,0.40905847931283335,0.06615575119061531],[0.07392262830332864,0.2695553175329367,0.0706713464156034],[0.0634126543563228,0.1383693812195823,0.057554993431610864],[0.22704649156736645,0.10560396704921719,0.10524867134934497],[0.3803386529428619,0.0560443352309281,0.05585577876031307],[0.525426758767151,0.09422989387509785,0.0927534485173812],[0.7289773275392208,0.11290274262800822,0.11165180906662077],[0.9353686797840419,0.059984810067697444,0.05998481006769743],[0.9083759356157973,0.2097133505176005,0.0905410732535408],[0.9697743036995357,0.3130755743279094,0.02968167382187168],[0.028494855173958254,0.06145507724821148,0.02691430782713264],[0.09431314799281704,0.04143940162411575,0.041439401624115746],[0.02044169711832049,0.016518797243755753,0.01651879724375575]],"n32":[[0.41585986847034256,0.47522564327790445,0.017906287846743283],[0.7459121210642935,0.5418760609275376,0.07855006411609519],[0.5898963180541528,0.6560279802284643,0.0961951079939528],[0.3323635292471394,0.693860398339335,0.15706473663916012],[0.2539367725221197,0.4063939944181527,0.1344443730160238],[0.5691558298328117,0.3344939271458027,0.17964384800300395],[0.9521889509220612,0.5336054125382774,0.04703477652032197],[0.8827359972201122,0.6723417223246585,0.10688524799175977],[0.9270855496111936,0.8458478488292012,0.0712628138025259],[0.8994336665190358,0.9565734143434046,0.042863333495026],[0.7718778974681849,0.9085393580399197,0.09053085998341703],[0.5610871069165565,0.8745742772296149,0.12188160895918444],[0.3702482425928937,0.9236719277040419,0.07466825273236571],[0.2079454016606202,0.9113004044594037,0.08797405469316384],[0.060186001506978365,0.9208910286089849,0.06009626780713521],[0.093045166981705,0.7705858101959396,0.09304516698170498],[0.09849825724758815,0.5805023048835422,0.09518091339692245],[0.05999652211324279,0.43160901344137687,0.05860984004695938],[0.08635469389854651,0.2639681113873591,0.08548490023539845],[0.04355832140182899,0.1408445927175781,0.03485783677142864],[0.24841247991494206,0.06116992104738808,0.0581236818431038],[0.36421206797711253,0.06069968248639083,0.05761791341576364],[0.5003779351153219,0.08154504927927453,0.08013430141300178],[0.6775746772449098,0.08944000282989562,0.08795185084030874],[0.8471286298259342,0.08210541445181767,0.08076362447188958],[0.9337688559957862,0.19985149753453774,0.06542133252691516],[0.8719967695056793,0.3806636460429655,0.12565149054736446],[0.027864976576426927,0.0693679250963853,0.026744808513994148],[0.05656661687254323,0.01955103432796613,0.011786012410349728],[0.0801111261760638,0.019400004145189505,0.011674287669846904],[0.023964494794158495,0.021830218814408116,0.020895680415101325],[0.12494978080049891,0.08196858324237995,0.06530189071522721]]}},"genes":[{"name":"inner_count","kind":"int","author":"seed","added_gen":0,"hypothesis":"Number of circles in the ring around the central circle (8 in OpenEvolve's initial program).","of":null,"default":8,"low":1,"high":16,"log":false,"status":"active","value":5},{"name":"inner_radius","kind":"float","author":"seed","added_gen":0,"hypothesis":"Distance of the inner ring from the centre of the square (0.3 in OpenEvolve's initial program).","of":null,"default":0.3,"low":0.1,"high":0.45,"log":false,"status":"active","value":0.1507665541420377},{"name":"outer_count","kind":"int","author":"seed","added_gen":0,"hypothesis":"Number of circles in the outer ring (16 in OpenEvolve's initial program). Circles beyond the last ring slot are left at the origin, as the 26th is there.","of":null,"default":16,"low":1,"high":32,"log":false,"status":"active","value":21},{"name":"outer_radius","kind":"float","author":"seed","added_gen":0,"hypothesis":"Distance of the outer ring from the centre of the square (0.7 in OpenEvolve's initial program, which is outside the square, so the clip flattens the ring onto the sides).","of":null,"default":0.7,"low":0.3,"high":0.75,"log":false,"status":"active","value":0.6012032370376277},{"name":"clip_margin","kind":"float","author":"seed","added_gen":0,"hypothesis":"Centres are clipped into [margin, 1 - margin] (0.01 in OpenEvolve's initial program); it is the radius available to a circle pushed against a side.","of":null,"default":0.01,"low":0.001,"high":0.2,"log":true,"status":"active","value":0.024323774497423817},{"name":"perturb_worst","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":1,"hypothesis":"Perturb the circles with smallest radii to escape plateau and target the bottleneck in the solution.","predicted":"+0.5 to +1.0 points on n26, improving across all sizes","status":"queued","screen":{"effect":0.9518981480209492,"ci":[0.9181517823778368,1.0022286149318127],"runs":8,"generation":1}},{"name":"vectorize_side_distances","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":1,"hypothesis":"Use numpy vectorization for computing distances to sides in compute_max_radii, leveraging SIMD operations to speed up this O(n) operation which is called repeatedly during radius computation.","predicted":"+0.0 to +0.5 iterations per second throughput gain; measurable impact on larger instances (n \u003e= 28) or when search steps call compute_max_radii multiple times per iteration.","status":"rejected","screen":{"effect":0.0,"ci":[0.0,0.0],"runs":8,"generation":1}},{"name":"nearest_pair_first","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":1,"hypothesis":"In the greedy radius computation, process overlapping pairs sorted by distance (nearest first) instead of index order, to prioritize resolving the most constrained overlaps early.","predicted":"+0.05 to +0.15 points at n \u003e= 12, with larger gains possible if nearest constraints significantly limit overall packing quality","status":"queued","screen":{"effect":0.09936999614660913,"ci":[0.09936999614660913,0.09936999614660913],"runs":8,"generation":1}},{"name":"enable_local_improve","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":1,"hypothesis":"Enable local improvement by randomly perturbing circle centers, exploiting that good packings are locally optimal dense arrangements.","predicted":"+0.3 to +0.6 points on n26; local search should help refine the ring-based construction by moving circles to better positions.","default":false,"status":"active","value":true,"screen":{"effect":1.1829959254482783,"ci":[1.1557001302880034,1.2175299001147453],"runs":8,"generation":1},"neutral_rounds":0,"knockout":{"effect":1.3772553364767421,"ci":[1.3622650064296342,1.3879355794556911],"runs":8,"generation":1},"generality":{"n24":{"effect":1.3263885167971738,"ci":[1.304571830720803,1.3573198398225308]},"n28":{"effect":1.3873386411716033,"ci":[1.3712383806870934,1.4006478497429267]},"n30":{"effect":1.4511717483623752,"ci":[1.42896957182598,1.4733172576196125]},"n32":{"effect":1.4285685001919048,"ci":[1.3828818803453682,1.4612889166955592]}},"label":"general"},{"name":"perturb_distance","kind":"float","author":"llm:claude-haiku-4-5","added_gen":1,"hypothesis":"Standard deviation of the random perturbation applied to each circle center in the local improvement step.","of":"enable_local_improve","default":0.02,"low":0.005,"high":0.1,"log":false,"status":"active","value":0.05256864299037408}],"interactions":[],"decomposition":{"seed":0.9597652169962062,"tuning":0.0,"ideas":1.3663545991652963,"compute":0.0,"unit":"points, mean over train instances","provisional":true},"records":[],"history":[{"t":"2026-10-03T20:05:45","generation":0,"event":"run_started","detail":"seed solver solvers/circle_packing, 5 genes, budget time=10.0"},{"t":"2026-10-03T20:05:52","generation":1,"event":"generation_started","detail":"trunk gen000"},{"t":"2026-10-03T20:05:52","generation":1,"event":"inventing","detail":"4 proposals: inventor, inventor, inventor, inventor"},{"t":"2026-10-03T20:08:03","generation":1,"event":"gene_proposed","gene":"enable_local_improve","detail":"Enable local improvement by randomly perturbing circle centers, exploiting that good packings are locally optimal dense arrangements."},{"t":"2026-10-03T20:08:03","generation":1,"event":"gene_proposed","gene":"perturb_worst","detail":"Perturb the circles with smallest radii to escape plateau and target the bottleneck in the solution."},{"t":"2026-10-03T20:08:03","generation":1,"event":"gene_proposed","gene":"vectorize_side_distances","detail":"Use numpy vectorization for computing distances to sides in compute_max_radii, leveraging SIMD operations to speed up this O(n) operation which is called repeatedly during radius computation."},{"t":"2026-10-03T20:08:03","generation":1,"event":"gene_proposed","gene":"nearest_pair_first","detail":"In the greedy radius computation, process overlapping pairs sorted by distance (nearest first) instead of index order, to prioritize resolving the most constrained overlaps early."},{"t":"2026-10-03T20:08:43","generation":1,"event":"gate_passed","gene":"enable_local_improve","detail":"gate passed"},{"t":"2026-10-03T20:09:05","generation":1,"event":"gate_passed","gene":"perturb_worst","detail":"gate passed"},{"t":"2026-10-03T20:09:06","generation":1,"event":"gate_passed","gene":"vectorize_side_distances","detail":"gate passed (1 warning(s))"},{"t":"2026-10-03T20:09:18","generation":1,"event":"gate_passed","gene":"nearest_pair_first","detail":"gate passed"},{"t":"2026-10-03T20:09:42","generation":1,"event":"gene_screened","gene":"enable_local_improve","detail":"effect +1.183, 95% interval [+1.156, +1.218], 8 runs"},{"t":"2026-10-03T20:10:25","generation":1,"event":"gene_screened","gene":"perturb_worst","detail":"effect +0.9519, 95% interval [+0.9182, +1.002], 8 runs"},{"t":"2026-10-03T20:10:26","generation":1,"event":"gene_screened","gene":"vectorize_side_distances","detail":"effect +0, 95% interval [+0, +0], 8 runs"},{"t":"2026-10-03T20:10:27","generation":1,"event":"gene_screened","gene":"nearest_pair_first","detail":"effect +0.09937, 95% interval [+0.09937, +0.09937], 8 runs"},{"t":"2026-10-03T20:10:27","generation":1,"event":"gene_queued","gene":"perturb_worst","detail":"effect +0.9519; will be ported onto the new trunk next generation"},{"t":"2026-10-03T20:10:27","generation":1,"event":"gene_rejected","gene":"vectorize_side_distances","detail":"effect +0 is not positive"},{"t":"2026-10-03T20:10:27","generation":1,"event":"gene_queued","gene":"nearest_pair_first","detail":"effect +0.09937; will be ported onto the new trunk next generation"},{"t":"2026-10-03T20:10:27","generation":1,"event":"gene_merged","gene":"enable_local_improve","detail":"effect +1.183; new trunk gen001"},{"t":"2026-10-03T20:11:53","generation":1,"event":"tuning_started","detail":"32 trials in batches of 8"},{"t":"2026-10-03T20:17:59","generation":1,"event":"tuned","detail":"normalised score 0.8129 -\u003e 0.8871 on the confirmation seeds; inner_count: 8 -\u003e 5, inner_radius: 0.3 -\u003e 0.1507665541420377, outer_count: 16 -\u003e 21, outer_radius: 0.7 -\u003e 0.6012032370376277, clip_margin: 0.01 -\u003e 0.024323774497423817, perturb_distance: 0.02 -\u003e 0.05256864299037408"},{"t":"2026-10-03T20:19:34","generation":1,"event":"knockouts","detail":"enable_local_improve +1.377"},{"t":"2026-10-03T20:19:37","generation":1,"event":"generality","detail":"enable_local_improve: general"},{"t":"2026-10-03T20:19:37","generation":1,"event":"generation_finished","detail":"trunk gen001"},{"t":"2026-10-03T20:19:37","generation":2,"event":"generation_started","detail":"trunk gen001"},{"t":"2026-10-03T20:19:37","generation":2,"event":"inventing","detail":"4 proposals: port, port, inventor, inventor"},{"t":"2026-10-03T20:23:22","generation":2,"event":"gene_proposed","gene":"perturb_worst","detail":"Perturb the circles with smallest radii to escape plateau and target the bottleneck in the solution."},{"t":"2026-10-03T20:23:22","generation":2,"event":"gene_proposed","gene":"nearest_pair_first","detail":"In the greedy radius computation, process overlapping pairs sorted by distance (nearest first) instead of index order, to prioritize resolving the most constrained overlaps early."},{"t":"2026-10-03T20:23:22","generation":2,"event":"gene_proposed","gene":"pair_separation","detail":"Identify the closest pair of circles and move them apart by a small distance to reduce local constraints, allowing finalise to compute larger radii for both circles."},{"t":"2026-10-03T20:23:22","generation":2,"event":"gene_proposed","gene":"squared_distance","detail":"Use squared distances in pairwise overlap checks to avoid expensive sqrt operations in the O(n²) pairwise distance computation, improving throughput by allowing more iterations within a fixed time budget."},{"t":"2026-10-03T20:23:52","generation":2,"event":"gate_passed","gene":"perturb_worst","detail":"gate passed"},{"t":"2026-10-03T20:24:07","generation":2,"event":"gate_passed","gene":"nearest_pair_first","detail":"gate passed"},{"t":"2026-10-03T20:25:53","generation":2,"event":"gate_passed","gene":"pair_separation","detail":"gate passed"},{"t":"2026-10-03T20:26:06","generation":2,"event":"gate_passed","gene":"squared_distance","detail":"gate passed (1 warning(s))"},{"t":"2026-10-03T20:26:48","generation":2,"event":"gene_screened","gene":"perturb_worst","detail":"effect -0.009795, 95% interval [-0.04081, +0.02448], 8 runs"},{"t":"2026-10-03T20:27:30","generation":2,"event":"gene_screened","gene":"nearest_pair_first","detail":"effect -0.0319, 95% interval [-0.05094, -0.01919], 8 runs"}],"timeline":[{"t":7.0,"generation":0,"score":0.3641014323981136},{"t":367.6,"generation":1,"score":0.8199604136968679},{"t":823.7,"generation":1,"score":0.8824486884873092}],"engine":{"ideas_taken":0}},"live":{},"ideas":[]};</script>
+<script>window.MENDEL_SNAPSHOT = {"run":"cp-haiku-3","taken":"2026-10-03T21:10:54","state":{"run":{"id":"cp-haiku-3","problem":"circle_packing","title":"Circles in the unit square, maximum sum of radii (AlphaEvolve B.12)","direction":"max","started":"2026-10-03T20:05:45","updated":"2026-10-03T21:10:24","status":"running","generation":4,"spend":{"llm_calls":16,"llm_usd":2.230262,"cpu_seconds":3218.907,"evaluations":477}},"instances":{"train":["n26"],"heldout":["n24","n28","n30","n32"]},"best_known":{"n24":2.530311586971,"n26":2.635983084919,"n28":2.737739985536,"n30":2.842668747462,"n32":2.939572771205},"champion":{"config":{"inner_count":5,"inner_radius":0.1507665541420377,"outer_count":21,"outer_radius":0.6012032370376277,"clip_margin":0.024323774497423817,"enable_local_improve":true,"perturb_distance":0.05256864299037408,"squared_distance":true},"solver_version":"ceee1728e759eda4","scores":{"n26":{"mean":2.3275301656418526,"best":2.339696595847794,"runs":4,"budget":"time=10"},"n24":{"mean":2.2207546185454596,"best":2.251900163087574,"runs":3,"budget":"time=10"},"n28":{"mean":2.3831346591735176,"best":2.3902203274053004,"runs":3,"budget":"time=10"},"n30":{"mean":2.4272703029713405,"best":2.4461904934046887,"runs":3,"budget":"time=10"},"n32":{"mean":2.3937933054126517,"best":2.4266536786367636,"runs":3,"budget":"time=10"}},"solutions":{"n26":[[0.46784344161437247,0.4498201027966962,0.014746579689736743],[0.7384700790473084,0.5469567903940312,0.08181899007890532],[0.5611982489750765,0.703859351296037,0.14034490339132957],[0.32092430418886414,0.5654635109061602,0.10482527806308005],[0.30985569026687915,0.3008518143833575,0.1528894794296961],[0.6188622472230147,0.33633931492985186,0.15814816288538266],[0.9052831865768954,0.4950891864319328,0.0907637496496162],[0.9297323740296698,0.6526398519467208,0.06748008691511512],[0.8856320718767425,0.8270114472832166,0.1102738251045879],[0.9560588477129536,0.9594840932614618,0.03975594756457726],[0.6918055027908985,0.9025400242896129,0.09742024243641938],[0.5156835325526832,0.9212244344663897,0.07804195339242564],[0.4021819766817223,0.9582616414898215,0.037345839922135145],[0.2728060427866171,0.8279103232840688,0.14631035635016065],[0.0729205480444681,0.9205677445927509,0.07292054804446808],[0.06759736712563186,0.7661892747050871,0.06759736712563184],[0.10868611143259442,0.5929413432675841,0.10799425408890255],[0.08634040329037321,0.4004489720981862,0.08579079082115897],[0.08287303352941716,0.23090628084641507,0.08287303352941715],[0.06557204166070067,0.07619837970674023,0.06557204166070066],[0.2146081958365979,0.08356296913800676,0.08344309984575647],[0.3717441300443859,0.07408470679439355,0.07397843386678433],[0.5284409102958582,0.08133829584861209,0.08133829584861207],[0.7069892175782734,0.09679320186230998,0.09679320186230995],[0.8961025280474028,0.08867451103804246,0.0883746116099178],[0.8867615018783563,0.28968772496392325,0.11285552267096643]],"n24":[[0.47961793174412104,0.4938086251856139,0.01690124571277531],[0.7381865051897117,0.4907818525570499,0.07853611510138638],[0.6015811744714965,0.6738629985202925,0.13444113149861922],[0.28593684953910514,0.633850924907485,0.12614735196183086],[0.30166622293455947,0.38428536834331084,0.11943324417936321],[0.5711870572138252,0.316112157147251,0.15765284460854898],[0.9000242935000823,0.40567099526250133,0.09997570649991769],[0.8679766983154611,0.6557791150646433,0.1313914697144709],[0.9271594582060976,0.8512532586802379,0.07250611631596664],[0.8660234281347567,0.953317857356631,0.046172046602740706],[0.7230620530588956,0.8879696032700434,0.11101684955645452],[0.5733802653711948,0.9507043277035688,0.049251514266442045],[0.4126100174013286,0.8686216902026586,0.13126062386115894],[0.21098849784736468,0.9230162344987033,0.0769837655012967],[0.06694487853857449,0.9279219114374362,0.06694487853857448],[0.09992255921741727,0.762154493105276,0.09982415468483996],[0.07974448143380046,0.5815177897965383,0.07944260960692211],[0.09223386193714174,0.41116284888803895,0.09136954018721741],[0.06300429311510683,0.2593506950936541,0.06300429311510682],[0.10460473273477025,0.10043086424700687,0.10043086424700684],[0.21692507646524814,0.030267031064493143,0.03016142233339032],[0.34334951956905146,0.134144706086968,0.133465321147563],[0.5496296819546819,0.07971127719963766,0.07971127719963765],[0.8424385756795633,0.15587577664634336,0.15587577664634333]],"n28":[[0.44949842886394586,0.4337849941447329,0.01832871718154518],[0.7563032678003642,0.5335648457248094,0.08595247715470761],[0.5804597496925331,0.6994658648743042,0.1455383425744431],[0.29501761400836757,0.5932317479104315,0.1413527118062645],[0.3214653402788794,0.3280094565115742,0.12265249329882433],[0.6243955606239651,0.302847305650096,0.1794122436719747],[0.9218424133131409,0.5163562488419323,0.07662223958846766],[0.8731312556830204,0.7108780461398512,0.12390582952326307],[0.9513485478468294,0.8687148763121206,0.04865145215317056],[0.8841302002680402,0.9462995016479854,0.05370049835201461],[0.7336915631027148,0.8964610746062593,0.10353892539374063],[0.5537756755313892,0.9222352525707899,0.07711699905524821],[0.35064432671307905,0.8642417841129097,0.13344924227815824],[0.2098145517136854,0.9621533062595157,0.03774641060997118],[0.10883753711071543,0.8540490844106453,0.10857227458557489],[0.03900892435015712,0.7214127219844976,0.03900892435015711],[0.07713306329587583,0.6090571287607883,0.07710579711074522],[0.11025991838514004,0.42211725398908645,0.10857035977452756],[0.05605040354137984,0.26465735250003514,0.05569709013628821],[0.07925360030369669,0.13222354184874538,0.07875402567764787],[0.2155507494780121,0.0701649656478239,0.07013123087866299],[0.3893220731213903,0.10769935444615625,0.10764757343511354],[0.5624535019566573,0.0653518803471359,0.06535188034713589],[0.7200934024297229,0.07119904151529395,0.07119904151529394],[0.8593493155261501,0.06576768928494393,0.06576768928494392],[0.9283039888352855,0.1849430592973533,0.07169601116471445],[0.9086493250423628,0.34840168269159477,0.09135067495763714],[0.0325100224277294,0.03139917154506427,0.03139917154506426]],"n30":[[0.4255024870988704,0.5099314146362816,0.018750160180246635],[0.6545923650461736,0.45873156809262833,0.038470688409823615],[0.6598549281778765,0.6677247651432756,0.13705741648701902],[0.36311378861409804,0.705654681113137,0.15427421510478545],[0.29566693439982744,0.3713419443313201,0.16508315230110482],[0.5825373544137589,0.3082136918589846,0.1276709126457094],[0.8460397208137138,0.4454719163096489,0.1511971178574894],[0.926114782694488,0.6566322182029305,0.07126658553001866],[0.9115815322958812,0.8128592542965903,0.0854209611787852],[0.8835291723123657,0.9476303819219616,0.052238734237334467],[0.7354469112438985,0.8963201430098265,0.10367985699017343],[0.5367998660762018,0.9049375919247079,0.09506240807529207],[0.37398317615743953,0.9282396758137453,0.06849557084266455],[0.21617232296931102,0.909535335914345,0.09041987118559569],[0.06168041471916962,0.9382305700348433,0.06168041471916961],[0.08134297867745852,0.7939422396657879,0.0813429786774585],[0.11736687073637914,0.5899908737459628,0.11704849611246661],[0.06649545382471958,0.40905847931283335,0.06615575119061531],[0.07392262830332864,0.2695553175329367,0.0706713464156034],[0.0634126543563228,0.1383693812195823,0.060555120040572],[0.22704649156736645,0.10560396704921719,0.10524867134934497],[0.3803386529428619,0.0560443352309281,0.05585577876031307],[0.525426758767151,0.09422989387509785,0.09380298183108711],[0.7316606735809484,0.11189032989512282,0.1110519117387229],[0.9353686797840419,0.059984810067697444,0.05998481006769743],[0.9083759356157973,0.2097133505176005,0.09038507154328494],[0.9697743036995357,0.3130755743279094,0.029837675532127534],[0.02402957924177353,0.061043924410151724,0.023719845774530707],[0.09431314799281704,0.04143940162411575,0.04118111466150737],[0.01882350279790817,0.019064790802243377,0.018580873964145005]],"n32":[[0.41585986847034256,0.47522564327790445,0.017906287846743283],[0.7459121210642935,0.5418760609275376,0.07855006411609519],[0.5898963180541528,0.6560279802284643,0.0961951079939528],[0.3323635292471394,0.693860398339335,0.15706473663916012],[0.2539367725221197,0.4063939944181527,0.1344443730160238],[0.5691558298328117,0.3344939271458027,0.17964384800300395],[0.9521889509220612,0.5336054125382774,0.04703477652032197],[0.8827359972201122,0.6723417223246585,0.10688524799175977],[0.9270855496111936,0.8458478488292012,0.0712628138025259],[0.8994336665190358,0.9565734143434046,0.042863333495026],[0.7718778974681849,0.9085393580399197,0.09053085998341703],[0.5610871069165565,0.8745742772296149,0.12188160895918444],[0.3702482425928937,0.9236719277040419,0.07466825273236571],[0.2079454016606202,0.9113004044594037,0.08797405469316384],[0.060186001506978365,0.9208910286089849,0.06009626780713521],[0.093045166981705,0.7705858101959396,0.09304516698170498],[0.09849825724758815,0.5805023048835422,0.09518091339692245],[0.05999652211324279,0.43160901344137687,0.05860984004695938],[0.08635469389854651,0.2639681113873591,0.08548490023539845],[0.04355832140182899,0.1408445927175781,0.03485783677142864],[0.24841247991494206,0.06116992104738808,0.06022419822954246],[0.3662029688311307,0.05740406645457373,0.056662881628239736],[0.5003779351153219,0.08154504927927453,0.07966653056555778],[0.6775746772449098,0.08944000282989562,0.08795185084030874],[0.8471286298259342,0.08210541445181767,0.08076362447188958],[0.9337688559957862,0.19985149753453774,0.06542133252691516],[0.8719967695056793,0.3806636460429655,0.12565149054736446],[0.027864976576426927,0.0693679250963853,0.026744808513994148],[0.05656661687254323,0.01955103432796613,0.011786012410349728],[0.0801111261760638,0.019400004145189505,0.01172684974100066],[0.023964494794158495,0.021830218814408116,0.020895680415101325],[0.12494978080049891,0.08196858324237995,0.06497812771420705]]}},"genes":[{"name":"inner_count","kind":"int","author":"seed","added_gen":0,"hypothesis":"Number of circles in the ring around the central circle (8 in OpenEvolve's initial program).","of":null,"default":8,"low":1,"high":16,"log":false,"status":"active","value":5},{"name":"inner_radius","kind":"float","author":"seed","added_gen":0,"hypothesis":"Distance of the inner ring from the centre of the square (0.3 in OpenEvolve's initial program).","of":null,"default":0.3,"low":0.1,"high":0.45,"log":false,"status":"active","value":0.1507665541420377},{"name":"outer_count","kind":"int","author":"seed","added_gen":0,"hypothesis":"Number of circles in the outer ring (16 in OpenEvolve's initial program). Circles beyond the last ring slot are left at the origin, as the 26th is there.","of":null,"default":16,"low":1,"high":32,"log":false,"status":"active","value":21},{"name":"outer_radius","kind":"float","author":"seed","added_gen":0,"hypothesis":"Distance of the outer ring from the centre of the square (0.7 in OpenEvolve's initial program, which is outside the square, so the clip flattens the ring onto the sides).","of":null,"default":0.7,"low":0.3,"high":0.75,"log":false,"status":"active","value":0.6012032370376277},{"name":"clip_margin","kind":"float","author":"seed","added_gen":0,"hypothesis":"Centres are clipped into [margin, 1 - margin] (0.01 in OpenEvolve's initial program); it is the radius available to a circle pushed against a side.","of":null,"default":0.01,"low":0.001,"high":0.2,"log":true,"status":"active","value":0.024323774497423817},{"name":"perturb_worst","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":2,"hypothesis":"Perturb the circles with smallest radii to escape plateau and target the bottleneck in the solution.","predicted":"+0.5 to +1.0 points on n26, improving across all sizes","status":"rejected","screen":{"effect":-0.009795083374433355,"ci":[-0.04080729611429568,0.0244795559783072],"runs":8,"generation":2}},{"name":"vectorize_side_distances","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":1,"hypothesis":"Use numpy vectorization for computing distances to sides in compute_max_radii, leveraging SIMD operations to speed up this O(n) operation which is called repeatedly during radius computation.","predicted":"+0.0 to +0.5 iterations per second throughput gain; measurable impact on larger instances (n \u003e= 28) or when search steps call compute_max_radii multiple times per iteration.","status":"rejected","screen":{"effect":0.0,"ci":[0.0,0.0],"runs":8,"generation":1}},{"name":"nearest_pair_first","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":2,"hypothesis":"In the greedy radius computation, process overlapping pairs sorted by distance (nearest first) instead of index order, to prioritize resolving the most constrained overlaps early.","predicted":"+0.05 to +0.15 points at n \u003e= 12, with larger gains possible if nearest constraints significantly limit overall packing quality","status":"rejected","screen":{"effect":-0.031896787254728,"ci":[-0.050936982121238095,-0.019188446160075312],"runs":8,"generation":2}},{"name":"enable_local_improve","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":1,"hypothesis":"Enable local improvement by randomly perturbing circle centers, exploiting that good packings are locally optimal dense arrangements.","predicted":"+0.3 to +0.6 points on n26; local search should help refine the ring-based construction by moving circles to better positions.","default":false,"status":"active","value":true,"screen":{"effect":1.1829959254482783,"ci":[1.1557001302880034,1.2175299001147453],"runs":8,"generation":1},"neutral_rounds":0,"knockout":{"effect":1.378665685957092,"ci":[1.3628710327406273,1.38971508485005],"runs":8,"generation":3},"generality":{"n24":{"effect":1.3261742952804159,"ci":[1.3039291661705295,1.3573198398225308]},"n28":{"effect":1.393877186642542,"ci":[1.3800208553103746,1.4009628548743247]},"n30":{"effect":1.4620962565168225,"ci":[1.4512284156415323,1.4810164469501705]},"n32":{"effect":1.4288350562930514,"ci":[1.3829200091971652,1.4616954295171631]}},"label":"general"},{"name":"perturb_distance","kind":"float","author":"llm:claude-haiku-4-5","added_gen":1,"hypothesis":"Standard deviation of the random perturbation applied to each circle center in the local improvement step.","of":"enable_local_improve","default":0.02,"low":0.005,"high":0.1,"log":false,"status":"active","value":0.05256864299037408},{"name":"pair_separation","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":2,"hypothesis":"Identify the closest pair of circles and move them apart by a small distance to reduce local constraints, allowing finalise to compute larger radii for both circles.","predicted":"+0.2 to +0.4 points on n26; targeting the most constrained pair should prioritize resolving bottlenecks better than random perturbation.","status":"rejected","screen":{"effect":-0.010521328799787066,"ci":[-0.03789439311511167,0.010758064046504812],"runs":8,"generation":2}},{"name":"squared_distance","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":2,"hypothesis":"Use squared distances in pairwise overlap checks to avoid expensive sqrt operations in the O(n²) pairwise distance computation, improving throughput by allowing more iterations within a fixed time budget.","predicted":"No effect on final score quality (this is a low-level micro-optimization), but potentially +5-10% throughput improvement allowing more iterations per second on instances with enable_local_improve enabled.","default":false,"status":"active","value":true,"screen":{"effect":0.004002040425772679,"ci":[0.002406243268787689,0.005094386207857071],"runs":8,"generation":2},"neutral_rounds":0,"knockout":{"effect":-0.0019421245811267474,"ci":[-0.004676811489244814,0.0007925623269913196],"runs":8,"generation":3},"generality":{"n24":{"effect":0.0,"ci":[0.0,0.0]},"n28":{"effect":0.00035976327168644556,"ci":[0.0,0.0007929033700233568]},"n30":{"effect":0.0001588152239582937,"ci":[0.0,0.00047644567187488107]},"n32":{"effect":0.0,"ci":[0.0,0.0]}},"label":"inconclusive"},{"name":"interlocking_rings","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":3,"hypothesis":"Offset the outer ring by half the angular increment to create an interlocking structure that reduces direct conflicts between inner and outer rings, exploiting radial symmetry for better packing density.","predicted":"+0.005 to +0.015 points on n \u003e= 24 by reducing overlap constraints between rings and improving radii assignments.","status":"rejected","screen":{"effect":-0.03299833851524381,"ci":[-0.06073509512202624,-0.005261581908461377],"runs":8,"generation":3}},{"name":"escape_perturbation","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":3,"hypothesis":"Enable occasional large perturbations of all circles to escape search plateaus, complementing single-circle local perturbations with periodic diversification bursts to explore different regions of the search space.","predicted":"+0.3 to +0.6 points on n26; escape moves should help avoid getting stuck in local optima by periodically perturbing the entire packing rather than just single circles.","status":"rejected","screen":{"effect":-0.07458413389625917,"ci":[-0.11240276616065326,-0.036765501631865094],"runs":8,"generation":3}},{"name":"batch_perturbations","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":3,"hypothesis":"Perturb multiple circles per improvement iteration to amortize the O(n²) cost of finalise, improving throughput by reducing expensive radius computations per unit work.","predicted":"+0.008 to +0.015 points on n26 with enable_local_improve; more iterations within time budget compensate for diversity loss.","status":"rejected","screen":{"effect":-0.04707634369649294,"ci":[-0.07798787930916307,-0.016164808083822813],"runs":8,"generation":3}},{"name":"spiral_construction","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":3,"hypothesis":"Place circles along a Fermat spiral with golden angle spacing for more even initial distribution, allowing larger radii in the greedy computation compared to concentric rings.","predicted":"+0.3 to +0.5 points on n26; the spiral's even distribution should reduce the initial overlap constraints that the greedy radius rule must resolve.","status":"rejected","screen":{"effect":-0.13870734300149856,"ci":[-0.19364470734739592,-0.08342204758331728],"runs":8,"generation":3}},{"name":"periodic_restarts","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":4,"hypothesis":"Periodically restart from a fresh construction during the improvement phase to escape local plateaus and explore alternative packing configurations that local perturbations alone cannot reach.","predicted":"+0.2 to +0.5 points on n\u003e=24 by mixing exploration (fresh constructions every 50 iterations) with exploitation (local improvement), allowing the solver to escape suboptimal local optima that gradient-like improvements get stuck in.","status":"rejected","screen":{"effect":-0.029114494726504403,"ci":[-0.04929783949580124,-0.016627231865291914],"runs":8,"generation":4}},{"name":"enable_middle_ring","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":4,"hypothesis":"Add an optional middle ring of circles at an intermediate radius between inner and outer rings, creating a four-level hierarchical radial structure that reduces angular conflicts between rings and better fills the radial space.","predicted":"+0.05 to +0.15 points on n26 when enabled with local improvement; intermediate radii should reduce direct conflicts and allow better final radii in the greedy computation.","status":"rejected","screen":{"effect":-0.1231609414931989,"ci":[-0.17272601081697903,-0.06526955449154803],"runs":8,"generation":4}},{"name":"adaptive_ring_distribution","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":4,"hypothesis":"Scale ring circle counts adaptively based on instance size (denser for small n, sparser for large n) to maintain consistent packing density across different problem sizes.","predicted":"Slight improvement on smaller instances (n24, n25) and maintained performance on larger instances (n28, n30, n32) due to better structural fit for each size range, especially noticeable when combined with local improvement.","status":"rejected","screen":{"effect":-0.003809944320612657,"ci":[-0.00508297776297062,-0.002406243268787689],"runs":8,"generation":4}},{"name":"vectorized_overlap_checks","kind":"switch","author":"llm:claude-haiku-4-5","added_gen":4,"hypothesis":"Precompute all pairwise squared distances at once using numpy broadcasting instead of computing them one at a time in a Python loop, leveraging vectorized SIMD operations to speed up the O(n²) pairwise overlap checks in compute_max_radii.","predicted":"+0.5 to +2% throughput gain by reducing Python loop overhead and using numpy's optimized distance computation.","default":false,"status":"active","value":true,"screen":{"effect":0.01080773001659252,"ci":[0.005458722177363651,0.01615673785582139],"runs":8,"generation":4},"neutral_rounds":0}],"interactions":[{"a":"enable_local_improve","b":"squared_distance","synergy":-0.0019421245811267474,"ci":[-0.004676811489244814,0.0007925623269913196],"runs":16,"generation":3}],"decomposition":{"seed":0.9597652169962062,"tuning":0.0,"ideas":1.3677649486456462,"compute":0.0,"unit":"points, mean over train instances","provisional":true},"records":[],"history":[{"t":"2026-10-03T20:05:45","generation":0,"event":"run_started","detail":"seed solver solvers/circle_packing, 5 genes, budget time=10.0"},{"t":"2026-10-03T20:05:52","generation":1,"event":"generation_started","detail":"trunk gen000"},{"t":"2026-10-03T20:05:52","generation":1,"event":"inventing","detail":"4 proposals: inventor, inventor, inventor, inventor"},{"t":"2026-10-03T20:08:03","generation":1,"event":"gene_proposed","gene":"enable_local_improve","detail":"Enable local improvement by randomly perturbing circle centers, exploiting that good packings are locally optimal dense arrangements."},{"t":"2026-10-03T20:08:03","generation":1,"event":"gene_proposed","gene":"perturb_worst","detail":"Perturb the circles with smallest radii to escape plateau and target the bottleneck in the solution."},{"t":"2026-10-03T20:08:03","generation":1,"event":"gene_proposed","gene":"vectorize_side_distances","detail":"Use numpy vectorization for computing distances to sides in compute_max_radii, leveraging SIMD operations to speed up this O(n) operation which is called repeatedly during radius computation."},{"t":"2026-10-03T20:08:03","generation":1,"event":"gene_proposed","gene":"nearest_pair_first","detail":"In the greedy radius computation, process overlapping pairs sorted by distance (nearest first) instead of index order, to prioritize resolving the most constrained overlaps early."},{"t":"2026-10-03T20:08:43","generation":1,"event":"gate_passed","gene":"enable_local_improve","detail":"gate passed"},{"t":"2026-10-03T20:09:05","generation":1,"event":"gate_passed","gene":"perturb_worst","detail":"gate passed"},{"t":"2026-10-03T20:09:06","generation":1,"event":"gate_passed","gene":"vectorize_side_distances","detail":"gate passed (1 warning(s))"},{"t":"2026-10-03T20:09:18","generation":1,"event":"gate_passed","gene":"nearest_pair_first","detail":"gate passed"},{"t":"2026-10-03T20:09:42","generation":1,"event":"gene_screened","gene":"enable_local_improve","detail":"effect +1.183, 95% interval [+1.156, +1.218], 8 runs"},{"t":"2026-10-03T20:10:25","generation":1,"event":"gene_screened","gene":"perturb_worst","detail":"effect +0.9519, 95% interval [+0.9182, +1.002], 8 runs"},{"t":"2026-10-03T20:10:26","generation":1,"event":"gene_screened","gene":"vectorize_side_distances","detail":"effect +0, 95% interval [+0, +0], 8 runs"},{"t":"2026-10-03T20:10:27","generation":1,"event":"gene_screened","gene":"nearest_pair_first","detail":"effect +0.09937, 95% interval [+0.09937, +0.09937], 8 runs"},{"t":"2026-10-03T20:10:27","generation":1,"event":"gene_queued","gene":"perturb_worst","detail":"effect +0.9519; will be ported onto the new trunk next generation"},{"t":"2026-10-03T20:10:27","generation":1,"event":"gene_rejected","gene":"vectorize_side_distances","detail":"effect +0 is not positive"},{"t":"2026-10-03T20:10:27","generation":1,"event":"gene_queued","gene":"nearest_pair_first","detail":"effect +0.09937; will be ported onto the new trunk next generation"},{"t":"2026-10-03T20:10:27","generation":1,"event":"gene_merged","gene":"enable_local_improve","detail":"effect +1.183; new trunk gen001"},{"t":"2026-10-03T20:11:53","generation":1,"event":"tuning_started","detail":"32 trials in batches of 8"},{"t":"2026-10-03T20:17:59","generation":1,"event":"tuned","detail":"normalised score 0.8129 -\u003e 0.8871 on the confirmation seeds; inner_count: 8 -\u003e 5, inner_radius: 0.3 -\u003e 0.1507665541420377, outer_count: 16 -\u003e 21, outer_radius: 0.7 -\u003e 0.6012032370376277, clip_margin: 0.01 -\u003e 0.024323774497423817, perturb_distance: 0.02 -\u003e 0.05256864299037408"},{"t":"2026-10-03T20:19:34","generation":1,"event":"knockouts","detail":"enable_local_improve +1.377"},{"t":"2026-10-03T20:19:37","generation":1,"event":"generality","detail":"enable_local_improve: general"},{"t":"2026-10-03T20:19:37","generation":1,"event":"generation_finished","detail":"trunk gen001"},{"t":"2026-10-03T20:19:37","generation":2,"event":"generation_started","detail":"trunk gen001"},{"t":"2026-10-03T20:19:37","generation":2,"event":"inventing","detail":"4 proposals: port, port, inventor, inventor"},{"t":"2026-10-03T20:23:22","generation":2,"event":"gene_proposed","gene":"perturb_worst","detail":"Perturb the circles with smallest radii to escape plateau and target the bottleneck in the solution."},{"t":"2026-10-03T20:23:22","generation":2,"event":"gene_proposed","gene":"nearest_pair_first","detail":"In the greedy radius computation, process overlapping pairs sorted by distance (nearest first) instead of index order, to prioritize resolving the most constrained overlaps early."},{"t":"2026-10-03T20:23:22","generation":2,"event":"gene_proposed","gene":"pair_separation","detail":"Identify the closest pair of circles and move them apart by a small distance to reduce local constraints, allowing finalise to compute larger radii for both circles."},{"t":"2026-10-03T20:23:22","generation":2,"event":"gene_proposed","gene":"squared_distance","detail":"Use squared distances in pairwise overlap checks to avoid expensive sqrt operations in the O(n²) pairwise distance computation, improving throughput by allowing more iterations within a fixed time budget."},{"t":"2026-10-03T20:23:52","generation":2,"event":"gate_passed","gene":"perturb_worst","detail":"gate passed"},{"t":"2026-10-03T20:24:07","generation":2,"event":"gate_passed","gene":"nearest_pair_first","detail":"gate passed"},{"t":"2026-10-03T20:25:53","generation":2,"event":"gate_passed","gene":"pair_separation","detail":"gate passed"},{"t":"2026-10-03T20:26:06","generation":2,"event":"gate_passed","gene":"squared_distance","detail":"gate passed (1 warning(s))"},{"t":"2026-10-03T20:26:48","generation":2,"event":"gene_screened","gene":"perturb_worst","detail":"effect -0.009795, 95% interval [-0.04081, +0.02448], 8 runs"},{"t":"2026-10-03T20:27:30","generation":2,"event":"gene_screened","gene":"nearest_pair_first","detail":"effect -0.0319, 95% interval [-0.05094, -0.01919], 8 runs"},{"t":"2026-10-03T20:29:09","generation":2,"event":"gene_screened","gene":"pair_separation","detail":"effect -0.01052, 95% interval [-0.03789, +0.01076], 8 runs"},{"t":"2026-10-03T20:29:52","generation":2,"event":"gene_screened","gene":"squared_distance","detail":"effect +0.004002, 95% interval [+0.002406, +0.005094], 8 runs"},{"t":"2026-10-03T20:29:52","generation":2,"event":"gene_rejected","gene":"perturb_worst","detail":"effect -0.009795 is not positive"},{"t":"2026-10-03T20:29:52","generation":2,"event":"gene_rejected","gene":"nearest_pair_first","detail":"effect -0.0319 is not positive"},{"t":"2026-10-03T20:29:52","generation":2,"event":"gene_rejected","gene":"pair_separation","detail":"effect -0.01052 is not positive"},{"t":"2026-10-03T20:29:52","generation":2,"event":"gene_merged","gene":"squared_distance","detail":"effect +0.004002; new trunk gen002"},{"t":"2026-10-03T20:32:17","generation":2,"event":"tuning_started","detail":"32 trials in batches of 8"},{"t":"2026-10-03T20:39:08","generation":2,"event":"tuned","detail":"no better config found"},{"t":"2026-10-03T20:39:30","generation":2,"event":"knockouts","detail":"enable_local_improve +1.379; squared_distance -0.001942"},{"t":"2026-10-03T20:39:31","generation":2,"event":"pairwise","detail":"enable_local_improve x squared_distance -0.001942"},{"t":"2026-10-03T20:39:55","generation":2,"event":"generality","detail":"enable_local_improve: general; squared_distance: inconclusive"},{"t":"2026-10-03T20:39:55","generation":2,"event":"generation_finished","detail":"trunk gen002"},{"t":"2026-10-03T20:44:16","generation":2,"event":"run_resumed","detail":"from the end of generation 2, trunk gen002"},{"t":"2026-10-03T20:44:16","generation":3,"event":"generation_started","detail":"trunk gen002"},{"t":"2026-10-03T20:44:16","generation":3,"event":"inventing","detail":"4 proposals: inventor, inventor, inventor, inventor"},{"t":"2026-10-03T20:51:15","generation":3,"event":"gene_proposed","gene":"interlocking_rings","detail":"Offset the outer ring by half the angular increment to create an interlocking structure that reduces direct conflicts between inner and outer rings, exploiting radial symmetry for better packing density."},{"t":"2026-10-03T20:51:15","generation":3,"event":"gene_proposed","gene":"escape_perturbation","detail":"Enable occasional large perturbations of all circles to escape search plateaus, complementing single-circle local perturbations with periodic diversification bursts to explore different regions of the search space."},{"t":"2026-10-03T20:51:15","generation":3,"event":"gene_proposed","gene":"batch_perturbations","detail":"Perturb multiple circles per improvement iteration to amortize the O(n²) cost of finalise, improving throughput by reducing expensive radius computations per unit work."},{"t":"2026-10-03T20:51:15","generation":3,"event":"gene_proposed","gene":"spiral_construction","detail":"Place circles along a Fermat spiral with golden angle spacing for more even initial distribution, allowing larger radii in the greedy computation compared to concentric rings."},{"t":"2026-10-03T20:51:33","generation":3,"event":"gate_passed","gene":"interlocking_rings","detail":"gate passed"},{"t":"2026-10-03T20:52:26","generation":3,"event":"gate_passed","gene":"escape_perturbation","detail":"gate passed"},{"t":"2026-10-03T20:52:49","generation":3,"event":"gate_passed","gene":"batch_perturbations","detail":"gate passed"},{"t":"2026-10-03T20:53:21","generation":3,"event":"gate_passed","gene":"spiral_construction","detail":"gate passed"},{"t":"2026-10-03T20:55:33","generation":3,"event":"gene_screened","gene":"interlocking_rings","detail":"effect -0.033, 95% interval [-0.06074, -0.005262], 8 runs"},{"t":"2026-10-03T20:56:17","generation":3,"event":"gene_screened","gene":"escape_perturbation","detail":"effect -0.07458, 95% interval [-0.1124, -0.03677], 8 runs"},{"t":"2026-10-03T20:57:01","generation":3,"event":"gene_screened","gene":"batch_perturbations","detail":"effect -0.04708, 95% interval [-0.07799, -0.01616], 8 runs"},{"t":"2026-10-03T20:57:46","generation":3,"event":"gene_screened","gene":"spiral_construction","detail":"effect -0.1387, 95% interval [-0.1936, -0.08342], 8 runs"},{"t":"2026-10-03T20:57:46","generation":3,"event":"gene_rejected","gene":"interlocking_rings","detail":"effect -0.033 is not positive"},{"t":"2026-10-03T20:57:46","generation":3,"event":"gene_rejected","gene":"escape_perturbation","detail":"effect -0.07458 is not positive"},{"t":"2026-10-03T20:57:46","generation":3,"event":"gene_rejected","gene":"batch_perturbations","detail":"effect -0.04708 is not positive"},{"t":"2026-10-03T20:57:46","generation":3,"event":"gene_rejected","gene":"spiral_construction","detail":"effect -0.1387 is not positive"},{"t":"2026-10-03T20:57:46","generation":3,"event":"tuning_started","detail":"32 trials in batches of 8"},{"t":"2026-10-03T21:03:28","generation":3,"event":"tuned","detail":"no better config found"},{"t":"2026-10-03T21:03:28","generation":3,"event":"knockouts","detail":"enable_local_improve +1.379; squared_distance -0.001942"},{"t":"2026-10-03T21:03:28","generation":3,"event":"pairwise","detail":"enable_local_improve x squared_distance -0.001942"},{"t":"2026-10-03T21:03:28","generation":3,"event":"generality","detail":"enable_local_improve: general; squared_distance: inconclusive"},{"t":"2026-10-03T21:03:28","generation":3,"event":"generation_finished","detail":"trunk gen002"},{"t":"2026-10-03T21:03:28","generation":4,"event":"generation_started","detail":"trunk gen002"},{"t":"2026-10-03T21:03:28","generation":4,"event":"inventing","detail":"4 proposals: inventor, inventor, inventor, inventor"},{"t":"2026-10-03T21:06:05","generation":4,"event":"gene_proposed","gene":"periodic_restarts","detail":"Periodically restart from a fresh construction during the improvement phase to escape local plateaus and explore alternative packing configurations that local perturbations alone cannot reach."},{"t":"2026-10-03T21:06:05","generation":4,"event":"gene_proposed","gene":"vectorized_overlap_checks","detail":"Precompute all pairwise squared distances at once using numpy broadcasting instead of computing them one at a time in a Python loop, leveraging vectorized SIMD operations to speed up the O(n²) pairwise overlap checks in compute_max_radii."},{"t":"2026-10-03T21:06:05","generation":4,"event":"gene_proposed","gene":"enable_middle_ring","detail":"Add an optional middle ring of circles at an intermediate radius between inner and outer rings, creating a four-level hierarchical radial structure that reduces angular conflicts between rings and better fills the radial space."},{"t":"2026-10-03T21:06:05","generation":4,"event":"gene_proposed","gene":"adaptive_ring_distribution","detail":"Scale ring circle counts adaptively based on instance size (denser for small n, sparser for large n) to maintain consistent packing density across different problem sizes."},{"t":"2026-10-03T21:06:38","generation":4,"event":"gate_passed","gene":"periodic_restarts","detail":"gate passed (1 warning(s))"},{"t":"2026-10-03T21:06:49","generation":4,"event":"gate_passed","gene":"vectorized_overlap_checks","detail":"gate passed (1 warning(s))"},{"t":"2026-10-03T21:07:05","generation":4,"event":"gate_passed","gene":"enable_middle_ring","detail":"gate passed"},{"t":"2026-10-03T21:07:19","generation":4,"event":"gate_passed","gene":"adaptive_ring_distribution","detail":"gate passed (1 warning(s))"},{"t":"2026-10-03T21:08:10","generation":4,"event":"gene_screened","gene":"periodic_restarts","detail":"effect -0.02911, 95% interval [-0.0493, -0.01663], 8 runs"},{"t":"2026-10-03T21:08:57","generation":4,"event":"gene_screened","gene":"vectorized_overlap_checks","detail":"effect +0.01081, 95% interval [+0.005459, +0.01616], 8 runs"},{"t":"2026-10-03T21:09:41","generation":4,"event":"gene_screened","gene":"enable_middle_ring","detail":"effect -0.1232, 95% interval [-0.1727, -0.06527], 8 runs"},{"t":"2026-10-03T21:10:24","generation":4,"event":"gene_screened","gene":"adaptive_ring_distribution","detail":"effect -0.00381, 95% interval [-0.005083, -0.002406], 8 runs"},{"t":"2026-10-03T21:10:24","generation":4,"event":"gene_rejected","gene":"periodic_restarts","detail":"effect -0.02911 is not positive"},{"t":"2026-10-03T21:10:24","generation":4,"event":"gene_rejected","gene":"enable_middle_ring","detail":"effect -0.1232 is not positive"},{"t":"2026-10-03T21:10:24","generation":4,"event":"gene_rejected","gene":"adaptive_ring_distribution","detail":"effect -0.00381 is not positive"},{"t":"2026-10-03T21:10:24","generation":4,"event":"gene_merged","gene":"vectorized_overlap_checks","detail":"effect +0.01081; new trunk gen004"}],"timeline":[{"t":7.0,"generation":0,"score":0.3641014323981136},{"t":367.6,"generation":1,"score":0.8199604136968679},{"t":823.7,"generation":1,"score":0.8824486884873092},{"t":1592.0,"generation":2,"score":0.882983725866122},{"t":3202.0,"generation":3,"score":0.882983725866122}],"engine":{"ideas_taken":0}},"live":{},"ideas":[]};</script>
 <script>
 'use strict';
 (() => {
@@ -517,17 +526,29 @@ body.snap #idea-form, body.snap #run-select { display: none; }
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   function trimZeros(t) { return t.includes('.') ? t.replace(/0+$/, '').replace(/\.$/, '') : t; }
-  function fmtSigned(x, d = 2) {
+  // Decimals used for effects and other score-unit numbers. 2 for most problems; more when the
+  // run's effects are small (set per render from the data, see effectDecimals).
+  let DEC = 2;
+  // A score at its own precision: whole numbers as they are, small decimals to three significant digits.
+  function fmtScore(x) {
+    if (!isNum(x)) return '–';
+    const a = Math.abs(x);
+    if (Number.isInteger(x)) return (x < 0 ? MINUS : '') + String(a);
+    const text = a >= 100 ? a.toFixed(1) : a >= 10 ? a.toFixed(2) : a >= 1 ? a.toFixed(3) : String(Number(a.toPrecision(3)));
+    return (x < 0 && Number(text) !== 0 ? MINUS : '') + trimZeros(text);
+  }
+  const fmtScoreSigned = (x) => (!isNum(x) ? '–' : x === 0 ? '0' : (x < 0 ? MINUS : '+') + fmtScore(Math.abs(x)));
+  function fmtSigned(x, d = DEC) {
     if (!isNum(x)) return '–';
     const t = Math.abs(x).toFixed(d);
     return Number(t) === 0 ? t : (x < 0 ? MINUS : '+') + t;
   }
-  function trimNum(x, d = 2) {
+  function trimNum(x, d = DEC) {
     if (!isNum(x)) return '–';
     const t = trimZeros(Math.abs(x).toFixed(d));
     return (x < 0 && Number(t) !== 0 ? MINUS : '') + t;
   }
-  function trimSigned(x, d = 2) {
+  function trimSigned(x, d = DEC) {
     if (!isNum(x)) return '–';
     const t = trimZeros(Math.abs(x).toFixed(d));
     return Number(t) === 0 ? '0' : (x < 0 ? MINUS : '+') + t;
@@ -683,14 +704,22 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       addedGen: g.gen, generality: {}, value: undefined, of: null, note: '', neutralRounds: null,
     }));
   }
+  // Two significant digits for the largest effect in the run: 0.5 -> 2 decimals, 0.0005 -> 5.
+  function effectDecimals() {
+    let max = 0;
+    for (const g of S.genes) for (const m of [g.ko, g.sc]) if (m) max = Math.max(max, Math.abs(m.effect), Math.abs(m.lo || 0), Math.abs(m.hi || 0));
+    if (!(max > 0)) { const d = obj(obj(S.state).decomposition); for (const k of ['tuning', 'ideas', 'compute']) if (isNum(d[k])) max = Math.max(max, Math.abs(d[k])); }
+    return max > 0 && max < 1 ? clamp(1 - Math.floor(Math.log10(max)), 2, 6) : 2;
+  }
   const byEffect = (a, b) => (b.m ? b.m.effect : -Infinity) - (a.m ? a.m.effect : -Infinity) || a.name.localeCompare(b.name);
   function instanceList(st) {
     const out = [], seen = new Set(), inst = obj(st.instances);
     const add = (k, split) => { if (typeof k !== 'string' || !k || seen.has(k)) return; seen.add(k); out.push({ key: k, split }); };
     arr(inst.train).forEach((k) => add(k, 'train'));
     arr(inst.heldout).forEach((k) => add(k, 'heldout'));
-    for (const name of Object.keys(inst)) if (name !== 'train' && name !== 'heldout') arr(inst[name]).forEach((k) => add(k, name));
-    Object.keys(obj(obj(st.champion).scores)).forEach((k) => add(k, 'other'));
+    const scored = obj(obj(st.champion).scores);
+    for (const name of Object.keys(inst)) if (name !== 'train' && name !== 'heldout') arr(inst[name]).forEach((k) => { if (scored[k]) add(k, name); });
+    Object.keys(scored).forEach((k) => add(k, 'other'));
     return out;
   }
   const splitName = (sp) => (sp === 'train' ? 'Train' : sp === 'heldout' ? 'Held-out' : sp === 'other' ? 'Other' : sp);
@@ -704,7 +733,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     live: {}, liveText: '{}', pending: null, localError: null, dismissed: null, liveTimer: 0, stripKey: '',
     ideas: [], drawer: null, collapsed: true, online: true, tick: 0,
   };
-  const V = { pts: [], n: 1, key: null, yaw: 0.7, pitch: 0.42, drag: null, last: 0, sols: {} };
+  const V = { key: null, cur: null, sols: {}, painted: '', yaw: 0.7, pitch: 0.42, drag: null, last: 0 };
 
   async function getJSON(url) {
     const res = await fetch(url, { cache: 'no-store' });
@@ -908,15 +937,15 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const chips = recs.map((r) => {
       const known = num(r.best_known) != null ? num(r.best_known) : num(bk[r.instance]);
       const checks = arr(r.checks).filter((c) => typeof c === 'string' && c);
-      const tip = [r.instance + ': ' + trimNum(r.value) + (known != null ? ', best published ' + trimNum(known) + ' (' + trimSigned(r.value - known) + ')' : '')];
+      const tip = [r.instance + ': ' + fmtScore(r.value) + (known != null ? ', best published ' + fmtScore(known) + ' (' + fmtScoreSigned(r.value - known) + ')' : '')];
       if (r.verified === true) tip.push(checks.length ? 'Verified by ' + plural(checks.length, 'independent checker') + ': ' + checks.join(', ') : 'Verified by the exact evaluator');
       else tip.push(r.verified === false ? 'Not verified yet' : 'Verification not reported');
       if (r.certificate) tip.push('Certificate: ' + str(r.certificate));
       if (known != null && !(minimise ? r.value < known : r.value > known)) tip.push('Note: this does not beat the published value');
       return h('div', { class: 'rc', tip: tip.join('\n') },
         h('span', { class: 'k', text: r.instance }),
-        h('span', { class: 'v', text: trimNum(r.value) }),
-        h('span', { class: 'bk', text: known != null ? 'vs ' + trimNum(known) : '' }),
+        h('span', { class: 'v', text: fmtScore(r.value) }),
+        h('span', { class: 'bk', text: known != null ? 'vs ' + fmtScore(known) : '' }),
         r.verified === true
           ? h('span', { class: 'ok' }, h('i', { text: '✓' }), checks.length > 1 ? '×' + checks.length : null)
           : h('span', { class: 'ok no' }, h('i', { text: '?' }), 'unverified'));
@@ -928,7 +957,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       shown--;
       list.removeChild(chips[shown]);
       more.textContent = '+' + (chips.length - shown) + ' more';
-      more.setAttribute('data-tip', 'More records\n' + recs.slice(shown).map((r) => r.instance + ': ' + trimNum(r.value)).join('\n'));
+      more.setAttribute('data-tip', 'More records\n' + recs.slice(shown).map((r) => r.instance + ': ' + fmtScore(r.value)).join('\n'));
       if (!more.parentNode) list.appendChild(more);
     }
   }
@@ -954,7 +983,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     if (!insts.length) { body.appendChild(empty('Scores appear here once the champion has been evaluated.')); return; }
     let nRec = 0, nEq = 0, nBehind = 0;
     const groups = [];
-    let longest = 1;
+    let longest = 1, whole = true;
     for (const it of insts) {
       let grp = groups.find((x) => x.split === it.split);
       if (!grp) { grp = { split: it.split, items: [] }; groups.push(grp); }
@@ -963,51 +992,60 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       it.rec = records.find((r) => r.instance === it.key);
       it.ours = num(it.sc.best) != null ? num(it.sc.best) : num(it.sc.mean);
       if (it.rec && isNum(it.rec.value) && (it.ours == null || (minimise ? it.rec.value < it.ours : it.rec.value > it.ours))) it.ours = it.rec.value;
-      it.text = it.ours != null ? trimNum(it.ours) : '–';
+      it.text = it.ours != null ? fmtScore(it.ours) : '–';
       longest = Math.max(longest, it.text.length);
+      it.known = num(bk[it.key]) != null ? num(bk[it.key]) : it.rec ? num(it.rec.best_known) : null;
+      if ((it.ours != null && !Number.isInteger(it.ours)) || (it.known != null && !Number.isInteger(it.known))) whole = false;
     }
+    // Whole-number scores (point counts) show the gap in points; anything else as a percentage of the published value.
+    const gap = (d, known) => {
+      if (whole || !known) return fmtScoreSigned(d);
+      const pc = (d / Math.abs(known)) * 100, a = Math.abs(pc);
+      return (pc > 0 ? '+' : MINUS) + (a < 0.1 ? String(Number(a.toPrecision(1))) : a < 10 ? a.toFixed(1) : String(Math.round(a))) + '%';
+    };
     // the big numerals shrink together when there are many instances or long values
     const tileW = (body.clientWidth - 14 * (groups.length - 1) - 6 * (insts.length - groups.length)) / insts.length;
-    const fontSize = clamp(Math.floor((tileW - 8) / (0.6 * longest)), 13, 34) + 'px';
-    const wrap = h('div', { class: 'groups' });
+    const fontSize = clamp(Math.floor((tileW - 8) / (0.6 * longest)), 10, 34) + 'px';
+    const longKey = insts.some((it) => it.key.length * 6.7 > tileW - 4);      // "triangle30" in a narrow tile
+    const wrap = h('div', { class: 'groups' + (tileW < 60 ? ' narrow' : '') });
     for (const grp of groups) {
       const tiles = h('div', { class: 'tiles' });
       for (const it of grp.items) {
-        const sc = it.sc, rec = it.rec, ours = it.ours;
-        const known = num(bk[it.key]) != null ? num(bk[it.key]) : rec ? num(rec.best_known) : null;
+        const sc = it.sc, rec = it.rec, ours = it.ours, known = it.known;
         const delta = ours != null && known != null ? ours - known : null;
         const better = delta != null && (minimise ? delta < 0 : delta > 0);
         let glyph = '', gcls = 'neu', dtext = '', cap = '';
         if (ours == null) cap = 'pending';
-        else if (known == null) cap = 'no reference';
+        else if (known == null) cap = tileW < 70 ? 'no ref.' : 'no reference';
         else if (better) {
-          nRec++; glyph = '★'; gcls = 'pos'; dtext = trimSigned(delta);
+          nRec++; glyph = '★'; gcls = 'pos'; dtext = gap(delta, known);
           cap = rec && rec.verified === false ? 'unverified' : tileW < 58 ? 'record' : 'new record';
         } else if (delta === 0) { nEq++; glyph = '='; dtext = ''; cap = 'matched'; }
-        else { nBehind++; glyph = minimise ? '▲' : '▼'; gcls = 'neg'; dtext = trimSigned(delta); cap = 'behind'; }
-        const tipLines = [it.key + ' (' + splitName(it.split).toLowerCase() + '): ' + (ours != null ? trimNum(ours) : 'no result yet')];
-        if (known != null) tipLines.push('best published ' + trimNum(known));
-        if (isNum(sc.mean)) tipLines.push('mean ' + trimNum(sc.mean) + (isNum(sc.runs) ? ' over ' + plural(sc.runs, 'run') : ''));
+        else { nBehind++; glyph = minimise ? '▲' : '▼'; gcls = 'neg'; dtext = gap(delta, known); cap = 'behind'; }
+        const tipLines = [it.key + ' (' + splitName(it.split).toLowerCase() + '): ' + (ours != null ? fmtScore(ours) : 'no result yet')];
+        if (known != null) tipLines.push('best published ' + fmtScore(known) + (delta ? ' (' + fmtScoreSigned(delta) + (whole || !known ? '' : ', ' + gap(delta, known)) + ')' : ''));
+        if (isNum(sc.mean)) tipLines.push('mean ' + fmtScore(sc.mean) + (isNum(sc.runs) ? ' over ' + plural(sc.runs, 'run') : ''));
         if (sc.budget) tipLines.push('budget ' + str(sc.budget));
         if (rec) tipLines.push(rec.verified === true ? 'Record verified by the exact evaluator' : rec.verified === false ? 'Record not verified yet' : 'Record');
         if (rec && rec.certificate) tipLines.push(str(rec.certificate));
         const canShow = !!V.sols[it.key];
-        if (canShow) tipLines.push('Click to show this point set');
+        if (canShow) tipLines.push('Click to show this solution');
         const tile = h('div', {
           class: 'tile' + (better ? ' record' : '') + (canShow ? ' pick' : '') + (canShow && V.key === it.key ? ' shown' : ''),
           tip: tipLines.join('\n'), tabindex: canShow ? 0 : null, role: canShow ? 'button' : null,
           onclick: canShow ? () => pickInstance(it.key) : null,
           onkeydown: canShow ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickInstance(it.key); } } : null,
         },
-          h('div', { class: 't-key', text: it.key }),
+          h('div', { class: 't-key' + (longKey ? ' long' : ''), text: longKey ? it.key.replace(/^([A-Za-z_]+)(\d)/, '$1\u200b$2') : it.key }),
           h('div', { class: 't-val', style: { fontSize }, text: it.text }),
-          h('div', { class: 't-bk', text: known != null ? 'vs ' + trimNum(known) : ' ' }),
+          h('div', { class: 't-bk', text: known != null ? 'vs ' + fmtScore(known) : ' ' }),
           h('div', { class: 't-delta' }, glyph ? h('span', { class: 'g ' + gcls, text: glyph }) : null, dtext),
           h('div', { class: 't-cap', text: cap }));
         tiles.appendChild(tile);
       }
       wrap.appendChild(h('div', { class: 'tgroup', style: { flex: grp.items.length + ' 1 0' } },
-        h('div', { class: 'tg-label', text: splitName(grp.split) + (grp.split === 'heldout' ? ' · never tuned on' : '') }), tiles));
+        h('div', { class: 'tg-label', text: splitName(grp.split) + (grp.split === 'heldout' && groups.length <= 2 && grp.items.length * tileW > 150 ? ' · never tuned on' : ''),
+          tip: grp.split === 'heldout' ? 'Held-out instances\nNever used for tuning or for choosing ideas' : grp.split === 'train' ? 'Training instances\nUsed for screening and tuning' : null }), tiles));
     }
     body.appendChild(wrap);
     const parts = [];
@@ -1017,57 +1055,166 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     note.textContent = parts.length ? parts.join(' · ') : 'our best vs best published';
   }
 
-  // ----------------------------------------------------------- point-set viewer
-  function validPoints(v) {
+  // ------------------------------------------------------------ solution viewer
+  // The drawing is chosen from the shape of the data, so every problem type gets a fitting picture:
+  //   [x, y, r] decimals with r > 0     circles to scale in the unit square     (circle packing)
+  //   [x, y, z] whole numbers           rotating 3D scatter in a cube           (no 5 on a sphere)
+  //   [x, y] whole numbers              2D scatter in an n x n grid             (grid problems)
+  //   [x, y] decimals or digit strings  2D scatter in its region                (Heilbronn point sets)
+  //   a flat list of numbers            step plot                               (step functions)
+  // Anything else is not drawn and the panel stays hidden.
+  function asNumber(x) {
+    if (typeof x === 'number') return isFinite(x) ? x : null;
+    if (typeof x === 'string' && x.trim() !== '') { const v = Number(x); return isFinite(v) ? v : null; }
+    return null;
+  }
+  function gridSize(key, pts) {
+    const m = /^n(\d+)$/.exec(key || '');
+    let max = 0;
+    for (const p of pts) for (const c of p) if (c > max) max = c;
+    const n = m ? Number(m[1]) : 0;
+    return Math.max(2, n > max ? n : max + 1);        // from the key when the data fits it, else from the data's extent
+  }
+  function classifySolution(key, v) {
     if (!Array.isArray(v) || !v.length) return null;
-    for (const p of v) if (!Array.isArray(p) || p.length !== 3 || !p.every(isNum)) return null;
-    return v;
+    if (v.every((x) => !Array.isArray(x))) {                                   // a flat list: step heights
+      const vals = v.map(asNumber);
+      return vals.length >= 2 && vals.every((x) => x != null) ? { kind: 'steps', vals } : null;
+    }
+    const dim = Array.isArray(v[0]) ? v[0].length : 0;
+    if (dim !== 2 && dim !== 3) return null;
+    let whole = true;
+    const pts = [];
+    for (const p of v) {
+      if (!Array.isArray(p) || p.length !== dim) return null;
+      const q = p.map(asNumber);
+      if (q.some((c) => c == null)) return null;
+      if (!p.every((c) => typeof c === 'number' && Number.isInteger(c) && c >= 0)) whole = false;
+      pts.push(q);
+    }
+    if (dim === 3) {
+      if (whole) return { kind: 'grid3', pts, n: gridSize(key, pts) };
+      return pts.every((c) => c[2] > 0) ? { kind: 'circles', pts } : null;
+    }
+    const shape = /^(square|triangle|convex)/i.exec(key || '');
+    if (whole && !shape) return { kind: 'grid2', pts, n: gridSize(key, pts) };
+    return { kind: 'plane', pts, shape: shape ? shape[1].toLowerCase() : '' };
+  }
+  // A square window [x0, y0, side] around a set of points, with a little margin.
+  function boundsOf(pts) {
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const p of pts) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); }
+    const side = (Math.max(x1 - x0, y1 - y0) || 1) * 1.08;
+    return [(x0 + x1) / 2 - side / 2, (y0 + y1) / 2 - side / 2, side];
+  }
+  function convexHull(pts) {
+    const s2 = pts.slice().sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+    if (s2.length < 3) return s2;
+    const cross = (o, p, q) => (p[0] - o[0]) * (q[1] - o[1]) - (p[1] - o[1]) * (q[0] - o[0]);
+    const half = (list) => { const out = []; for (const p of list) { while (out.length >= 2 && cross(out[out.length - 2], out[out.length - 1], p) <= 0) out.pop(); out.push(p); } out.pop(); return out; };
+    return half(s2).concat(half(s2.slice().reverse()));
+  }
+  function smallestTriangle(pts) {
+    const n = pts.length;
+    let best = Infinity, idx = null;
+    for (let i = 0; i < n - 2; i++) for (let j = i + 1; j < n - 1; j++) {
+      const ax = pts[j][0] - pts[i][0], ay = pts[j][1] - pts[i][1];
+      for (let k = j + 1; k < n; k++) {
+        const area = Math.abs(ax * (pts[k][1] - pts[i][1]) - ay * (pts[k][0] - pts[i][0])) / 2;
+        if (area < best) { best = area; idx = [i, j, k]; }
+      }
+    }
+    return idx ? { area: best, idx } : null;
+  }
+  const sig = (x) => (isNum(x) ? String(Number(x.toPrecision(3))).replace('-', MINUS) : '–');
+  // Title, caption and whatever the drawing needs, worked out once per solution.
+  function prepareSolution(sol) {
+    if (sol.title) return sol;
+    const k = sol.pts ? sol.pts.length : sol.vals.length;
+    if (sol.kind === 'circles') {
+      let sum = 0;
+      for (const c of sol.pts) sum += c[2];
+      sol.title = 'Packing';
+      sol.caption = 'Sum of radii ' + trimNum(sum, 4);
+      sol.more = plural(k, 'circle') + ', drawn to scale in the unit square';
+      const inUnit = sol.pts.every((c) => c[0] - c[2] >= -0.02 && c[0] + c[2] <= 1.02 && c[1] - c[2] >= -0.02 && c[1] + c[2] <= 1.02);
+      sol.box = inUnit ? [0, 0, 1] : boundsOf(sol.pts.map((c) => [c[0] - c[2], c[1] - c[2]]).concat(sol.pts.map((c) => [c[0] + c[2], c[1] + c[2]])));
+      sol.unit = inUnit;
+    } else if (sol.kind === 'grid3') {
+      sol.title = 'Point set';
+      sol.caption = plural(k, 'point') + ' in a ' + sol.n + '×' + sol.n + '×' + sol.n + ' grid';
+    } else if (sol.kind === 'grid2') {
+      sol.title = 'Point set';
+      sol.caption = plural(k, 'point') + ' in a ' + sol.n + '×' + sol.n + ' grid';
+    } else if (sol.kind === 'plane') {
+      sol.title = 'Point set';
+      const unit = sol.shape === 'square' || sol.shape === 'triangle';
+      sol.box = unit ? [-0.02, -0.02, 1.04] : boundsOf(sol.pts);
+      sol.region = sol.shape === 'square' ? [[0, 0], [1, 0], [1, 1], [0, 1]] : sol.shape === 'triangle' ? [[0, 0], [1, 0], [0, 1]]
+        : sol.shape === 'convex' ? convexHull(sol.pts) : null;
+      sol.tri = k >= 3 && k <= 160 ? smallestTriangle(sol.pts) : null;       // at most a few hundred thousand triples, once
+      sol.caption = sol.tri ? 'Smallest triangle ' + sig(sol.tri.area) : plural(k, 'point');
+      sol.more = plural(k, 'point') + (sol.tri ? '; the triangle of smallest area is highlighted' : '');
+    } else {
+      sol.lo = Infinity; sol.hi = -Infinity;
+      for (const v of sol.vals) { if (v < sol.lo) sol.lo = v; if (v > sol.hi) sol.hi = v; }
+      sol.title = 'Step function';
+      sol.caption = plural(k, 'step') + ', ' + sig(sol.lo) + ' to ' + sig(sol.hi);
+      sol.more = 'Heights of a step function with ' + plural(k, 'equal step') + '; the line marks zero';
+    }
+    return sol;
   }
   function renderViewer() {
     const st = S.state || {}, sols = obj(obj(st.champion).solutions), panel = $('p-viewer'), sel = $('viewer-select');
     V.sols = {};
-    for (const k of Object.keys(sols)) { const pts = validPoints(sols[k]); if (pts) V.sols[k] = pts; }
+    for (const k of Object.keys(sols)) { const sol = classifySolution(k, sols[k]); if (sol) V.sols[k] = sol; }
     const order = instanceList(st).map((i) => i.key).filter((k) => V.sols[k]);
     for (const k of Object.keys(V.sols)) if (!order.includes(k)) order.push(k);
     panel.hidden = !order.length;
-    if (!order.length) { V.key = null; V.pts = []; return; }
+    if (!order.length) { V.key = null; V.cur = null; return; }
     if (!V.key || !V.sols[V.key]) {
       const rec = arr(st.records).map(obj).find((r) => V.sols[r.instance]);
       V.key = rec ? rec.instance : order[order.length - 1];
     }
-    const sig = order.join('\n');
-    if (sel.dataset.key !== sig) {
-      sel.dataset.key = sig;
+    const sig2 = order.join('\n');
+    if (sel.dataset.key !== sig2) {
+      sel.dataset.key = sig2;
       clear(sel);
       order.forEach((k) => sel.appendChild(h('option', { value: k, text: k })));
     }
     sel.value = V.key;
-    loadPoints();
+    loadSolution();
   }
-  function loadPoints() {
-    const pts = V.sols[V.key] || [];
-    let n = 0;
-    const m = /^n(\d+)$/.exec(V.key || '');
-    if (m) n = Number(m[1]);
-    let max = 0;
-    for (const p of pts) max = Math.max(max, p[0], p[1], p[2]);
-    if (!(n > max)) n = max + 1;
-    V.n = Math.max(2, n);
-    V.pts = pts;
-    $('viewer-cap').textContent = plural(pts.length, 'point') + ' in a ' + V.n + '×' + V.n + '×' + V.n + ' grid';
+  function loadSolution() {
+    const sol = V.sols[V.key] ? prepareSolution(V.sols[V.key]) : null, cv = $('viewer');
+    V.cur = sol;
+    if (!sol) return;
+    $('viewer-title').textContent = sol.title;
+    $('viewer-cap').textContent = sol.caption;
+    $('viewer-cap').setAttribute('data-tip', sol.title + ' for ' + V.key + '\n' + sol.caption + (sol.more ? '\n' + sol.more : ''));
+    $('p-viewer').classList.toggle('wide', sol.kind === 'steps');
+    cv.style.cursor = sol.kind === 'grid3' ? '' : 'default';
+    cv.setAttribute('aria-label', sol.title + ' for ' + V.key + ': ' + sol.caption);
+    V.painted = '';
     paintViewer(0);   // first frame now; the animation loop takes over from here
   }
   function pickInstance(key) {
     if (!V.sols[key]) return;
+    const panel = $('p-viewer'), wide = panel.classList.contains('wide');
     V.key = key;
     $('viewer-select').value = key;
-    loadPoints();
+    loadSolution();
     renderChampion();
+    if (panel.classList.contains('wide') !== wide) renderTimeline();     // the neighbouring chart changed width
   }
   $('viewer-select').addEventListener('change', (e) => pickInstance(e.target.value));
   (function viewerInput() {
     const cv = $('viewer');
-    cv.addEventListener('pointerdown', (e) => { V.drag = { x: e.clientX, y: e.clientY, yaw: V.yaw, pitch: V.pitch }; cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener('pointerdown', (e) => {
+      if (!V.cur || V.cur.kind !== 'grid3') return;                        // only the 3D view turns
+      V.drag = { x: e.clientX, y: e.clientY, yaw: V.yaw, pitch: V.pitch };
+      cv.setPointerCapture(e.pointerId);
+    });
     cv.addEventListener('pointermove', (e) => {
       if (!V.drag) return;
       V.yaw = V.drag.yaw + (e.clientX - V.drag.x) * 0.012;
@@ -1076,7 +1223,6 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const end = () => { V.drag = null; };
     cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
   })();
-  const CUBE_EDGES = [[0, 1], [1, 3], [3, 2], [2, 0], [4, 5], [5, 7], [7, 6], [6, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
   function drawViewer(ts) {
     requestAnimationFrame(drawViewer);
     const dt = Math.min(0.05, Math.max(0, (ts - V.last) / 1000)) || 0;
@@ -1084,15 +1230,31 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     paintViewer(dt);
   }
   function paintViewer(dt) {
-    const cv = $('viewer');
-    if ($('p-viewer').hidden) return;
-    if (!V.drag) V.yaw += dt * 0.32;
+    const cv = $('viewer'), sol = V.cur;
+    if ($('p-viewer').hidden || !sol) return;
     const w = cv.clientWidth, hgt = cv.clientHeight, dpr = window.devicePixelRatio || 1;
     if (!w || !hgt) return;
+    const turning = sol.kind === 'grid3', stamp = V.key + '|' + w + 'x' + hgt + '@' + dpr;
+    if (!turning && V.painted === stamp) return;                            // a still picture is drawn once per size
+    V.painted = stamp;
     if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(hgt * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(hgt * dpr); }
     const ctx = cv.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, hgt);
+    if (turning) { if (!V.drag) V.yaw += dt * 0.32; paintCube(ctx, w, hgt, sol); }
+    else if (sol.kind === 'circles') paintCircles(ctx, w, hgt, sol);
+    else if (sol.kind === 'grid2') paintGrid(ctx, w, hgt, sol);
+    else if (sol.kind === 'plane') paintPlane(ctx, w, hgt, sol);
+    else paintSteps(ctx, w, hgt, sol);
+  }
+  const FRAME = 'rgba(174,182,196,.6)', DOT = 'rgb(96,160,240)', WASH = 'rgba(57,135,229,.22)', TAU = Math.PI * 2;
+  // The largest centred square in the canvas, and the map from data to it (y grows upwards).
+  function squareIn(w, hgt, pad, box) {
+    const side = Math.max(10, Math.min(w, hgt) - 2 * pad), x = (w - side) / 2, y = (hgt - side) / 2;
+    return { x, y, side, X: (u) => x + ((u - box[0]) / box[2]) * side, Y: (v) => y + side - ((v - box[1]) / box[2]) * side, len: (d) => (d / box[2]) * side };
+  }
+  const CUBE_EDGES = [[0, 1], [1, 3], [3, 2], [2, 0], [4, 5], [5, 7], [7, 6], [6, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
+  function paintCube(ctx, w, hgt, sol) {
     const size = Math.min(w, hgt), cx = w / 2, cy = hgt / 2, D = 3.4, k = size * 0.52;
     const cyw = Math.cos(V.yaw), syw = Math.sin(V.yaw), cp = Math.cos(V.pitch), sp = Math.sin(V.pitch);
     const proj = (x, y, z) => {
@@ -1109,13 +1271,85 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       ctx.strokeStyle = 'rgba(174,182,196,' + (0.34 - depth * 0.22).toFixed(3) + ')';
       ctx.beginPath(); ctx.moveTo(corners[a][0], corners[a][1]); ctx.lineTo(corners[b][0], corners[b][1]); ctx.stroke();
     }
-    const span = V.n - 1;
-    const pts = V.pts.map((p) => proj(p[0] / span - 0.5, p[2] / span - 0.5, p[1] / span - 0.5)).sort((a, b) => b[2] - a[2]);
+    const span = sol.n - 1;
+    const pts = sol.pts.map((p) => proj(p[0] / span - 0.5, p[2] / span - 0.5, p[1] / span - 0.5)).sort((a, b) => b[2] - a[2]);
     for (const p of pts) {
       const near = clamp(0.5 - p[2] / 1.74, 0, 1);            // 0 far .. 1 near
       ctx.fillStyle = `rgba(${Math.round(57 + 70 * near)},${Math.round(125 + 60 * near)},${Math.round(215 + 35 * near)},${(0.42 + 0.58 * near).toFixed(3)})`;
-      ctx.beginPath(); ctx.arc(p[0], p[1], (1.5 + 1.7 * near) * p[3], 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(p[0], p[1], (1.5 + 1.7 * near) * p[3], 0, TAU); ctx.fill();
     }
+  }
+  function paintCircles(ctx, w, hgt, sol) {
+    const f = squareIn(w, hgt, 3, sol.box);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = FRAME;
+    ctx.strokeRect(f.x + 0.5, f.y + 0.5, f.side - 1, f.side - 1);          // the unit square (or the packing's own extent)
+    ctx.fillStyle = WASH;
+    ctx.strokeStyle = 'rgba(120,176,246,.95)';
+    for (const c of sol.pts) {
+      ctx.beginPath(); ctx.arc(f.X(c[0]), f.Y(c[1]), Math.max(0.6, f.len(c[2]) - 0.5), 0, TAU);
+      ctx.fill(); ctx.stroke();
+    }
+  }
+  function paintGrid(ctx, w, hgt, sol) {
+    const f = squareIn(w, hgt, 3, [0, 0, sol.n]), cell = f.side / sol.n;
+    ctx.lineWidth = 1;
+    if (cell >= 5) {                                                         // grid lines only while they stay readable
+      ctx.strokeStyle = 'rgba(174,182,196,.11)';
+      ctx.beginPath();
+      for (let i = 1; i < sol.n; i++) {
+        const gx = Math.round(f.x + i * cell) + 0.5, gy = Math.round(f.y + i * cell) + 0.5;
+        ctx.moveTo(gx, f.y); ctx.lineTo(gx, f.y + f.side); ctx.moveTo(f.x, gy); ctx.lineTo(f.x + f.side, gy);
+      }
+      ctx.stroke();
+    }
+    ctx.strokeStyle = FRAME;
+    ctx.strokeRect(f.x + 0.5, f.y + 0.5, f.side - 1, f.side - 1);
+    ctx.fillStyle = DOT;
+    const r = clamp(cell * 0.36, 1.1, 3.4);
+    for (const p of sol.pts) { ctx.beginPath(); ctx.arc(f.X(p[0] + 0.5), f.Y(p[1] + 0.5), r, 0, TAU); ctx.fill(); }
+  }
+  function paintPlane(ctx, w, hgt, sol) {
+    const f = squareIn(w, hgt, 4, sol.box);
+    const trace = (poly) => { ctx.beginPath(); poly.forEach((p, i) => (i ? ctx.lineTo(f.X(p[0]), f.Y(p[1])) : ctx.moveTo(f.X(p[0]), f.Y(p[1])))); ctx.closePath(); };
+    ctx.lineWidth = 1;
+    if (sol.region && sol.region.length >= 3) { trace(sol.region); ctx.strokeStyle = FRAME; ctx.stroke(); }
+    const mark = new Set(sol.tri ? sol.tri.idx : []);
+    if (sol.tri) {                                                           // the smallest triangle: what limits the score
+      trace(sol.tri.idx.map((i) => sol.pts[i]));
+      ctx.fillStyle = 'rgba(57,135,229,.40)'; ctx.fill();
+      ctx.strokeStyle = '#eef1f6'; ctx.lineWidth = 1.2; ctx.lineJoin = 'round'; ctx.stroke();
+    }
+    sol.pts.forEach((p, i) => {
+      ctx.fillStyle = mark.has(i) ? '#eef1f6' : DOT;
+      ctx.beginPath(); ctx.arc(f.X(p[0]), f.Y(p[1]), mark.has(i) ? 2.7 : 2.2, 0, TAU); ctx.fill();
+    });
+  }
+  function paintSteps(ctx, w, hgt, sol) {
+    const v = sol.vals, n = v.length, left = 2, pw = Math.max(10, w - 4), top = 5, ph = Math.max(10, hgt - 10);
+    const lo = Math.min(0, sol.lo), hi = Math.max(0, sol.hi), span = hi - lo || 1;
+    const Y = (val) => top + (1 - (val - lo) / span) * ph, X = (i) => left + (i / n) * pw, base = Y(0);
+    if (n <= pw) {
+      const outline = () => { for (let i = 0; i < n; i++) { ctx.lineTo(X(i), Y(v[i])); ctx.lineTo(X(i + 1), Y(v[i])); } };
+      ctx.beginPath(); ctx.moveTo(X(0), base); outline(); ctx.lineTo(X(n), base); ctx.closePath();
+      ctx.fillStyle = WASH; ctx.fill();
+      ctx.beginPath(); ctx.moveTo(X(0), Y(v[0])); outline();
+      ctx.strokeStyle = DOT; ctx.lineWidth = 1.5; ctx.lineJoin = 'round'; ctx.stroke();
+    } else {
+      // more steps than pixels: each pixel column spans its lowest to its highest step
+      for (let px = 0; px < pw; px++) {
+        const from = Math.floor((px / pw) * n), to = Math.max(from + 1, Math.floor(((px + 1) / pw) * n));
+        let mn = Infinity, mx = -Infinity;
+        for (let i = from; i < to && i < n; i++) { if (v[i] < mn) mn = v[i]; if (v[i] > mx) mx = v[i]; }
+        const yTop = Y(mx), yBot = Y(mn);
+        ctx.fillStyle = WASH;
+        if (mn > 0) ctx.fillRect(left + px, yBot, 1, base - yBot); else if (mx < 0) ctx.fillRect(left + px, base, 1, yTop - base);
+        ctx.fillStyle = DOT;
+        ctx.fillRect(left + px, yTop - 0.75, 1, Math.max(1.5, yBot - yTop + 1.5));
+      }
+    }
+    ctx.strokeStyle = FRAME; ctx.lineWidth = 1;                              // the zero line
+    ctx.beginPath(); ctx.moveTo(left, Math.round(base) + 0.5); ctx.lineTo(left + pw, Math.round(base) + 0.5); ctx.stroke();
   }
 
   // ---------------------------------------------------------------- timeline
@@ -1249,7 +1483,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const svg = s('svg', { class: 'fill', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Decomposition of the gain' });
     const bw = Math.min(40, cw - 14), name = (k) => k.charAt(0).toUpperCase() + k.slice(1);
     const xl = (i) => cw * i + (cw - bw) / 2;
-    const size = (text, big) => (text.length >= 6 ? 12 : text.length >= 5 ? Math.min(big, 14) : big) + 'px';   // long numbers shrink to their column
+    const size = (text, big) => (text.length >= 8 ? 10 : text.length >= 6 ? 11.5 : text.length >= 5 ? Math.min(big, 14) : big) + 'px';   // long numbers shrink to their column
     svg.appendChild(s('line', { x1: 0, x2: W, y1: Y(0), y2: Y(0), class: 'grid' }));
     // seed level
     const seedText = seed != null ? trimNum(seed) : '';
@@ -1334,8 +1568,8 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const right = left + pitch * pairs.length + gap * (groups.length - 1);
     const yl = (v, text) => s('text', { x: left - 7, y: Y(v) + 3.5, 'text-anchor': 'end', text });
     svg.appendChild(yl(0, '0'));
-    if (Y(0) - Y(hi) > 10) svg.appendChild(yl(hi, trimSigned(hi, 1)));
-    if (Y(lo) - Y(0) > 10) svg.appendChild(yl(lo, trimSigned(lo, 1)));
+    if (Y(0) - Y(hi) > 10) svg.appendChild(yl(hi, trimSigned(hi, Math.max(1, DEC - 1))));
+    if (Y(lo) - Y(0) > 10) svg.appendChild(yl(lo, trimSigned(lo, Math.max(1, DEC - 1))));
     if (m) {
       if (m.lo != null) svg.appendChild(s('rect', { x: left, y: Y(m.hi), width: right - left, height: Math.max(1, Y(m.lo) - Y(m.hi)), fill: 'var(--ink)', 'fill-opacity': 0.09, tip: '95% interval ' + ciText(m) }));
       svg.append(s('line', { x1: left, x2: right, y1: Y(m.effect), y2: Y(m.effect), stroke: 'var(--ink)', 'stroke-width': 1.5 }),
@@ -1436,9 +1670,10 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     let lastX = -99;
     for (const t of sc.ticks) {
       const x = sc.x(t);
-      if (x < 8 || x > BAR_W - 14 || x - lastX < 26) continue;
+      const label = trimSigned(t), half = label.length * 2.9 + 2;
+      if (x < 8 || x + half > BAR_W || x - lastX < half * 2 + 6) continue;
       lastX = x;
-      axis.append(s('text', { x, y: 24, 'text-anchor': 'middle', style: { letterSpacing: '0' }, text: trimSigned(t) }), s('line', { x1: x, x2: x, y1: 27, y2: 30, class: 'axis' }));
+      axis.append(s('text', { x, y: 24, 'text-anchor': 'middle', style: { letterSpacing: '0' }, text: label }), s('line', { x1: x, x2: x, y1: 27, y2: 30, class: 'axis' }));
     }
     head.append(h('div'), h('div', { text: 'Idea and hypothesis' }), h('div', null, axis),
       h('div', { text: 'Effect · interval' }), h('div', { text: 'Generality' }), h('div'));
@@ -1516,6 +1751,12 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     for (const g of rows) for (const c of cols) { const m = measure(g.generality[c.key]); if (m) max = Math.max(max, Math.abs(m.effect)); }
     max = max || 1;
     const gapAt = (i) => i > 0 && cols[i].split !== cols[i - 1].split;
+    // "triangle33" is shown on two lines; the cell is as wide as its label or its numbers need, within the panel
+    const parts = (key) => { const m = /^([A-Za-z_]+)(\d+)$/.exec(key); return m && key.length > 5 ? [m[1], m[2]] : [key]; };
+    const two = cols.some((c) => parts(c.key).length > 1);
+    const need = Math.max(37, DEC > 2 ? (DEC + 1) * 6.3 + 6 : 0, ...cols.map((c) => Math.max(...parts(c.key).map((x) => x.length)) * (two ? 5.6 : 6.4) + 4));
+    const cw = Math.round(clamp(need, 37, Math.max(37, Math.floor((body.clientWidth - 104) / cols.length) - 3)));
+    const cellStyle = (extra) => Object.assign({ flex: '0 0 ' + cw + 'px', width: cw + 'px' }, extra || {});
     const wrap = h('div', { class: 'gm' });
     // group header
     const hd = h('div', { class: 'gm-row head' }, h('div', { class: 'gm-name', style: { cursor: 'default' } }));
@@ -1524,11 +1765,11 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       let j = i;
       while (j + 1 < cols.length && cols[j + 1].split === cols[i].split) j++;
       const n = j - i + 1;
-      hd.appendChild(h('div', { class: 'gm-grp' + (i > 0 ? ' gap' : ''), style: { flex: '0 0 ' + (n * 37 + (n - 1) * 2) + 'px' }, text: splitName(cols[i].split) }));
+      hd.appendChild(h('div', { class: 'gm-grp' + (i > 0 ? ' gap' : ''), style: { flex: '0 0 ' + (n * cw + (n - 1) * 2) + 'px' }, text: splitName(cols[i].split) }));
       i = j + 1;
     }
-    const keys = h('div', { class: 'gm-row keys' }, h('div', { class: 'gm-name', style: { cursor: 'default' } }),
-      cols.map((c, n) => h('div', { class: 'gm-cell hd' + (gapAt(n) ? ' gap' : ''), text: c.key })));
+    const keys = h('div', { class: 'gm-row keys' + (two ? ' two' : '') }, h('div', { class: 'gm-name', style: { cursor: 'default' } }),
+      cols.map((c, n) => h('div', { class: 'gm-cell hd' + (gapAt(n) ? ' gap' : ''), style: cellStyle(), text: parts(c.key).join('\n'), tip: c.key + ' (' + splitName(c.split).toLowerCase() + ')' })));
     wrap.append(hd, keys);
     for (const g of rows) {
       const lab = LABELS[g.label];
@@ -1536,11 +1777,11 @@ body.snap #idea-form, body.snap #run-select { display: none; }
         tip: g.name + (g.label ? ': ' + g.label : '') + (lab ? '\n' + lab[1] : '') + '\nClick for details' }));
       cols.forEach((c, n) => {
         const m = measure(g.generality[c.key]), cls = 'gm-cell' + (gapAt(n) ? ' gap' : '');
-        if (!m) { row.appendChild(h('div', { class: cls + ' none', text: '·', tip: g.name + ' on ' + c.key + '\nnot measured' })); return; }
+        if (!m) { row.appendChild(h('div', { class: cls + ' none', style: cellStyle(), text: '·', tip: g.name + ' on ' + c.key + '\nnot measured' })); return; }
         const v = verdict(m), a = (0.2 + 0.62 * Math.min(1, Math.abs(m.effect) / max)).toFixed(2);
         row.appendChild(h('div', {
-          class: cls + (v === 'neu' ? ' neu' : ''), text: trimSigned(m.effect, 1),
-          style: v === 'neu' ? null : { background: v === 'pos' ? `rgba(57,135,229,${a})` : `rgba(230,103,103,${a})` },
+          class: cls + (v === 'neu' ? ' neu' : ''), text: DEC > 2 ? trimSigned(m.effect, DEC - 1).replace(/^([+−]?)0\./, '$1.') : trimSigned(m.effect, 1),
+          style: cellStyle(v === 'neu' ? null : { background: v === 'pos' ? `rgba(57,135,229,${a})` : `rgba(230,103,103,${a})` }),
           tip: measureTip(g.name + ' on ' + c.key + ' (' + splitName(c.split).toLowerCase() + ')', m),
         }));
       });
@@ -1718,6 +1959,9 @@ body.snap #idea-form, body.snap #run-select { display: none; }
   // --------------------------------------------------------------- main loop
   function renderPanels() {
     S.genes = prepGenes(S.state || {});
+    DEC = effectDecimals();
+    $('p-ledger').style.setProperty('--valw', (126 + (DEC - 2) * 20) + 'px');
+    $('p-ledger').style.setProperty('--effw', (44 + (DEC - 2) * 9) + 'px');
     renderViewer();
     renderRecords();
     renderChampion();

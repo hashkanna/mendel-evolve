@@ -82,6 +82,7 @@ select {
   display: flex; flex-direction: column; min-width: 0; min-height: 0; position: relative;
 }
 #p-champ { flex: 0 0 432px; } #p-viewer { flex: 0 0 186px; } #p-timeline { flex: 1 1 0; } #p-water { flex: 0 0 308px; }
+#p-viewer.wide { flex-basis: 256px; }
 #p-gen { flex: 1 1 0; min-height: 150px; } #p-int, #p-idea { flex: 0 0 auto; }
 .p-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; flex: 0 0 auto; min-width: 0; }
 .p-title { font-size: 11px; font-weight: 650; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
@@ -103,7 +104,7 @@ select {
 /* ---------- champion scoreboard */
 .groups { display: flex; gap: 14px; height: 100%; }
 .tgroup { display: flex; flex-direction: column; min-width: 0; }
-.tg-label { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); padding-bottom: 5px; border-bottom: 1px solid var(--line-2); margin-bottom: 8px; white-space: nowrap; }
+.tg-label { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); padding-bottom: 5px; border-bottom: 1px solid var(--line-2); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tiles { display: flex; gap: 6px; flex: 1; min-height: 0; }
 .tile {
   flex: 1 1 0; min-width: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 2px;
@@ -113,7 +114,13 @@ select {
 .tile.pick:hover { border-color: var(--line-2); }
 .tile.shown { box-shadow: inset 0 -2px 0 var(--ink-3); }
 .tile.record { border-color: rgba(57,135,229,.75); background: linear-gradient(180deg, rgba(57,135,229,.24), rgba(57,135,229,.07)); }
-.t-key { font: 11px var(--mono); color: var(--ink-2); }
+.t-key { font: 11px var(--mono); color: var(--ink-2); max-width: 100%; }
+.t-key.long { font-size: 9.5px; line-height: 1.15; letter-spacing: -.02em; }
+.groups.narrow .t-bk { font-size: 9.5px; line-height: 1.2; }
+.groups.narrow .t-delta { font-size: 10.5px; margin-top: 3px; gap: 2px; }
+.groups.narrow .t-delta .g { font-size: 9px; }
+.groups.narrow .t-cap { font-size: 9px; }
+.groups.narrow { gap: 10px; } .groups.narrow .tiles { gap: 4px; }
 .t-val { font-size: 34px; font-weight: 650; line-height: 1.08; letter-spacing: -.02em; }
 .t-bk { font-size: 11px; color: var(--ink-3); }
 .t-delta { margin-top: 6px; font-size: 12px; font-weight: 650; display: flex; align-items: center; gap: 4px; }
@@ -151,7 +158,7 @@ svg .pt { fill: var(--ink); }
 .wf-cap div + div { font-size: 11px; color: var(--ink-3); }
 
 /* ---------- ledger */
-.lhead, .lrow { display: grid; grid-template-columns: 30px minmax(0, 1fr) 190px 126px 104px 92px; column-gap: 12px; align-items: center; padding: 0 6px; }
+.lhead, .lrow { display: grid; grid-template-columns: 30px minmax(0, 1fr) 190px var(--valw, 126px) 104px 92px; column-gap: 12px; align-items: center; padding: 0 6px; }
 .lhead { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); height: 34px; border-bottom: 1px solid var(--line-2); flex: 0 0 auto; }
 .lhead svg { display: block; }
 #ledger-list { flex: 1 1 auto; min-height: 0; position: relative; }
@@ -187,7 +194,7 @@ svg .pt { fill: var(--ink); }
 .author.llm { color: var(--ink-2); }
 .author.human { color: var(--ink); background: var(--line); border-color: var(--ink-3); }
 .c-val { white-space: nowrap; display: flex; align-items: baseline; gap: 7px; min-width: 0; }
-.v-eff { font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; flex: 0 0 44px; text-align: right; }
+.v-eff { font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; flex: 0 0 var(--effw, 44px); text-align: right; }
 .v-ci { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .chip {
   display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; border-radius: 999px;
@@ -258,6 +265,8 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
 .gm-cell.neu { background: var(--neu-soft); color: var(--ink-3); font-weight: 500; }
 .gm-cell.none { color: var(--line-2); font-weight: 400; }
 .gm-cell.hd { background: none; height: auto; color: inherit; font-weight: 500; }
+.gm-row.keys.two { height: 22px; font-size: 9.5px; }
+.gm-row.keys.two .gm-cell.hd { white-space: pre; line-height: 1.1; text-align: center; }
 .gm-grp { margin-left: 2px; text-transform: uppercase; letter-spacing: .09em; border-bottom: 1px solid var(--line-2); padding-bottom: 2px; white-space: nowrap; overflow: hidden; }
 .gm-grp.gap { margin-left: 10px; }
 .gm-lab { flex: 0 0 96px; width: 96px; padding-left: 10px; }
@@ -332,7 +341,7 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
 #tip .t2 { color: var(--ink-2); font-size: 11.5px; font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .status.live i, .spin { animation: none; } }
 /* ---------- now line, records strip, research efficiency, newer engine states */
-.now { flex: 1 1 0; min-width: 0; text-align: right; padding-left: 8px; }
+.now { flex: 1 1 340px; min-width: 0; text-align: right; padding-left: 8px; }
 .now-1 { font-size: 12px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .now-2 { font-size: 11px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
 .now time { color: var(--ink-3); font-variant-numeric: tabular-nums; margin-right: 6px; }
@@ -416,8 +425,8 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       <div class="p-body" id="champ-body"></div>
     </div>
     <div class="panel" id="p-viewer" hidden>
-      <div class="p-head"><div class="p-title">Point set</div><select id="viewer-select" class="mini-select" aria-label="Instance shown"></select></div>
-      <div class="p-body"><canvas id="viewer" aria-label="Rotating 3D view of the champion's point set"></canvas></div>
+      <div class="p-head"><div class="p-title" id="viewer-title">Solution</div><select id="viewer-select" class="mini-select" aria-label="Instance shown"></select></div>
+      <div class="p-body"><canvas id="viewer" aria-label="The champion's solution"></canvas></div>
       <div class="p-foot" id="viewer-cap"></div>
     </div>
     <div class="panel" id="p-timeline">
@@ -475,7 +484,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
 </div>
 <div id="tip" hidden></div>
 
-<script>window.MENDEL_SNAPSHOT = {"run":"p60","taken":"2026-10-03T20:28:04","state":{"run":{"id":"p60","problem":"no5sphere","title":"No 5 on a sphere (Tao et al., problem 60)","direction":"max","started":"2026-10-03T20:07:56","updated":"2026-10-03T20:27:09","status":"running","generation":1,"spend":{"llm_calls":5,"llm_usd":7.720512,"cpu_seconds":8569.986,"evaluations":210}},"instances":{"train":["n17","n20","n23","n26"],"heldout":["n18","n21","n24","n28"],"gate":["n8","n12"]},"best_known":{"n7":21.0,"n8":23.0,"n9":26.0,"n10":28.0,"n11":31.0,"n12":33.0,"n13":36.0,"n14":38.0,"n15":40.0,"n16":42.0,"n17":45.0,"n18":48.0,"n19":50.0,"n20":53.0,"n21":55.0,"n22":58.0,"n23":59.0,"n24":62.0,"n25":65.0,"n26":67.0,"n27":70.0,"n28":71.0,"n29":75.0,"n30":76.0,"n31":79.0,"n32":82.0},"champion":{"config":{"centrosymmetric":false,"lookahead":false,"guided_ruin":false,"ruin_max":3,"accept_worse_prob":0.02,"patience":3000,"kick_fraction":0.25,"lookahead_m":3},"solver_version":"e5fa1fff38da5ba5","scores":{"n17":{"mean":44.0,"best":45.0,"runs":12,"budget":"time=45"},"n20":{"mean":51.166666666666664,"best":52.0,"runs":12,"budget":"time=45"},"n23":{"mean":58.75,"best":60.0,"runs":12,"budget":"time=45"},"n26":{"mean":65.66666666666667,"best":67.0,"runs":12,"budget":"time=45"},"n18":{"mean":46.25,"best":47.0,"runs":8,"budget":"time=45"},"n21":{"mean":53.75,"best":54.0,"runs":8,"budget":"time=45"},"n24":{"mean":60.75,"best":61.0,"runs":8,"budget":"time=45"},"n28":{"mean":70.0,"best":71.0,"runs":8,"budget":"time=45"}},"solutions":{"n17":[[0,0,3],[0,3,2],[0,4,14],[0,15,12],[1,0,14],[1,6,4],[1,10,6],[1,14,16],[2,2,0],[2,7,16],[2,12,8],[3,2,7],[3,11,8],[3,15,16],[3,16,1],[4,16,13],[5,0,1],[5,3,13],[5,7,4],[5,13,15],[6,1,15],[6,8,3],[7,3,10],[7,3,13],[7,9,15],[7,12,12],[8,0,12],[8,14,8],[10,2,11],[11,6,8],[11,8,0],[12,15,13],[13,5,3],[13,11,7],[13,16,5],[14,1,2],[14,5,16],[14,11,1],[14,13,9],[15,13,14],[15,16,15],[16,1,1],[16,1,11],[16,10,0],[16,14,3]],"n20":[[0,1,17],[0,4,0],[0,6,15],[0,18,4],[1,5,5],[1,11,18],[1,13,10],[1,17,10],[2,1,4],[2,3,0],[3,8,9],[3,10,19],[3,18,5],[3,19,0],[4,6,14],[4,10,0],[4,17,8],[5,0,11],[5,7,17],[5,17,15],[6,11,7],[6,17,11],[7,3,9],[10,0,5],[10,5,6],[10,7,11],[10,18,4],[11,0,19],[12,3,17],[12,13,6],[13,1,3],[13,4,12],[14,12,3],[14,15,1],[14,16,13],[14,19,18],[15,3,16],[15,8,12],[16,1,19],[16,5,6],[16,10,8],[17,2,1],[17,4,10],[17,15,8],[17,19,3],[18,9,3],[18,13,17],[18,16,19],[19,0,7],[19,11,1],[19,18,9],[19,19,2]],"n23":[[0,1,8],[0,4,22],[0,13,17],[0,20,9],[1,1,0],[1,2,3],[1,6,12],[1,22,2],[2,13,6],[2,18,19],[2,19,10],[3,1,18],[3,9,22],[3,21,3],[4,6,5],[4,10,9],[4,19,21],[4,22,18],[5,0,0],[5,6,14],[5,19,18],[7,3,22],[9,0,3],[9,1,19],[9,16,1],[9,20,10],[10,13,13],[10,21,1],[10,22,17],[11,15,2],[11,20,18],[12,3,20],[12,7,15],[12,17,8],[13,0,11],[13,4,1],[14,5,11],[14,18,16],[16,10,20],[17,4,8],[17,5,5],[17,11,13],[17,22,0],[18,0,20],[18,8,1],[18,15,3],[19,2,19],[19,17,11],[19,20,22],[19,21,13],[20,8,4],[20,19,7],[21,2,15],[21,14,21],[21,17,14],[21,18,20],[22,2,2],[22,6,0],[22,8,21],[22,21,6]],"n26":[[0,0,5],[0,1,14],[0,4,21],[0,25,6],[1,6,19],[1,13,25],[1,23,6],[1,24,20],[2,15,10],[2,16,20],[2,18,3],[3,1,2],[3,9,4],[3,23,12],[3,24,21],[4,1,25],[4,3,17],[5,16,1],[5,23,5],[6,20,22],[8,15,2],[8,25,23],[9,4,7],[9,18,24],[9,24,3],[10,1,5],[10,18,1],[11,0,18],[11,2,0],[11,11,15],[12,11,16],[12,17,6],[13,18,17],[13,23,4],[14,4,24],[14,8,25],[14,10,2],[14,20,9],[15,4,20],[15,9,7],[15,25,18],[17,13,21],[18,2,5],[18,3,23],[18,21,13],[19,24,0],[20,2,10],[20,9,13],[20,14,1],[20,22,16],[21,5,24],[21,17,14],[21,19,7],[22,17,23],[22,17,24],[23,0,0],[23,2,1],[23,6,11],[23,22,25],[24,3,11],[24,7,2],[24,19,4],[24,22,22],[25,0,22],[25,13,23],[25,19,4],[25,25,12]],"n18":[[0,0,3],[0,1,17],[0,3,7],[0,8,15],[1,1,15],[1,9,17],[1,13,5],[1,15,12],[2,0,14],[2,5,16],[2,16,17],[2,17,0],[3,6,11],[3,12,1],[3,14,10],[3,17,3],[4,3,4],[4,14,14],[6,11,11],[6,12,3],[6,17,2],[7,0,13],[8,4,2],[9,1,0],[9,6,14],[9,16,7],[11,3,13],[11,8,7],[11,13,4],[11,16,12],[12,3,9],[13,0,1],[13,10,0],[13,11,17],[14,12,15],[14,15,5],[15,10,16],[15,11,10],[15,15,0],[16,1,16],[16,2,6],[16,10,1],[16,13,11],[17,2,14],[17,8,5],[17,13,16],[17,16,11]],"n21":[[0,3,18],[0,6,10],[0,13,0],[0,18,7],[1,1,5],[1,5,17],[1,18,20],[1,20,11],[2,0,16],[2,17,13],[2,19,1],[3,10,13],[3,13,11],[3,17,9],[4,1,1],[4,4,9],[5,9,0],[6,6,14],[6,9,2],[7,3,7],[7,7,4],[7,18,5],[8,16,20],[9,2,19],[9,19,3],[10,0,1],[10,7,9],[10,20,16],[11,10,10],[12,5,14],[12,11,19],[12,13,16],[13,2,12],[13,17,10],[13,20,20],[14,5,0],[15,1,7],[15,5,8],[15,10,2],[16,0,19],[16,2,0],[17,12,20],[17,15,13],[17,16,3],[17,19,18],[18,6,4],[18,19,18],[18,20,1],[19,6,15],[19,18,4],[20,1,16],[20,2,11],[20,3,4],[20,11,13]],"n24":[[0,0,6],[0,2,7],[0,20,22],[0,23,2],[1,1,21],[1,4,1],[1,18,19],[1,23,22],[2,10,0],[2,23,4],[3,0,10],[3,12,20],[3,19,16],[4,6,14],[4,13,17],[5,2,10],[5,7,7],[5,13,3],[6,15,7],[6,21,2],[6,22,5],[7,4,5],[7,22,22],[8,19,0],[8,20,16],[9,4,18],[9,16,3],[10,2,1],[10,22,23],[12,15,17],[14,3,11],[14,3,15],[15,19,23],[15,21,16],[15,22,19],[16,1,23],[16,11,20],[16,14,9],[17,1,2],[17,5,14],[17,7,4],[17,13,5],[18,2,7],[18,15,9],[18,21,10],[19,0,15],[19,11,0],[20,0,0],[20,4,21],[20,8,6],[21,9,12],[21,10,20],[21,14,23],[22,1,15],[22,3,8],[22,3,22],[22,23,17],[23,6,8],[23,12,4],[23,18,21],[23,19,5]],"n28":[[0,0,8],[0,1,2],[0,4,2],[0,14,3],[1,2,14],[1,5,22],[1,8,12],[1,22,25],[2,9,16],[2,13,7],[2,22,10],[2,26,23],[3,1,23],[3,17,27],[3,21,17],[4,6,1],[4,25,3],[4,27,2],[5,13,13],[5,18,15],[5,24,26],[6,0,25],[6,11,4],[6,13,1],[6,24,25],[8,8,20],[8,11,27],[8,20,1],[9,2,20],[10,16,4],[11,5,6],[11,6,27],[11,19,24],[13,15,8],[13,16,19],[13,21,15],[14,5,19],[14,19,8],[14,25,0],[14,27,11],[15,1,0],[15,7,15],[16,7,12],[17,3,23],[17,25,17],[17,26,27],[18,2,9],[18,18,12],[19,11,20],[19,15,6],[20,4,9],[21,27,0],[22,20,3],[23,14,24],[23,20,10],[23,24,11],[23,26,26],[24,7,5],[24,9,0],[24,27,23],[25,1,21],[25,7,26],[25,9,19],[25,13,26],[26,0,3],[26,20,8],[26,24,1],[27,0,19],[27,6,14],[27,17,22],[27,18,24]]}},"genes":[{"name":"centrosymmetric","kind":"switch","author":"seed","added_gen":0,"hypothesis":"Building the set from antipodal pairs about the cube centre halves the search space, and the published records for n = 13 to 16 have exactly this symmetry (those for n \u003e= 17 do not).","predicted":"+1 to +2 points for n \u003e= 14, little or nothing for n \u003c= 10","default":false,"status":"inactive","value":false},{"name":"lookahead","kind":"switch","author":"seed","added_gen":0,"hypothesis":"When refilling, placing the free point that blocks the fewest other free points (best of lookahead_m samples) packs more points than placing a random one.","predicted":"+0.5 points at equal CPU time, more on large n where free lists are longer","default":false,"status":"inactive","value":false},{"name":"guided_ruin","kind":"switch","author":"seed","added_gen":0,"hypothesis":"Aiming the ruin at a grid point blocked by a single sphere (remove one of that sphere's four members, insert the point first) makes every step a real exchange instead of a mostly futile random removal.","predicted":"+0.5 to +1 point at equal CPU time","default":false,"status":"inactive","value":false},{"name":"ruin_max","kind":"int","author":"seed","added_gen":0,"hypothesis":"Each step removes 1..ruin_max points (pairs when centrosymmetric); larger ruins escape deeper local optima but cost more per step.","of":null,"default":3,"low":1,"high":10,"log":false,"status":"active","value":3},{"name":"accept_worse_prob","kind":"float","author":"seed","added_gen":0,"hypothesis":"Probability of accepting a refill that is one unit smaller than the current set; a little downhill movement keeps the search from freezing on a plateau.","of":null,"default":0.02,"low":0.0,"high":0.3,"log":false,"status":"active","value":0.02},{"name":"patience","kind":"int","author":"seed","added_gen":0,"hypothesis":"Steps without a new best before a kick; too small never finishes polishing, too large wastes time in a dead basin.","of":null,"default":3000,"low":100,"high":100000,"log":true,"status":"active","value":3000},{"name":"kick_fraction","kind":"float","author":"seed","added_gen":0,"hypothesis":"Fraction of the set removed by a kick; 1.0 is a full restart.","of":null,"default":0.25,"low":0.05,"high":1.0,"log":false,"status":"active","value":0.25},{"name":"lookahead_m","kind":"int","author":"seed","added_gen":0,"hypothesis":"Number of free points sampled per placement when lookahead is on; each sample costs one pass over all member triples.","of":"lookahead","default":3,"low":2,"high":12,"log":false,"status":"inactive","value":3}],"interactions":[],"decomposition":{"seed":54.895833333333336,"tuning":0.0,"ideas":0.0,"compute":0.0,"unit":"points, mean over train instances","provisional":true},"records":[{"instance":"n23","value":60.0,"best_known":59.0,"verified":true,"certificate":"certificates/n23_60.json"}],"history":[{"t":"2026-10-03T20:07:56","generation":0,"event":"run_started","detail":"seed solver solvers/no5sphere, 8 genes, budget time=45.0"},{"t":"2026-10-03T20:11:28","generation":0,"event":"record","detail":"n23: 60 beats the best known 59"},{"t":"2026-10-03T20:11:28","generation":1,"event":"generation_started","detail":"trunk gen000"},{"t":"2026-10-03T20:11:28","generation":1,"event":"inventing","detail":"5 proposals: inventor, inventor, inventor, inventor, inventor"},{"t":"2026-10-03T20:17:52","generation":1,"event":"gene_proposed","gene":"layer_balance","detail":"Since every axis plane x = c, y = c, z = c holds at most 4 points, a large set must be spread evenly over the layers, so refilling with the sampled free point whose three axis planes hold the fewest members (best of layer_balance_m samples) keeps the layers balanced and leaves room for more points."},{"t":"2026-10-03T20:17:52","generation":1,"event":"gene_proposed","gene":"multi_recreate","detail":"Each ruin costs a full pass over the incidence records and the grid while a tentative refill is cheap, so refilling the same hole multi_recreate_m times and keeping the largest refill (ties: the one with the most new points) gets several search attempts, and more real plateau moves, per expensive ruin."},{"t":"2026-10-03T20:17:52","generation":1,"event":"gene_proposed","gene":"incidence_index","detail":"Keeping a per-member count of incidences at every grid point, plus a chain of records per grid point, lets a ruin find the freed points without moving the removed members' records out of the record array and back, so a rejected step (the common case) no longer makes two passes over the whole array and more steps fit in the same CPU time."},{"t":"2026-10-03T20:17:52","generation":1,"event":"gene_proposed","gene":"fresh_first","detail":"A one-step tabu on reinsertion: after a ruin the refill first places only free points that were not just removed, and the removed points fill what room is left, so a step with any fresh free point is a real exchange instead of usually putting the same points back, and the search walks its plateau much faster."},{"t":"2026-10-03T20:17:52","generation":1,"event":"gene_proposed","gene":"fresh_first","detail":"During repair, placing the grid points newly freed by the ruin before any just-removed member turns every step with a newcomer into a real exchange, instead of usually re-placing a removed point first and re-blocking the newcomers."},{"t":"2026-10-03T20:18:52","generation":1,"event":"gate_passed","gene":"layer_balance","detail":"gate passed"},{"t":"2026-10-03T20:20:02","generation":1,"event":"gate_passed","gene":"multi_recreate","detail":"gate passed"},{"t":"2026-10-03T20:20:58","generation":1,"event":"gate_passed","gene":"incidence_index","detail":"gate passed (1 warning(s))"},{"t":"2026-10-03T20:22:19","generation":1,"event":"gate_passed","gene":"fresh_first","detail":"gate passed"},{"t":"2026-10-03T20:23:45","generation":1,"event":"gate_passed","gene":"fresh_first","detail":"gate passed"},{"t":"2026-10-03T20:27:09","generation":1,"event":"gene_screened","gene":"layer_balance","detail":"effect -0.1458, 95% interval [-0.3333, +0.04167], 96 runs"}],"timeline":[{"t":212.5,"generation":0,"score":0.9797621992902983}],"engine":{"ideas_taken":0}},"live":{},"ideas":[]};</script>
+<script>window.MENDEL_SNAPSHOT = {"run":"p60","taken":"2026-10-03T21:10:53","state":{"run":{"id":"p60","problem":"no5sphere","title":"No 5 on a sphere (Tao et al., problem 60)","direction":"max","started":"2026-10-03T20:07:56","updated":"2026-10-03T21:07:14","status":"running","generation":2,"spend":{"llm_calls":10,"llm_usd":16.080786,"cpu_seconds":32053.045,"evaluations":750}},"instances":{"train":["n17","n20","n23","n26"],"heldout":["n18","n21","n24","n28"],"gate":["n8","n12"]},"best_known":{"n7":21.0,"n8":23.0,"n9":26.0,"n10":28.0,"n11":31.0,"n12":33.0,"n13":36.0,"n14":38.0,"n15":40.0,"n16":42.0,"n17":45.0,"n18":48.0,"n19":50.0,"n20":53.0,"n21":55.0,"n22":58.0,"n23":59.0,"n24":62.0,"n25":65.0,"n26":67.0,"n27":70.0,"n28":71.0,"n29":75.0,"n30":76.0,"n31":79.0,"n32":82.0},"champion":{"config":{"centrosymmetric":false,"lookahead":false,"guided_ruin":false,"ruin_max":3,"accept_worse_prob":0.02,"patience":3000,"kick_fraction":0.25,"lookahead_m":3},"solver_version":"e5fa1fff38da5ba5","scores":{"n17":{"mean":44.0,"best":45.0,"runs":12,"budget":"time=45"},"n20":{"mean":51.166666666666664,"best":52.0,"runs":12,"budget":"time=45"},"n23":{"mean":58.75,"best":60.0,"runs":12,"budget":"time=45"},"n26":{"mean":65.66666666666667,"best":67.0,"runs":12,"budget":"time=45"},"n18":{"mean":46.25,"best":47.0,"runs":8,"budget":"time=45"},"n21":{"mean":53.75,"best":54.0,"runs":8,"budget":"time=45"},"n24":{"mean":60.75,"best":61.0,"runs":8,"budget":"time=45"},"n28":{"mean":70.0,"best":71.0,"runs":8,"budget":"time=45"}},"solutions":{"n17":[[0,0,3],[0,3,2],[0,4,14],[0,15,12],[1,0,14],[1,6,4],[1,10,6],[1,14,16],[2,2,0],[2,7,16],[2,12,8],[3,2,7],[3,11,8],[3,15,16],[3,16,1],[4,16,13],[5,0,1],[5,3,13],[5,7,4],[5,13,15],[6,1,15],[6,8,3],[7,3,10],[7,3,13],[7,9,15],[7,12,12],[8,0,12],[8,14,8],[10,2,11],[11,6,8],[11,8,0],[12,15,13],[13,5,3],[13,11,7],[13,16,5],[14,1,2],[14,5,16],[14,11,1],[14,13,9],[15,13,14],[15,16,15],[16,1,1],[16,1,11],[16,10,0],[16,14,3]],"n20":[[0,1,17],[0,4,0],[0,6,15],[0,18,4],[1,5,5],[1,11,18],[1,13,10],[1,17,10],[2,1,4],[2,3,0],[3,8,9],[3,10,19],[3,18,5],[3,19,0],[4,6,14],[4,10,0],[4,17,8],[5,0,11],[5,7,17],[5,17,15],[6,11,7],[6,17,11],[7,3,9],[10,0,5],[10,5,6],[10,7,11],[10,18,4],[11,0,19],[12,3,17],[12,13,6],[13,1,3],[13,4,12],[14,12,3],[14,15,1],[14,16,13],[14,19,18],[15,3,16],[15,8,12],[16,1,19],[16,5,6],[16,10,8],[17,2,1],[17,4,10],[17,15,8],[17,19,3],[18,9,3],[18,13,17],[18,16,19],[19,0,7],[19,11,1],[19,18,9],[19,19,2]],"n23":[[0,1,8],[0,4,22],[0,13,17],[0,20,9],[1,1,0],[1,2,3],[1,6,12],[1,22,2],[2,13,6],[2,18,19],[2,19,10],[3,1,18],[3,9,22],[3,21,3],[4,6,5],[4,10,9],[4,19,21],[4,22,18],[5,0,0],[5,6,14],[5,19,18],[7,3,22],[9,0,3],[9,1,19],[9,16,1],[9,20,10],[10,13,13],[10,21,1],[10,22,17],[11,15,2],[11,20,18],[12,3,20],[12,7,15],[12,17,8],[13,0,11],[13,4,1],[14,5,11],[14,18,16],[16,10,20],[17,4,8],[17,5,5],[17,11,13],[17,22,0],[18,0,20],[18,8,1],[18,15,3],[19,2,19],[19,17,11],[19,20,22],[19,21,13],[20,8,4],[20,19,7],[21,2,15],[21,14,21],[21,17,14],[21,18,20],[22,2,2],[22,6,0],[22,8,21],[22,21,6]],"n26":[[0,0,5],[0,1,14],[0,4,21],[0,25,6],[1,6,19],[1,13,25],[1,23,6],[1,24,20],[2,15,10],[2,16,20],[2,18,3],[3,1,2],[3,9,4],[3,23,12],[3,24,21],[4,1,25],[4,3,17],[5,16,1],[5,23,5],[6,20,22],[8,15,2],[8,25,23],[9,4,7],[9,18,24],[9,24,3],[10,1,5],[10,18,1],[11,0,18],[11,2,0],[11,11,15],[12,11,16],[12,17,6],[13,18,17],[13,23,4],[14,4,24],[14,8,25],[14,10,2],[14,20,9],[15,4,20],[15,9,7],[15,25,18],[17,13,21],[18,2,5],[18,3,23],[18,21,13],[19,24,0],[20,2,10],[20,9,13],[20,14,1],[20,22,16],[21,5,24],[21,17,14],[21,19,7],[22,17,23],[22,17,24],[23,0,0],[23,2,1],[23,6,11],[23,22,25],[24,3,11],[24,7,2],[24,19,4],[24,22,22],[25,0,22],[25,13,23],[25,19,4],[25,25,12]],"n18":[[0,0,3],[0,1,17],[0,3,7],[0,8,15],[1,1,15],[1,9,17],[1,13,5],[1,15,12],[2,0,14],[2,5,16],[2,16,17],[2,17,0],[3,6,11],[3,12,1],[3,14,10],[3,17,3],[4,3,4],[4,14,14],[6,11,11],[6,12,3],[6,17,2],[7,0,13],[8,4,2],[9,1,0],[9,6,14],[9,16,7],[11,3,13],[11,8,7],[11,13,4],[11,16,12],[12,3,9],[13,0,1],[13,10,0],[13,11,17],[14,12,15],[14,15,5],[15,10,16],[15,11,10],[15,15,0],[16,1,16],[16,2,6],[16,10,1],[16,13,11],[17,2,14],[17,8,5],[17,13,16],[17,16,11]],"n21":[[0,3,18],[0,6,10],[0,13,0],[0,18,7],[1,1,5],[1,5,17],[1,18,20],[1,20,11],[2,0,16],[2,17,13],[2,19,1],[3,10,13],[3,13,11],[3,17,9],[4,1,1],[4,4,9],[5,9,0],[6,6,14],[6,9,2],[7,3,7],[7,7,4],[7,18,5],[8,16,20],[9,2,19],[9,19,3],[10,0,1],[10,7,9],[10,20,16],[11,10,10],[12,5,14],[12,11,19],[12,13,16],[13,2,12],[13,17,10],[13,20,20],[14,5,0],[15,1,7],[15,5,8],[15,10,2],[16,0,19],[16,2,0],[17,12,20],[17,15,13],[17,16,3],[17,19,18],[18,6,4],[18,19,18],[18,20,1],[19,6,15],[19,18,4],[20,1,16],[20,2,11],[20,3,4],[20,11,13]],"n24":[[0,0,6],[0,2,7],[0,20,22],[0,23,2],[1,1,21],[1,4,1],[1,18,19],[1,23,22],[2,10,0],[2,23,4],[3,0,10],[3,12,20],[3,19,16],[4,6,14],[4,13,17],[5,2,10],[5,7,7],[5,13,3],[6,15,7],[6,21,2],[6,22,5],[7,4,5],[7,22,22],[8,19,0],[8,20,16],[9,4,18],[9,16,3],[10,2,1],[10,22,23],[12,15,17],[14,3,11],[14,3,15],[15,19,23],[15,21,16],[15,22,19],[16,1,23],[16,11,20],[16,14,9],[17,1,2],[17,5,14],[17,7,4],[17,13,5],[18,2,7],[18,15,9],[18,21,10],[19,0,15],[19,11,0],[20,0,0],[20,4,21],[20,8,6],[21,9,12],[21,10,20],[21,14,23],[22,1,15],[22,3,8],[22,3,22],[22,23,17],[23,6,8],[23,12,4],[23,18,21],[23,19,5]],"n28":[[0,0,8],[0,1,2],[0,4,2],[0,14,3],[1,2,14],[1,5,22],[1,8,12],[1,22,25],[2,9,16],[2,13,7],[2,22,10],[2,26,23],[3,1,23],[3,17,27],[3,21,17],[4,6,1],[4,25,3],[4,27,2],[5,13,13],[5,18,15],[5,24,26],[6,0,25],[6,11,4],[6,13,1],[6,24,25],[8,8,20],[8,11,27],[8,20,1],[9,2,20],[10,16,4],[11,5,6],[11,6,27],[11,19,24],[13,15,8],[13,16,19],[13,21,15],[14,5,19],[14,19,8],[14,25,0],[14,27,11],[15,1,0],[15,7,15],[16,7,12],[17,3,23],[17,25,17],[17,26,27],[18,2,9],[18,18,12],[19,11,20],[19,15,6],[20,4,9],[21,27,0],[22,20,3],[23,14,24],[23,20,10],[23,24,11],[23,26,26],[24,7,5],[24,9,0],[24,27,23],[25,1,21],[25,7,26],[25,9,19],[25,13,26],[26,0,3],[26,20,8],[26,24,1],[27,0,19],[27,6,14],[27,17,22],[27,18,24]]}},"genes":[{"name":"centrosymmetric","kind":"switch","author":"seed","added_gen":0,"hypothesis":"Building the set from antipodal pairs about the cube centre halves the search space, and the published records for n = 13 to 16 have exactly this symmetry (those for n \u003e= 17 do not).","predicted":"+1 to +2 points for n \u003e= 14, little or nothing for n \u003c= 10","default":false,"status":"inactive","value":false},{"name":"lookahead","kind":"switch","author":"seed","added_gen":0,"hypothesis":"When refilling, placing the free point that blocks the fewest other free points (best of lookahead_m samples) packs more points than placing a random one.","predicted":"+0.5 points at equal CPU time, more on large n where free lists are longer","default":false,"status":"inactive","value":false},{"name":"guided_ruin","kind":"switch","author":"seed","added_gen":0,"hypothesis":"Aiming the ruin at a grid point blocked by a single sphere (remove one of that sphere's four members, insert the point first) makes every step a real exchange instead of a mostly futile random removal.","predicted":"+0.5 to +1 point at equal CPU time","default":false,"status":"inactive","value":false},{"name":"ruin_max","kind":"int","author":"seed","added_gen":0,"hypothesis":"Each step removes 1..ruin_max points (pairs when centrosymmetric); larger ruins escape deeper local optima but cost more per step.","of":null,"default":3,"low":1,"high":10,"log":false,"status":"active","value":3},{"name":"accept_worse_prob","kind":"float","author":"seed","added_gen":0,"hypothesis":"Probability of accepting a refill that is one unit smaller than the current set; a little downhill movement keeps the search from freezing on a plateau.","of":null,"default":0.02,"low":0.0,"high":0.3,"log":false,"status":"active","value":0.02},{"name":"patience","kind":"int","author":"seed","added_gen":0,"hypothesis":"Steps without a new best before a kick; too small never finishes polishing, too large wastes time in a dead basin.","of":null,"default":3000,"low":100,"high":100000,"log":true,"status":"active","value":3000},{"name":"kick_fraction","kind":"float","author":"seed","added_gen":0,"hypothesis":"Fraction of the set removed by a kick; 1.0 is a full restart.","of":null,"default":0.25,"low":0.05,"high":1.0,"log":false,"status":"active","value":0.25},{"name":"lookahead_m","kind":"int","author":"seed","added_gen":0,"hypothesis":"Number of free points sampled per placement when lookahead is on; each sample costs one pass over all member triples.","of":"lookahead","default":3,"low":2,"high":12,"log":false,"status":"inactive","value":3},{"name":"layer_balance","kind":"switch","author":"llm:claude-fable-5-1","added_gen":1,"hypothesis":"Since every axis plane x = c, y = c, z = c holds at most 4 points, a large set must be spread evenly over the layers, so refilling with the sampled free point whose three axis planes hold the fewest members (best of layer_balance_m samples) keeps the layers balanced and leaves room for more points.","predicted":"+0.2 to +0.5 points at equal CPU time for n \u003e= 17; the pick costs almost nothing per step","status":"rejected","screen":{"effect":-0.14583333333333331,"ci":[-0.33333333333333337,0.041666666666666664],"runs":96,"generation":1}},{"name":"multi_recreate","kind":"switch","author":"llm:claude-fable-5-1","added_gen":1,"hypothesis":"Each ruin costs a full pass over the incidence records and the grid while a tentative refill is cheap, so refilling the same hole multi_recreate_m times and keeping the largest refill (ties: the one with the most new points) gets several search attempts, and more real plateau moves, per expensive ruin.","predicted":"+0.3 to +0.7 points at equal CPU time on n \u003e= 20, about 0 at n17","status":"rejected","screen":{"effect":-0.041666666666666664,"ci":[-0.22916666666666666,0.125],"runs":96,"generation":1}},{"name":"incidence_index","kind":"switch","author":"llm:claude-fable-5-1","added_gen":2,"hypothesis":"Keeping a per-member count of incidences at every grid point, plus a chain of records per grid point, lets a ruin find the freed points without moving the removed members' records out of the record array and back, so a rejected step (the common case) no longer makes two passes over the whole array and more steps fit in the same CPU time.","predicted":"Roughly 1.3x to 1.5x more steps per CPU second with the same trajectory per step; at most +0.2 points at 5 s budgets, more at longer budgets and larger n where the record array is biggest.","status":"rejected","screen":{"effect":0.0,"ci":[-0.0625,0.0625],"runs":96,"generation":2}},{"name":"fresh_first","kind":"switch","author":"llm:claude-fable-5-1","added_gen":1,"hypothesis":"A one-step tabu on reinsertion: after a ruin the refill first places only free points that were not just removed, and the removed points fill what room is left, so a step with any fresh free point is a real exchange instead of usually putting the same points back, and the search walks its plateau much faster.","predicted":"Close to zero at the default constant: between -0.5 and +0.5 points at equal CPU time on n \u003e= 17, sign not established","status":"active","screen":{"effect":0.125,"ci":[-0.08333333333333333,0.3125],"runs":96,"generation":1},"default":false,"value":true,"neutral_rounds":0},{"name":"fresh_first_prob","kind":"float","author":"llm:claude-fable-5-1","added_gen":1,"hypothesis":"Chance per step that the removed points are held back until the fresh free points have been placed; below 1.0 some steps refill in the old uniformly random order.","of":"fresh_first","default":1.0,"low":0.2,"high":1.0,"log":false,"status":"active","value":1.0},{"name":"layer_ruin","kind":"switch","author":"llm:claude-fable-5-1","added_gen":2,"hypothesis":"An axis plane x = c, y = c or z = c holds at most 4 members and a plane with 4 is blocked as a whole, so a ruin that removes every member of one random axis plane (instead of random members) reopens that layer jointly and lets the refill repack it from scratch, an exchange that scattered random removals almost never make.","predicted":"between -0.2 and +0.4 points at equal CPU time on n \u003e= 17; sign uncertain","status":"rejected","screen":{"effect":-0.16666666666666669,"ci":[-0.33333333333333337,0.02083333333333333],"runs":96,"generation":2}},{"name":"revisit_tabu","kind":"switch","author":"llm:claude-fable-5-1","added_gen":2,"hypothesis":"A tabu on revisiting: free points that left the set within the last revisit_tenure accepted moves are refilled last, after the fresh and the just-removed points, so the plateau walk stops paying an expensive sphere enumeration to step straight back to a set it has just left and covers new sets instead.","predicted":"+0.1 to +0.4 points at equal CPU time on n \u003e= 20, about zero at n17; sign not certain","status":"rejected","screen":{"effect":-0.45833333333333337,"ci":[-0.6666666666666667,-0.25],"runs":96,"generation":2}},{"name":"symmetric_start","kind":"switch","author":"llm:claude-fable-5-1","added_gen":2,"hypothesis":"Seeding the search with a centrosymmetric phase (the construction and the first symmetric_start_frac of the budget build a set of antipodal pairs, then the symmetry is dropped and the ordinary search continues from that set) should help because the symmetric search space is half the size and climbs quickly to a high plateau, which the unrestricted search can then extend with unpaired points.","predicted":"Close to zero at the default fraction: between -0.3 and +0.3 points at equal CPU time on n \u003e= 17, sign not established; possibly positive at long budgets or a tuned fraction","status":"rejected","screen":{"effect":-0.125,"ci":[-0.2708333333333333,0.020833333333333332],"runs":96,"generation":2}},{"name":"tent_cache","kind":"switch","author":"llm:claude-fable-5-1","added_gen":2,"hypothesis":"The refill tests every candidate against all C(k,3) triples of the tentative set, but the spheres through old members were already enumerated at commit time, so reading the saved incidence records for old triples and doing geometry only for triples that contain a freshly placed point finds the same blocked points at a fraction of the cost, and more steps fit in the same CPU time.","predicted":"Same search, more steps per second: 0 to +0.2 points at equal CPU time while the record passes still dominate a step, more once incidence_index removes those passes","status":"rejected","screen":{"effect":-0.041666666666666664,"ci":[-0.10416666666666666,0.0],"runs":96,"generation":2}}],"interactions":[],"decomposition":{"seed":54.895833333333336,"tuning":0.0,"ideas":0.0,"compute":0.0,"unit":"points, mean over train instances","provisional":true},"records":[{"instance":"n21","value":56,"best_known":55,"verified":true,"checks":["evaluate.py","verify.py","third_check.py"],"certificate":"results/no5sphere/certificates/n21_56.json"},{"instance":"n23","value":60,"best_known":59,"verified":true,"checks":["evaluate.py","verify.py","third_check.py"],"certificate":"results/no5sphere/certificates/n23_60.json"},{"instance":"n26","value":68,"best_known":67,"verified":true,"checks":["evaluate.py","verify.py","third_check.py"],"certificate":"results/no5sphere/certificates/n26_68.json"},{"instance":"n23","value":60.0,"best_known":59.0,"verified":true,"certificate":"certificates/n23_60.json"}],"history":[{"t":"2026-10-03T20:07:56","generation":0,"event":"run_started","detail":"seed solver solvers/no5sphere, 8 genes, budget time=45.0"},{"t":"2026-10-03T20:11:28","generation":0,"event":"record","detail":"n23: 60 beats the best known 59"},{"t":"2026-10-03T20:11:28","generation":1,"event":"generation_started","detail":"trunk gen000"},{"t":"2026-10-03T20:11:28","generation":1,"event":"inventing","detail":"5 proposals: inventor, inventor, inventor, inventor, inventor"},{"t":"2026-10-03T20:17:52","generation":1,"event":"gene_proposed","gene":"layer_balance","detail":"Since every axis plane x = c, y = c, z = c holds at most 4 points, a large set must be spread evenly over the layers, so refilling with the sampled free point whose three axis planes hold the fewest members (best of layer_balance_m samples) keeps the layers balanced and leaves room for more points."},{"t":"2026-10-03T20:17:52","generation":1,"event":"gene_proposed","gene":"multi_recreate","detail":"Each ruin costs a full pass over the incidence records and the grid while a tentative refill is cheap, so refilling the same hole multi_recreate_m times and keeping the largest refill (ties: the one with the most new points) gets several search attempts, and more real plateau moves, per expensive ruin."},{"t":"2026-10-03T20:17:52","generation":1,"event":"gene_proposed","gene":"incidence_index","detail":"Keeping a per-member count of incidences at every grid point, plus a chain of records per grid point, lets a ruin find the freed points without moving the removed members' records out of the record array and back, so a rejected step (the common case) no longer makes two passes over the whole array and more steps fit in the same CPU time."},{"t":"2026-10-03T20:17:52","generation":1,"event":"gene_proposed","gene":"fresh_first","detail":"A one-step tabu on reinsertion: after a ruin the refill first places only free points that were not just removed, and the removed points fill what room is left, so a step with any fresh free point is a real exchange instead of usually putting the same points back, and the search walks its plateau much faster."},{"t":"2026-10-03T20:17:52","generation":1,"event":"gene_proposed","gene":"fresh_first","detail":"During repair, placing the grid points newly freed by the ruin before any just-removed member turns every step with a newcomer into a real exchange, instead of usually re-placing a removed point first and re-blocking the newcomers."},{"t":"2026-10-03T20:18:52","generation":1,"event":"gate_passed","gene":"layer_balance","detail":"gate passed"},{"t":"2026-10-03T20:20:02","generation":1,"event":"gate_passed","gene":"multi_recreate","detail":"gate passed"},{"t":"2026-10-03T20:20:58","generation":1,"event":"gate_passed","gene":"incidence_index","detail":"gate passed (1 warning(s))"},{"t":"2026-10-03T20:22:19","generation":1,"event":"gate_passed","gene":"fresh_first","detail":"gate passed"},{"t":"2026-10-03T20:23:45","generation":1,"event":"gate_passed","gene":"fresh_first","detail":"gate passed"},{"t":"2026-10-03T20:27:09","generation":1,"event":"gene_screened","gene":"layer_balance","detail":"effect -0.1458, 95% interval [-0.3333, +0.04167], 96 runs"},{"t":"2026-10-03T20:29:16","generation":1,"event":"gene_screened","gene":"multi_recreate","detail":"effect -0.04167, 95% interval [-0.2292, +0.125], 96 runs"},{"t":"2026-10-03T20:32:22","generation":1,"event":"gene_screened","gene":"incidence_index","detail":"effect +0.02083, 95% interval [+0, +0.0625], 96 runs"},{"t":"2026-10-03T20:34:14","generation":1,"event":"gene_screened","gene":"fresh_first","detail":"effect +0.125, 95% interval [-0.08333, +0.3125], 96 runs"},{"t":"2026-10-03T20:36:20","generation":1,"event":"gene_screened","gene":"fresh_first","detail":"effect -0.0625, 95% interval [-0.25, +0.1458], 96 runs"},{"t":"2026-10-03T20:36:20","generation":1,"event":"gene_rejected","gene":"layer_balance","detail":"effect -0.1458 is not positive"},{"t":"2026-10-03T20:36:20","generation":1,"event":"gene_rejected","gene":"multi_recreate","detail":"effect -0.04167 is not positive"},{"t":"2026-10-03T20:36:20","generation":1,"event":"gene_queued","gene":"incidence_index","detail":"effect +0.02083; will be ported onto the new trunk next generation"},{"t":"2026-10-03T20:36:20","generation":1,"event":"gene_rejected","gene":"fresh_first","detail":"effect -0.0625 is not positive"},{"t":"2026-10-03T20:36:20","generation":1,"event":"gene_merged","gene":"fresh_first","detail":"effect +0.125; new trunk gen001"},{"t":"2026-10-03T20:36:34","generation":1,"event":"step_failed","detail":"score: AttributeError: 'Connection' object has no attribute '_transport'"},{"t":"2026-10-03T20:36:34","generation":1,"event":"generation_finished","detail":"trunk gen001"},{"t":"2026-10-03T20:36:34","generation":2,"event":"generation_started","detail":"trunk gen001"},{"t":"2026-10-03T20:36:34","generation":2,"event":"inventing","detail":"5 proposals: port, inventor, inventor, inventor, inventor"},{"t":"2026-10-03T20:41:22","generation":2,"event":"gene_proposed","gene":"incidence_index","detail":"Keeping a per-member count of incidences at every grid point, plus a chain of records per grid point, lets a ruin find the freed points without moving the removed members' records out of the record array and back, so a rejected step (the common case) no longer makes two passes over the whole array and more steps fit in the same CPU time."},{"t":"2026-10-03T20:41:22","generation":2,"event":"gene_proposed","gene":"layer_ruin","detail":"An axis plane x = c, y = c or z = c holds at most 4 members and a plane with 4 is blocked as a whole, so a ruin that removes every member of one random axis plane (instead of random members) reopens that layer jointly and lets the refill repack it from scratch, an exchange that scattered random removals almost never make."},{"t":"2026-10-03T20:41:22","generation":2,"event":"gene_proposed","gene":"revisit_tabu","detail":"A tabu on revisiting: free points that left the set within the last revisit_tenure accepted moves are refilled last, after the fresh and the just-removed points, so the plateau walk stops paying an expensive sphere enumeration to step straight back to a set it has just left and covers new sets instead."},{"t":"2026-10-03T20:41:22","generation":2,"event":"gene_proposed","gene":"symmetric_start","detail":"Seeding the search with a centrosymmetric phase (the construction and the first symmetric_start_frac of the budget build a set of antipodal pairs, then the symmetry is dropped and the ordinary search continues from that set) should help because the symmetric search space is half the size and climbs quickly to a high plateau, which the unrestricted search can then extend with unpaired points."},{"t":"2026-10-03T20:41:22","generation":2,"event":"gene_proposed","gene":"tent_cache","detail":"The refill tests every candidate against all C(k,3) triples of the tentative set, but the spheres through old members were already enumerated at commit time, so reading the saved incidence records for old triples and doing geometry only for triples that contain a freshly placed point finds the same blocked points at a fraction of the cost, and more steps fit in the same CPU time."},{"t":"2026-10-03T20:43:31","generation":2,"event":"gate_passed","gene":"incidence_index","detail":"gate passed (1 warning(s))"},{"t":"2026-10-03T20:45:29","generation":2,"event":"gate_passed","gene":"layer_ruin","detail":"gate passed"},{"t":"2026-10-03T20:47:05","generation":2,"event":"gate_passed","gene":"revisit_tabu","detail":"gate passed"},{"t":"2026-10-03T20:49:27","generation":2,"event":"gate_passed","gene":"symmetric_start","detail":"gate passed"},{"t":"2026-10-03T20:51:24","generation":2,"event":"gate_passed","gene":"tent_cache","detail":"gate passed (1 warning(s))"},{"t":"2026-10-03T20:53:14","generation":2,"event":"gene_screened","gene":"incidence_index","detail":"effect +0, 95% interval [-0.0625, +0.0625], 96 runs"},{"t":"2026-10-03T20:56:22","generation":2,"event":"gene_screened","gene":"layer_ruin","detail":"effect -0.1667, 95% interval [-0.3333, +0.02083], 96 runs"},{"t":"2026-10-03T20:58:05","generation":2,"event":"gene_screened","gene":"revisit_tabu","detail":"effect -0.4583, 95% interval [-0.6667, -0.25], 96 runs"},{"t":"2026-10-03T20:59:44","generation":2,"event":"gene_screened","gene":"symmetric_start","detail":"effect -0.125, 95% interval [-0.2708, +0.02083], 96 runs"},{"t":"2026-10-03T21:01:45","generation":2,"event":"gene_screened","gene":"tent_cache","detail":"effect -0.04167, 95% interval [-0.1042, +0], 96 runs"},{"t":"2026-10-03T21:01:45","generation":2,"event":"gene_rejected","gene":"incidence_index","detail":"effect +0 is not positive"},{"t":"2026-10-03T21:01:45","generation":2,"event":"gene_rejected","gene":"layer_ruin","detail":"effect -0.1667 is not positive"},{"t":"2026-10-03T21:01:45","generation":2,"event":"gene_rejected","gene":"revisit_tabu","detail":"effect -0.4583 is not positive"},{"t":"2026-10-03T21:01:45","generation":2,"event":"gene_rejected","gene":"symmetric_start","detail":"effect -0.125 is not positive"},{"t":"2026-10-03T21:01:45","generation":2,"event":"gene_rejected","gene":"tent_cache","detail":"effect -0.04167 is not positive"},{"t":"2026-10-03T21:01:45","generation":2,"event":"tuning_started","detail":"40 trials in batches of 8"}],"timeline":[{"t":212.5,"generation":0,"score":0.9797621992902983},{"t":1717.8,"generation":1,"score":0.9797621992902983}],"engine":{"ideas_taken":0}},"live":{},"ideas":[]};</script>
 <script>
 'use strict';
 (() => {
@@ -517,17 +526,29 @@ body.snap #idea-form, body.snap #run-select { display: none; }
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   function trimZeros(t) { return t.includes('.') ? t.replace(/0+$/, '').replace(/\.$/, '') : t; }
-  function fmtSigned(x, d = 2) {
+  // Decimals used for effects and other score-unit numbers. 2 for most problems; more when the
+  // run's effects are small (set per render from the data, see effectDecimals).
+  let DEC = 2;
+  // A score at its own precision: whole numbers as they are, small decimals to three significant digits.
+  function fmtScore(x) {
+    if (!isNum(x)) return '–';
+    const a = Math.abs(x);
+    if (Number.isInteger(x)) return (x < 0 ? MINUS : '') + String(a);
+    const text = a >= 100 ? a.toFixed(1) : a >= 10 ? a.toFixed(2) : a >= 1 ? a.toFixed(3) : String(Number(a.toPrecision(3)));
+    return (x < 0 && Number(text) !== 0 ? MINUS : '') + trimZeros(text);
+  }
+  const fmtScoreSigned = (x) => (!isNum(x) ? '–' : x === 0 ? '0' : (x < 0 ? MINUS : '+') + fmtScore(Math.abs(x)));
+  function fmtSigned(x, d = DEC) {
     if (!isNum(x)) return '–';
     const t = Math.abs(x).toFixed(d);
     return Number(t) === 0 ? t : (x < 0 ? MINUS : '+') + t;
   }
-  function trimNum(x, d = 2) {
+  function trimNum(x, d = DEC) {
     if (!isNum(x)) return '–';
     const t = trimZeros(Math.abs(x).toFixed(d));
     return (x < 0 && Number(t) !== 0 ? MINUS : '') + t;
   }
-  function trimSigned(x, d = 2) {
+  function trimSigned(x, d = DEC) {
     if (!isNum(x)) return '–';
     const t = trimZeros(Math.abs(x).toFixed(d));
     return Number(t) === 0 ? '0' : (x < 0 ? MINUS : '+') + t;
@@ -683,14 +704,22 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       addedGen: g.gen, generality: {}, value: undefined, of: null, note: '', neutralRounds: null,
     }));
   }
+  // Two significant digits for the largest effect in the run: 0.5 -> 2 decimals, 0.0005 -> 5.
+  function effectDecimals() {
+    let max = 0;
+    for (const g of S.genes) for (const m of [g.ko, g.sc]) if (m) max = Math.max(max, Math.abs(m.effect), Math.abs(m.lo || 0), Math.abs(m.hi || 0));
+    if (!(max > 0)) { const d = obj(obj(S.state).decomposition); for (const k of ['tuning', 'ideas', 'compute']) if (isNum(d[k])) max = Math.max(max, Math.abs(d[k])); }
+    return max > 0 && max < 1 ? clamp(1 - Math.floor(Math.log10(max)), 2, 6) : 2;
+  }
   const byEffect = (a, b) => (b.m ? b.m.effect : -Infinity) - (a.m ? a.m.effect : -Infinity) || a.name.localeCompare(b.name);
   function instanceList(st) {
     const out = [], seen = new Set(), inst = obj(st.instances);
     const add = (k, split) => { if (typeof k !== 'string' || !k || seen.has(k)) return; seen.add(k); out.push({ key: k, split }); };
     arr(inst.train).forEach((k) => add(k, 'train'));
     arr(inst.heldout).forEach((k) => add(k, 'heldout'));
-    for (const name of Object.keys(inst)) if (name !== 'train' && name !== 'heldout') arr(inst[name]).forEach((k) => add(k, name));
-    Object.keys(obj(obj(st.champion).scores)).forEach((k) => add(k, 'other'));
+    const scored = obj(obj(st.champion).scores);
+    for (const name of Object.keys(inst)) if (name !== 'train' && name !== 'heldout') arr(inst[name]).forEach((k) => { if (scored[k]) add(k, name); });
+    Object.keys(scored).forEach((k) => add(k, 'other'));
     return out;
   }
   const splitName = (sp) => (sp === 'train' ? 'Train' : sp === 'heldout' ? 'Held-out' : sp === 'other' ? 'Other' : sp);
@@ -704,7 +733,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     live: {}, liveText: '{}', pending: null, localError: null, dismissed: null, liveTimer: 0, stripKey: '',
     ideas: [], drawer: null, collapsed: true, online: true, tick: 0,
   };
-  const V = { pts: [], n: 1, key: null, yaw: 0.7, pitch: 0.42, drag: null, last: 0, sols: {} };
+  const V = { key: null, cur: null, sols: {}, painted: '', yaw: 0.7, pitch: 0.42, drag: null, last: 0 };
 
   async function getJSON(url) {
     const res = await fetch(url, { cache: 'no-store' });
@@ -908,15 +937,15 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const chips = recs.map((r) => {
       const known = num(r.best_known) != null ? num(r.best_known) : num(bk[r.instance]);
       const checks = arr(r.checks).filter((c) => typeof c === 'string' && c);
-      const tip = [r.instance + ': ' + trimNum(r.value) + (known != null ? ', best published ' + trimNum(known) + ' (' + trimSigned(r.value - known) + ')' : '')];
+      const tip = [r.instance + ': ' + fmtScore(r.value) + (known != null ? ', best published ' + fmtScore(known) + ' (' + fmtScoreSigned(r.value - known) + ')' : '')];
       if (r.verified === true) tip.push(checks.length ? 'Verified by ' + plural(checks.length, 'independent checker') + ': ' + checks.join(', ') : 'Verified by the exact evaluator');
       else tip.push(r.verified === false ? 'Not verified yet' : 'Verification not reported');
       if (r.certificate) tip.push('Certificate: ' + str(r.certificate));
       if (known != null && !(minimise ? r.value < known : r.value > known)) tip.push('Note: this does not beat the published value');
       return h('div', { class: 'rc', tip: tip.join('\n') },
         h('span', { class: 'k', text: r.instance }),
-        h('span', { class: 'v', text: trimNum(r.value) }),
-        h('span', { class: 'bk', text: known != null ? 'vs ' + trimNum(known) : '' }),
+        h('span', { class: 'v', text: fmtScore(r.value) }),
+        h('span', { class: 'bk', text: known != null ? 'vs ' + fmtScore(known) : '' }),
         r.verified === true
           ? h('span', { class: 'ok' }, h('i', { text: '✓' }), checks.length > 1 ? '×' + checks.length : null)
           : h('span', { class: 'ok no' }, h('i', { text: '?' }), 'unverified'));
@@ -928,7 +957,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       shown--;
       list.removeChild(chips[shown]);
       more.textContent = '+' + (chips.length - shown) + ' more';
-      more.setAttribute('data-tip', 'More records\n' + recs.slice(shown).map((r) => r.instance + ': ' + trimNum(r.value)).join('\n'));
+      more.setAttribute('data-tip', 'More records\n' + recs.slice(shown).map((r) => r.instance + ': ' + fmtScore(r.value)).join('\n'));
       if (!more.parentNode) list.appendChild(more);
     }
   }
@@ -954,7 +983,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     if (!insts.length) { body.appendChild(empty('Scores appear here once the champion has been evaluated.')); return; }
     let nRec = 0, nEq = 0, nBehind = 0;
     const groups = [];
-    let longest = 1;
+    let longest = 1, whole = true;
     for (const it of insts) {
       let grp = groups.find((x) => x.split === it.split);
       if (!grp) { grp = { split: it.split, items: [] }; groups.push(grp); }
@@ -963,51 +992,60 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       it.rec = records.find((r) => r.instance === it.key);
       it.ours = num(it.sc.best) != null ? num(it.sc.best) : num(it.sc.mean);
       if (it.rec && isNum(it.rec.value) && (it.ours == null || (minimise ? it.rec.value < it.ours : it.rec.value > it.ours))) it.ours = it.rec.value;
-      it.text = it.ours != null ? trimNum(it.ours) : '–';
+      it.text = it.ours != null ? fmtScore(it.ours) : '–';
       longest = Math.max(longest, it.text.length);
+      it.known = num(bk[it.key]) != null ? num(bk[it.key]) : it.rec ? num(it.rec.best_known) : null;
+      if ((it.ours != null && !Number.isInteger(it.ours)) || (it.known != null && !Number.isInteger(it.known))) whole = false;
     }
+    // Whole-number scores (point counts) show the gap in points; anything else as a percentage of the published value.
+    const gap = (d, known) => {
+      if (whole || !known) return fmtScoreSigned(d);
+      const pc = (d / Math.abs(known)) * 100, a = Math.abs(pc);
+      return (pc > 0 ? '+' : MINUS) + (a < 0.1 ? String(Number(a.toPrecision(1))) : a < 10 ? a.toFixed(1) : String(Math.round(a))) + '%';
+    };
     // the big numerals shrink together when there are many instances or long values
     const tileW = (body.clientWidth - 14 * (groups.length - 1) - 6 * (insts.length - groups.length)) / insts.length;
-    const fontSize = clamp(Math.floor((tileW - 8) / (0.6 * longest)), 13, 34) + 'px';
-    const wrap = h('div', { class: 'groups' });
+    const fontSize = clamp(Math.floor((tileW - 8) / (0.6 * longest)), 10, 34) + 'px';
+    const longKey = insts.some((it) => it.key.length * 6.7 > tileW - 4);      // "triangle30" in a narrow tile
+    const wrap = h('div', { class: 'groups' + (tileW < 60 ? ' narrow' : '') });
     for (const grp of groups) {
       const tiles = h('div', { class: 'tiles' });
       for (const it of grp.items) {
-        const sc = it.sc, rec = it.rec, ours = it.ours;
-        const known = num(bk[it.key]) != null ? num(bk[it.key]) : rec ? num(rec.best_known) : null;
+        const sc = it.sc, rec = it.rec, ours = it.ours, known = it.known;
         const delta = ours != null && known != null ? ours - known : null;
         const better = delta != null && (minimise ? delta < 0 : delta > 0);
         let glyph = '', gcls = 'neu', dtext = '', cap = '';
         if (ours == null) cap = 'pending';
-        else if (known == null) cap = 'no reference';
+        else if (known == null) cap = tileW < 70 ? 'no ref.' : 'no reference';
         else if (better) {
-          nRec++; glyph = '★'; gcls = 'pos'; dtext = trimSigned(delta);
+          nRec++; glyph = '★'; gcls = 'pos'; dtext = gap(delta, known);
           cap = rec && rec.verified === false ? 'unverified' : tileW < 58 ? 'record' : 'new record';
         } else if (delta === 0) { nEq++; glyph = '='; dtext = ''; cap = 'matched'; }
-        else { nBehind++; glyph = minimise ? '▲' : '▼'; gcls = 'neg'; dtext = trimSigned(delta); cap = 'behind'; }
-        const tipLines = [it.key + ' (' + splitName(it.split).toLowerCase() + '): ' + (ours != null ? trimNum(ours) : 'no result yet')];
-        if (known != null) tipLines.push('best published ' + trimNum(known));
-        if (isNum(sc.mean)) tipLines.push('mean ' + trimNum(sc.mean) + (isNum(sc.runs) ? ' over ' + plural(sc.runs, 'run') : ''));
+        else { nBehind++; glyph = minimise ? '▲' : '▼'; gcls = 'neg'; dtext = gap(delta, known); cap = 'behind'; }
+        const tipLines = [it.key + ' (' + splitName(it.split).toLowerCase() + '): ' + (ours != null ? fmtScore(ours) : 'no result yet')];
+        if (known != null) tipLines.push('best published ' + fmtScore(known) + (delta ? ' (' + fmtScoreSigned(delta) + (whole || !known ? '' : ', ' + gap(delta, known)) + ')' : ''));
+        if (isNum(sc.mean)) tipLines.push('mean ' + fmtScore(sc.mean) + (isNum(sc.runs) ? ' over ' + plural(sc.runs, 'run') : ''));
         if (sc.budget) tipLines.push('budget ' + str(sc.budget));
         if (rec) tipLines.push(rec.verified === true ? 'Record verified by the exact evaluator' : rec.verified === false ? 'Record not verified yet' : 'Record');
         if (rec && rec.certificate) tipLines.push(str(rec.certificate));
         const canShow = !!V.sols[it.key];
-        if (canShow) tipLines.push('Click to show this point set');
+        if (canShow) tipLines.push('Click to show this solution');
         const tile = h('div', {
           class: 'tile' + (better ? ' record' : '') + (canShow ? ' pick' : '') + (canShow && V.key === it.key ? ' shown' : ''),
           tip: tipLines.join('\n'), tabindex: canShow ? 0 : null, role: canShow ? 'button' : null,
           onclick: canShow ? () => pickInstance(it.key) : null,
           onkeydown: canShow ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickInstance(it.key); } } : null,
         },
-          h('div', { class: 't-key', text: it.key }),
+          h('div', { class: 't-key' + (longKey ? ' long' : ''), text: longKey ? it.key.replace(/^([A-Za-z_]+)(\d)/, '$1\u200b$2') : it.key }),
           h('div', { class: 't-val', style: { fontSize }, text: it.text }),
-          h('div', { class: 't-bk', text: known != null ? 'vs ' + trimNum(known) : ' ' }),
+          h('div', { class: 't-bk', text: known != null ? 'vs ' + fmtScore(known) : ' ' }),
           h('div', { class: 't-delta' }, glyph ? h('span', { class: 'g ' + gcls, text: glyph }) : null, dtext),
           h('div', { class: 't-cap', text: cap }));
         tiles.appendChild(tile);
       }
       wrap.appendChild(h('div', { class: 'tgroup', style: { flex: grp.items.length + ' 1 0' } },
-        h('div', { class: 'tg-label', text: splitName(grp.split) + (grp.split === 'heldout' ? ' · never tuned on' : '') }), tiles));
+        h('div', { class: 'tg-label', text: splitName(grp.split) + (grp.split === 'heldout' && groups.length <= 2 && grp.items.length * tileW > 150 ? ' · never tuned on' : ''),
+          tip: grp.split === 'heldout' ? 'Held-out instances\nNever used for tuning or for choosing ideas' : grp.split === 'train' ? 'Training instances\nUsed for screening and tuning' : null }), tiles));
     }
     body.appendChild(wrap);
     const parts = [];
@@ -1017,57 +1055,166 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     note.textContent = parts.length ? parts.join(' · ') : 'our best vs best published';
   }
 
-  // ----------------------------------------------------------- point-set viewer
-  function validPoints(v) {
+  // ------------------------------------------------------------ solution viewer
+  // The drawing is chosen from the shape of the data, so every problem type gets a fitting picture:
+  //   [x, y, r] decimals with r > 0     circles to scale in the unit square     (circle packing)
+  //   [x, y, z] whole numbers           rotating 3D scatter in a cube           (no 5 on a sphere)
+  //   [x, y] whole numbers              2D scatter in an n x n grid             (grid problems)
+  //   [x, y] decimals or digit strings  2D scatter in its region                (Heilbronn point sets)
+  //   a flat list of numbers            step plot                               (step functions)
+  // Anything else is not drawn and the panel stays hidden.
+  function asNumber(x) {
+    if (typeof x === 'number') return isFinite(x) ? x : null;
+    if (typeof x === 'string' && x.trim() !== '') { const v = Number(x); return isFinite(v) ? v : null; }
+    return null;
+  }
+  function gridSize(key, pts) {
+    const m = /^n(\d+)$/.exec(key || '');
+    let max = 0;
+    for (const p of pts) for (const c of p) if (c > max) max = c;
+    const n = m ? Number(m[1]) : 0;
+    return Math.max(2, n > max ? n : max + 1);        // from the key when the data fits it, else from the data's extent
+  }
+  function classifySolution(key, v) {
     if (!Array.isArray(v) || !v.length) return null;
-    for (const p of v) if (!Array.isArray(p) || p.length !== 3 || !p.every(isNum)) return null;
-    return v;
+    if (v.every((x) => !Array.isArray(x))) {                                   // a flat list: step heights
+      const vals = v.map(asNumber);
+      return vals.length >= 2 && vals.every((x) => x != null) ? { kind: 'steps', vals } : null;
+    }
+    const dim = Array.isArray(v[0]) ? v[0].length : 0;
+    if (dim !== 2 && dim !== 3) return null;
+    let whole = true;
+    const pts = [];
+    for (const p of v) {
+      if (!Array.isArray(p) || p.length !== dim) return null;
+      const q = p.map(asNumber);
+      if (q.some((c) => c == null)) return null;
+      if (!p.every((c) => typeof c === 'number' && Number.isInteger(c) && c >= 0)) whole = false;
+      pts.push(q);
+    }
+    if (dim === 3) {
+      if (whole) return { kind: 'grid3', pts, n: gridSize(key, pts) };
+      return pts.every((c) => c[2] > 0) ? { kind: 'circles', pts } : null;
+    }
+    const shape = /^(square|triangle|convex)/i.exec(key || '');
+    if (whole && !shape) return { kind: 'grid2', pts, n: gridSize(key, pts) };
+    return { kind: 'plane', pts, shape: shape ? shape[1].toLowerCase() : '' };
+  }
+  // A square window [x0, y0, side] around a set of points, with a little margin.
+  function boundsOf(pts) {
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const p of pts) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); }
+    const side = (Math.max(x1 - x0, y1 - y0) || 1) * 1.08;
+    return [(x0 + x1) / 2 - side / 2, (y0 + y1) / 2 - side / 2, side];
+  }
+  function convexHull(pts) {
+    const s2 = pts.slice().sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+    if (s2.length < 3) return s2;
+    const cross = (o, p, q) => (p[0] - o[0]) * (q[1] - o[1]) - (p[1] - o[1]) * (q[0] - o[0]);
+    const half = (list) => { const out = []; for (const p of list) { while (out.length >= 2 && cross(out[out.length - 2], out[out.length - 1], p) <= 0) out.pop(); out.push(p); } out.pop(); return out; };
+    return half(s2).concat(half(s2.slice().reverse()));
+  }
+  function smallestTriangle(pts) {
+    const n = pts.length;
+    let best = Infinity, idx = null;
+    for (let i = 0; i < n - 2; i++) for (let j = i + 1; j < n - 1; j++) {
+      const ax = pts[j][0] - pts[i][0], ay = pts[j][1] - pts[i][1];
+      for (let k = j + 1; k < n; k++) {
+        const area = Math.abs(ax * (pts[k][1] - pts[i][1]) - ay * (pts[k][0] - pts[i][0])) / 2;
+        if (area < best) { best = area; idx = [i, j, k]; }
+      }
+    }
+    return idx ? { area: best, idx } : null;
+  }
+  const sig = (x) => (isNum(x) ? String(Number(x.toPrecision(3))).replace('-', MINUS) : '–');
+  // Title, caption and whatever the drawing needs, worked out once per solution.
+  function prepareSolution(sol) {
+    if (sol.title) return sol;
+    const k = sol.pts ? sol.pts.length : sol.vals.length;
+    if (sol.kind === 'circles') {
+      let sum = 0;
+      for (const c of sol.pts) sum += c[2];
+      sol.title = 'Packing';
+      sol.caption = 'Sum of radii ' + trimNum(sum, 4);
+      sol.more = plural(k, 'circle') + ', drawn to scale in the unit square';
+      const inUnit = sol.pts.every((c) => c[0] - c[2] >= -0.02 && c[0] + c[2] <= 1.02 && c[1] - c[2] >= -0.02 && c[1] + c[2] <= 1.02);
+      sol.box = inUnit ? [0, 0, 1] : boundsOf(sol.pts.map((c) => [c[0] - c[2], c[1] - c[2]]).concat(sol.pts.map((c) => [c[0] + c[2], c[1] + c[2]])));
+      sol.unit = inUnit;
+    } else if (sol.kind === 'grid3') {
+      sol.title = 'Point set';
+      sol.caption = plural(k, 'point') + ' in a ' + sol.n + '×' + sol.n + '×' + sol.n + ' grid';
+    } else if (sol.kind === 'grid2') {
+      sol.title = 'Point set';
+      sol.caption = plural(k, 'point') + ' in a ' + sol.n + '×' + sol.n + ' grid';
+    } else if (sol.kind === 'plane') {
+      sol.title = 'Point set';
+      const unit = sol.shape === 'square' || sol.shape === 'triangle';
+      sol.box = unit ? [-0.02, -0.02, 1.04] : boundsOf(sol.pts);
+      sol.region = sol.shape === 'square' ? [[0, 0], [1, 0], [1, 1], [0, 1]] : sol.shape === 'triangle' ? [[0, 0], [1, 0], [0, 1]]
+        : sol.shape === 'convex' ? convexHull(sol.pts) : null;
+      sol.tri = k >= 3 && k <= 160 ? smallestTriangle(sol.pts) : null;       // at most a few hundred thousand triples, once
+      sol.caption = sol.tri ? 'Smallest triangle ' + sig(sol.tri.area) : plural(k, 'point');
+      sol.more = plural(k, 'point') + (sol.tri ? '; the triangle of smallest area is highlighted' : '');
+    } else {
+      sol.lo = Infinity; sol.hi = -Infinity;
+      for (const v of sol.vals) { if (v < sol.lo) sol.lo = v; if (v > sol.hi) sol.hi = v; }
+      sol.title = 'Step function';
+      sol.caption = plural(k, 'step') + ', ' + sig(sol.lo) + ' to ' + sig(sol.hi);
+      sol.more = 'Heights of a step function with ' + plural(k, 'equal step') + '; the line marks zero';
+    }
+    return sol;
   }
   function renderViewer() {
     const st = S.state || {}, sols = obj(obj(st.champion).solutions), panel = $('p-viewer'), sel = $('viewer-select');
     V.sols = {};
-    for (const k of Object.keys(sols)) { const pts = validPoints(sols[k]); if (pts) V.sols[k] = pts; }
+    for (const k of Object.keys(sols)) { const sol = classifySolution(k, sols[k]); if (sol) V.sols[k] = sol; }
     const order = instanceList(st).map((i) => i.key).filter((k) => V.sols[k]);
     for (const k of Object.keys(V.sols)) if (!order.includes(k)) order.push(k);
     panel.hidden = !order.length;
-    if (!order.length) { V.key = null; V.pts = []; return; }
+    if (!order.length) { V.key = null; V.cur = null; return; }
     if (!V.key || !V.sols[V.key]) {
       const rec = arr(st.records).map(obj).find((r) => V.sols[r.instance]);
       V.key = rec ? rec.instance : order[order.length - 1];
     }
-    const sig = order.join('\n');
-    if (sel.dataset.key !== sig) {
-      sel.dataset.key = sig;
+    const sig2 = order.join('\n');
+    if (sel.dataset.key !== sig2) {
+      sel.dataset.key = sig2;
       clear(sel);
       order.forEach((k) => sel.appendChild(h('option', { value: k, text: k })));
     }
     sel.value = V.key;
-    loadPoints();
+    loadSolution();
   }
-  function loadPoints() {
-    const pts = V.sols[V.key] || [];
-    let n = 0;
-    const m = /^n(\d+)$/.exec(V.key || '');
-    if (m) n = Number(m[1]);
-    let max = 0;
-    for (const p of pts) max = Math.max(max, p[0], p[1], p[2]);
-    if (!(n > max)) n = max + 1;
-    V.n = Math.max(2, n);
-    V.pts = pts;
-    $('viewer-cap').textContent = plural(pts.length, 'point') + ' in a ' + V.n + '×' + V.n + '×' + V.n + ' grid';
+  function loadSolution() {
+    const sol = V.sols[V.key] ? prepareSolution(V.sols[V.key]) : null, cv = $('viewer');
+    V.cur = sol;
+    if (!sol) return;
+    $('viewer-title').textContent = sol.title;
+    $('viewer-cap').textContent = sol.caption;
+    $('viewer-cap').setAttribute('data-tip', sol.title + ' for ' + V.key + '\n' + sol.caption + (sol.more ? '\n' + sol.more : ''));
+    $('p-viewer').classList.toggle('wide', sol.kind === 'steps');
+    cv.style.cursor = sol.kind === 'grid3' ? '' : 'default';
+    cv.setAttribute('aria-label', sol.title + ' for ' + V.key + ': ' + sol.caption);
+    V.painted = '';
     paintViewer(0);   // first frame now; the animation loop takes over from here
   }
   function pickInstance(key) {
     if (!V.sols[key]) return;
+    const panel = $('p-viewer'), wide = panel.classList.contains('wide');
     V.key = key;
     $('viewer-select').value = key;
-    loadPoints();
+    loadSolution();
     renderChampion();
+    if (panel.classList.contains('wide') !== wide) renderTimeline();     // the neighbouring chart changed width
   }
   $('viewer-select').addEventListener('change', (e) => pickInstance(e.target.value));
   (function viewerInput() {
     const cv = $('viewer');
-    cv.addEventListener('pointerdown', (e) => { V.drag = { x: e.clientX, y: e.clientY, yaw: V.yaw, pitch: V.pitch }; cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener('pointerdown', (e) => {
+      if (!V.cur || V.cur.kind !== 'grid3') return;                        // only the 3D view turns
+      V.drag = { x: e.clientX, y: e.clientY, yaw: V.yaw, pitch: V.pitch };
+      cv.setPointerCapture(e.pointerId);
+    });
     cv.addEventListener('pointermove', (e) => {
       if (!V.drag) return;
       V.yaw = V.drag.yaw + (e.clientX - V.drag.x) * 0.012;
@@ -1076,7 +1223,6 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const end = () => { V.drag = null; };
     cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
   })();
-  const CUBE_EDGES = [[0, 1], [1, 3], [3, 2], [2, 0], [4, 5], [5, 7], [7, 6], [6, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
   function drawViewer(ts) {
     requestAnimationFrame(drawViewer);
     const dt = Math.min(0.05, Math.max(0, (ts - V.last) / 1000)) || 0;
@@ -1084,15 +1230,31 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     paintViewer(dt);
   }
   function paintViewer(dt) {
-    const cv = $('viewer');
-    if ($('p-viewer').hidden) return;
-    if (!V.drag) V.yaw += dt * 0.32;
+    const cv = $('viewer'), sol = V.cur;
+    if ($('p-viewer').hidden || !sol) return;
     const w = cv.clientWidth, hgt = cv.clientHeight, dpr = window.devicePixelRatio || 1;
     if (!w || !hgt) return;
+    const turning = sol.kind === 'grid3', stamp = V.key + '|' + w + 'x' + hgt + '@' + dpr;
+    if (!turning && V.painted === stamp) return;                            // a still picture is drawn once per size
+    V.painted = stamp;
     if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(hgt * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(hgt * dpr); }
     const ctx = cv.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, hgt);
+    if (turning) { if (!V.drag) V.yaw += dt * 0.32; paintCube(ctx, w, hgt, sol); }
+    else if (sol.kind === 'circles') paintCircles(ctx, w, hgt, sol);
+    else if (sol.kind === 'grid2') paintGrid(ctx, w, hgt, sol);
+    else if (sol.kind === 'plane') paintPlane(ctx, w, hgt, sol);
+    else paintSteps(ctx, w, hgt, sol);
+  }
+  const FRAME = 'rgba(174,182,196,.6)', DOT = 'rgb(96,160,240)', WASH = 'rgba(57,135,229,.22)', TAU = Math.PI * 2;
+  // The largest centred square in the canvas, and the map from data to it (y grows upwards).
+  function squareIn(w, hgt, pad, box) {
+    const side = Math.max(10, Math.min(w, hgt) - 2 * pad), x = (w - side) / 2, y = (hgt - side) / 2;
+    return { x, y, side, X: (u) => x + ((u - box[0]) / box[2]) * side, Y: (v) => y + side - ((v - box[1]) / box[2]) * side, len: (d) => (d / box[2]) * side };
+  }
+  const CUBE_EDGES = [[0, 1], [1, 3], [3, 2], [2, 0], [4, 5], [5, 7], [7, 6], [6, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
+  function paintCube(ctx, w, hgt, sol) {
     const size = Math.min(w, hgt), cx = w / 2, cy = hgt / 2, D = 3.4, k = size * 0.52;
     const cyw = Math.cos(V.yaw), syw = Math.sin(V.yaw), cp = Math.cos(V.pitch), sp = Math.sin(V.pitch);
     const proj = (x, y, z) => {
@@ -1109,13 +1271,85 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       ctx.strokeStyle = 'rgba(174,182,196,' + (0.34 - depth * 0.22).toFixed(3) + ')';
       ctx.beginPath(); ctx.moveTo(corners[a][0], corners[a][1]); ctx.lineTo(corners[b][0], corners[b][1]); ctx.stroke();
     }
-    const span = V.n - 1;
-    const pts = V.pts.map((p) => proj(p[0] / span - 0.5, p[2] / span - 0.5, p[1] / span - 0.5)).sort((a, b) => b[2] - a[2]);
+    const span = sol.n - 1;
+    const pts = sol.pts.map((p) => proj(p[0] / span - 0.5, p[2] / span - 0.5, p[1] / span - 0.5)).sort((a, b) => b[2] - a[2]);
     for (const p of pts) {
       const near = clamp(0.5 - p[2] / 1.74, 0, 1);            // 0 far .. 1 near
       ctx.fillStyle = `rgba(${Math.round(57 + 70 * near)},${Math.round(125 + 60 * near)},${Math.round(215 + 35 * near)},${(0.42 + 0.58 * near).toFixed(3)})`;
-      ctx.beginPath(); ctx.arc(p[0], p[1], (1.5 + 1.7 * near) * p[3], 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(p[0], p[1], (1.5 + 1.7 * near) * p[3], 0, TAU); ctx.fill();
     }
+  }
+  function paintCircles(ctx, w, hgt, sol) {
+    const f = squareIn(w, hgt, 3, sol.box);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = FRAME;
+    ctx.strokeRect(f.x + 0.5, f.y + 0.5, f.side - 1, f.side - 1);          // the unit square (or the packing's own extent)
+    ctx.fillStyle = WASH;
+    ctx.strokeStyle = 'rgba(120,176,246,.95)';
+    for (const c of sol.pts) {
+      ctx.beginPath(); ctx.arc(f.X(c[0]), f.Y(c[1]), Math.max(0.6, f.len(c[2]) - 0.5), 0, TAU);
+      ctx.fill(); ctx.stroke();
+    }
+  }
+  function paintGrid(ctx, w, hgt, sol) {
+    const f = squareIn(w, hgt, 3, [0, 0, sol.n]), cell = f.side / sol.n;
+    ctx.lineWidth = 1;
+    if (cell >= 5) {                                                         // grid lines only while they stay readable
+      ctx.strokeStyle = 'rgba(174,182,196,.11)';
+      ctx.beginPath();
+      for (let i = 1; i < sol.n; i++) {
+        const gx = Math.round(f.x + i * cell) + 0.5, gy = Math.round(f.y + i * cell) + 0.5;
+        ctx.moveTo(gx, f.y); ctx.lineTo(gx, f.y + f.side); ctx.moveTo(f.x, gy); ctx.lineTo(f.x + f.side, gy);
+      }
+      ctx.stroke();
+    }
+    ctx.strokeStyle = FRAME;
+    ctx.strokeRect(f.x + 0.5, f.y + 0.5, f.side - 1, f.side - 1);
+    ctx.fillStyle = DOT;
+    const r = clamp(cell * 0.36, 1.1, 3.4);
+    for (const p of sol.pts) { ctx.beginPath(); ctx.arc(f.X(p[0] + 0.5), f.Y(p[1] + 0.5), r, 0, TAU); ctx.fill(); }
+  }
+  function paintPlane(ctx, w, hgt, sol) {
+    const f = squareIn(w, hgt, 4, sol.box);
+    const trace = (poly) => { ctx.beginPath(); poly.forEach((p, i) => (i ? ctx.lineTo(f.X(p[0]), f.Y(p[1])) : ctx.moveTo(f.X(p[0]), f.Y(p[1])))); ctx.closePath(); };
+    ctx.lineWidth = 1;
+    if (sol.region && sol.region.length >= 3) { trace(sol.region); ctx.strokeStyle = FRAME; ctx.stroke(); }
+    const mark = new Set(sol.tri ? sol.tri.idx : []);
+    if (sol.tri) {                                                           // the smallest triangle: what limits the score
+      trace(sol.tri.idx.map((i) => sol.pts[i]));
+      ctx.fillStyle = 'rgba(57,135,229,.40)'; ctx.fill();
+      ctx.strokeStyle = '#eef1f6'; ctx.lineWidth = 1.2; ctx.lineJoin = 'round'; ctx.stroke();
+    }
+    sol.pts.forEach((p, i) => {
+      ctx.fillStyle = mark.has(i) ? '#eef1f6' : DOT;
+      ctx.beginPath(); ctx.arc(f.X(p[0]), f.Y(p[1]), mark.has(i) ? 2.7 : 2.2, 0, TAU); ctx.fill();
+    });
+  }
+  function paintSteps(ctx, w, hgt, sol) {
+    const v = sol.vals, n = v.length, left = 2, pw = Math.max(10, w - 4), top = 5, ph = Math.max(10, hgt - 10);
+    const lo = Math.min(0, sol.lo), hi = Math.max(0, sol.hi), span = hi - lo || 1;
+    const Y = (val) => top + (1 - (val - lo) / span) * ph, X = (i) => left + (i / n) * pw, base = Y(0);
+    if (n <= pw) {
+      const outline = () => { for (let i = 0; i < n; i++) { ctx.lineTo(X(i), Y(v[i])); ctx.lineTo(X(i + 1), Y(v[i])); } };
+      ctx.beginPath(); ctx.moveTo(X(0), base); outline(); ctx.lineTo(X(n), base); ctx.closePath();
+      ctx.fillStyle = WASH; ctx.fill();
+      ctx.beginPath(); ctx.moveTo(X(0), Y(v[0])); outline();
+      ctx.strokeStyle = DOT; ctx.lineWidth = 1.5; ctx.lineJoin = 'round'; ctx.stroke();
+    } else {
+      // more steps than pixels: each pixel column spans its lowest to its highest step
+      for (let px = 0; px < pw; px++) {
+        const from = Math.floor((px / pw) * n), to = Math.max(from + 1, Math.floor(((px + 1) / pw) * n));
+        let mn = Infinity, mx = -Infinity;
+        for (let i = from; i < to && i < n; i++) { if (v[i] < mn) mn = v[i]; if (v[i] > mx) mx = v[i]; }
+        const yTop = Y(mx), yBot = Y(mn);
+        ctx.fillStyle = WASH;
+        if (mn > 0) ctx.fillRect(left + px, yBot, 1, base - yBot); else if (mx < 0) ctx.fillRect(left + px, base, 1, yTop - base);
+        ctx.fillStyle = DOT;
+        ctx.fillRect(left + px, yTop - 0.75, 1, Math.max(1.5, yBot - yTop + 1.5));
+      }
+    }
+    ctx.strokeStyle = FRAME; ctx.lineWidth = 1;                              // the zero line
+    ctx.beginPath(); ctx.moveTo(left, Math.round(base) + 0.5); ctx.lineTo(left + pw, Math.round(base) + 0.5); ctx.stroke();
   }
 
   // ---------------------------------------------------------------- timeline
@@ -1249,7 +1483,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const svg = s('svg', { class: 'fill', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Decomposition of the gain' });
     const bw = Math.min(40, cw - 14), name = (k) => k.charAt(0).toUpperCase() + k.slice(1);
     const xl = (i) => cw * i + (cw - bw) / 2;
-    const size = (text, big) => (text.length >= 6 ? 12 : text.length >= 5 ? Math.min(big, 14) : big) + 'px';   // long numbers shrink to their column
+    const size = (text, big) => (text.length >= 8 ? 10 : text.length >= 6 ? 11.5 : text.length >= 5 ? Math.min(big, 14) : big) + 'px';   // long numbers shrink to their column
     svg.appendChild(s('line', { x1: 0, x2: W, y1: Y(0), y2: Y(0), class: 'grid' }));
     // seed level
     const seedText = seed != null ? trimNum(seed) : '';
@@ -1334,8 +1568,8 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const right = left + pitch * pairs.length + gap * (groups.length - 1);
     const yl = (v, text) => s('text', { x: left - 7, y: Y(v) + 3.5, 'text-anchor': 'end', text });
     svg.appendChild(yl(0, '0'));
-    if (Y(0) - Y(hi) > 10) svg.appendChild(yl(hi, trimSigned(hi, 1)));
-    if (Y(lo) - Y(0) > 10) svg.appendChild(yl(lo, trimSigned(lo, 1)));
+    if (Y(0) - Y(hi) > 10) svg.appendChild(yl(hi, trimSigned(hi, Math.max(1, DEC - 1))));
+    if (Y(lo) - Y(0) > 10) svg.appendChild(yl(lo, trimSigned(lo, Math.max(1, DEC - 1))));
     if (m) {
       if (m.lo != null) svg.appendChild(s('rect', { x: left, y: Y(m.hi), width: right - left, height: Math.max(1, Y(m.lo) - Y(m.hi)), fill: 'var(--ink)', 'fill-opacity': 0.09, tip: '95% interval ' + ciText(m) }));
       svg.append(s('line', { x1: left, x2: right, y1: Y(m.effect), y2: Y(m.effect), stroke: 'var(--ink)', 'stroke-width': 1.5 }),
@@ -1436,9 +1670,10 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     let lastX = -99;
     for (const t of sc.ticks) {
       const x = sc.x(t);
-      if (x < 8 || x > BAR_W - 14 || x - lastX < 26) continue;
+      const label = trimSigned(t), half = label.length * 2.9 + 2;
+      if (x < 8 || x + half > BAR_W || x - lastX < half * 2 + 6) continue;
       lastX = x;
-      axis.append(s('text', { x, y: 24, 'text-anchor': 'middle', style: { letterSpacing: '0' }, text: trimSigned(t) }), s('line', { x1: x, x2: x, y1: 27, y2: 30, class: 'axis' }));
+      axis.append(s('text', { x, y: 24, 'text-anchor': 'middle', style: { letterSpacing: '0' }, text: label }), s('line', { x1: x, x2: x, y1: 27, y2: 30, class: 'axis' }));
     }
     head.append(h('div'), h('div', { text: 'Idea and hypothesis' }), h('div', null, axis),
       h('div', { text: 'Effect · interval' }), h('div', { text: 'Generality' }), h('div'));
@@ -1516,6 +1751,12 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     for (const g of rows) for (const c of cols) { const m = measure(g.generality[c.key]); if (m) max = Math.max(max, Math.abs(m.effect)); }
     max = max || 1;
     const gapAt = (i) => i > 0 && cols[i].split !== cols[i - 1].split;
+    // "triangle33" is shown on two lines; the cell is as wide as its label or its numbers need, within the panel
+    const parts = (key) => { const m = /^([A-Za-z_]+)(\d+)$/.exec(key); return m && key.length > 5 ? [m[1], m[2]] : [key]; };
+    const two = cols.some((c) => parts(c.key).length > 1);
+    const need = Math.max(37, DEC > 2 ? (DEC + 1) * 6.3 + 6 : 0, ...cols.map((c) => Math.max(...parts(c.key).map((x) => x.length)) * (two ? 5.6 : 6.4) + 4));
+    const cw = Math.round(clamp(need, 37, Math.max(37, Math.floor((body.clientWidth - 104) / cols.length) - 3)));
+    const cellStyle = (extra) => Object.assign({ flex: '0 0 ' + cw + 'px', width: cw + 'px' }, extra || {});
     const wrap = h('div', { class: 'gm' });
     // group header
     const hd = h('div', { class: 'gm-row head' }, h('div', { class: 'gm-name', style: { cursor: 'default' } }));
@@ -1524,11 +1765,11 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       let j = i;
       while (j + 1 < cols.length && cols[j + 1].split === cols[i].split) j++;
       const n = j - i + 1;
-      hd.appendChild(h('div', { class: 'gm-grp' + (i > 0 ? ' gap' : ''), style: { flex: '0 0 ' + (n * 37 + (n - 1) * 2) + 'px' }, text: splitName(cols[i].split) }));
+      hd.appendChild(h('div', { class: 'gm-grp' + (i > 0 ? ' gap' : ''), style: { flex: '0 0 ' + (n * cw + (n - 1) * 2) + 'px' }, text: splitName(cols[i].split) }));
       i = j + 1;
     }
-    const keys = h('div', { class: 'gm-row keys' }, h('div', { class: 'gm-name', style: { cursor: 'default' } }),
-      cols.map((c, n) => h('div', { class: 'gm-cell hd' + (gapAt(n) ? ' gap' : ''), text: c.key })));
+    const keys = h('div', { class: 'gm-row keys' + (two ? ' two' : '') }, h('div', { class: 'gm-name', style: { cursor: 'default' } }),
+      cols.map((c, n) => h('div', { class: 'gm-cell hd' + (gapAt(n) ? ' gap' : ''), style: cellStyle(), text: parts(c.key).join('\n'), tip: c.key + ' (' + splitName(c.split).toLowerCase() + ')' })));
     wrap.append(hd, keys);
     for (const g of rows) {
       const lab = LABELS[g.label];
@@ -1536,11 +1777,11 @@ body.snap #idea-form, body.snap #run-select { display: none; }
         tip: g.name + (g.label ? ': ' + g.label : '') + (lab ? '\n' + lab[1] : '') + '\nClick for details' }));
       cols.forEach((c, n) => {
         const m = measure(g.generality[c.key]), cls = 'gm-cell' + (gapAt(n) ? ' gap' : '');
-        if (!m) { row.appendChild(h('div', { class: cls + ' none', text: '·', tip: g.name + ' on ' + c.key + '\nnot measured' })); return; }
+        if (!m) { row.appendChild(h('div', { class: cls + ' none', style: cellStyle(), text: '·', tip: g.name + ' on ' + c.key + '\nnot measured' })); return; }
         const v = verdict(m), a = (0.2 + 0.62 * Math.min(1, Math.abs(m.effect) / max)).toFixed(2);
         row.appendChild(h('div', {
-          class: cls + (v === 'neu' ? ' neu' : ''), text: trimSigned(m.effect, 1),
-          style: v === 'neu' ? null : { background: v === 'pos' ? `rgba(57,135,229,${a})` : `rgba(230,103,103,${a})` },
+          class: cls + (v === 'neu' ? ' neu' : ''), text: DEC > 2 ? trimSigned(m.effect, DEC - 1).replace(/^([+−]?)0\./, '$1.') : trimSigned(m.effect, 1),
+          style: cellStyle(v === 'neu' ? null : { background: v === 'pos' ? `rgba(57,135,229,${a})` : `rgba(230,103,103,${a})` }),
           tip: measureTip(g.name + ' on ' + c.key + ' (' + splitName(c.split).toLowerCase() + ')', m),
         }));
       });
@@ -1718,6 +1959,9 @@ body.snap #idea-form, body.snap #run-select { display: none; }
   // --------------------------------------------------------------- main loop
   function renderPanels() {
     S.genes = prepGenes(S.state || {});
+    DEC = effectDecimals();
+    $('p-ledger').style.setProperty('--valw', (126 + (DEC - 2) * 20) + 'px');
+    $('p-ledger').style.setProperty('--effw', (44 + (DEC - 2) * 9) + 'px');
     renderViewer();
     renderRecords();
     renderChampion();

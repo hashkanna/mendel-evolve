@@ -2,7 +2,7 @@
 # Regenerate the read-only snapshots in docs/ from the live runs. Usage: scripts/publish_site.sh [run ids...]
 # With DEPLOY=cloudflare it also deploys docs/ to the Cloudflare Pages project "mendel-evolve".
 cd "$(dirname "$0")/.." || exit 1
-RUNS="${*:-p60 cp-haiku-1 cp-haiku-2 cp-haiku-3}"
+RUNS="${*:-p60 p59 cp-fable-1 cp-haiku-hint cp-haiku-1 cp-haiku-2 cp-haiku-3 cp-haiku-4 cp-haiku-5}"
 for r in $RUNS; do
   [ -f "runs/$r/state.json" ] && uv run python -m mendel.dashboard.snapshot --run "$r" --runs runs --out "docs/$r.html" 2>&1 | grep -v VIRTUAL_ENV
 done

@@ -104,7 +104,7 @@ select {
 /* ---------- champion scoreboard */
 .groups { display: flex; gap: 14px; height: 100%; }
 .tgroup { display: flex; flex-direction: column; min-width: 0; }
-.tg-label { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); padding-bottom: 5px; border-bottom: 1px solid var(--line-2); margin-bottom: 8px; white-space: nowrap; }
+.tg-label { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); padding-bottom: 5px; border-bottom: 1px solid var(--line-2); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tiles { display: flex; gap: 6px; flex: 1; min-height: 0; }
 .tile {
   flex: 1 1 0; min-width: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 2px;
@@ -114,7 +114,13 @@ select {
 .tile.pick:hover { border-color: var(--line-2); }
 .tile.shown { box-shadow: inset 0 -2px 0 var(--ink-3); }
 .tile.record { border-color: rgba(57,135,229,.75); background: linear-gradient(180deg, rgba(57,135,229,.24), rgba(57,135,229,.07)); }
-.t-key { font: 11px var(--mono); color: var(--ink-2); }
+.t-key { font: 11px var(--mono); color: var(--ink-2); max-width: 100%; }
+.t-key.long { font-size: 9.5px; line-height: 1.15; letter-spacing: -.02em; }
+.groups.narrow .t-bk { font-size: 9.5px; line-height: 1.2; }
+.groups.narrow .t-delta { font-size: 10.5px; margin-top: 3px; gap: 2px; }
+.groups.narrow .t-delta .g { font-size: 9px; }
+.groups.narrow .t-cap { font-size: 9px; }
+.groups.narrow { gap: 10px; } .groups.narrow .tiles { gap: 4px; }
 .t-val { font-size: 34px; font-weight: 650; line-height: 1.08; letter-spacing: -.02em; }
 .t-bk { font-size: 11px; color: var(--ink-3); }
 .t-delta { margin-top: 6px; font-size: 12px; font-weight: 650; display: flex; align-items: center; gap: 4px; }
@@ -152,7 +158,7 @@ svg .pt { fill: var(--ink); }
 .wf-cap div + div { font-size: 11px; color: var(--ink-3); }
 
 /* ---------- ledger */
-.lhead, .lrow { display: grid; grid-template-columns: 30px minmax(0, 1fr) 190px 126px 104px 92px; column-gap: 12px; align-items: center; padding: 0 6px; }
+.lhead, .lrow { display: grid; grid-template-columns: 30px minmax(0, 1fr) 190px var(--valw, 126px) 104px 92px; column-gap: 12px; align-items: center; padding: 0 6px; }
 .lhead { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); height: 34px; border-bottom: 1px solid var(--line-2); flex: 0 0 auto; }
 .lhead svg { display: block; }
 #ledger-list { flex: 1 1 auto; min-height: 0; position: relative; }
@@ -188,7 +194,7 @@ svg .pt { fill: var(--ink); }
 .author.llm { color: var(--ink-2); }
 .author.human { color: var(--ink); background: var(--line); border-color: var(--ink-3); }
 .c-val { white-space: nowrap; display: flex; align-items: baseline; gap: 7px; min-width: 0; }
-.v-eff { font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; flex: 0 0 44px; text-align: right; }
+.v-eff { font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; flex: 0 0 var(--effw, 44px); text-align: right; }
 .v-ci { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .chip {
   display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; border-radius: 999px;
@@ -259,6 +265,8 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
 .gm-cell.neu { background: var(--neu-soft); color: var(--ink-3); font-weight: 500; }
 .gm-cell.none { color: var(--line-2); font-weight: 400; }
 .gm-cell.hd { background: none; height: auto; color: inherit; font-weight: 500; }
+.gm-row.keys.two { height: 22px; font-size: 9.5px; }
+.gm-row.keys.two .gm-cell.hd { white-space: pre; line-height: 1.1; text-align: center; }
 .gm-grp { margin-left: 2px; text-transform: uppercase; letter-spacing: .09em; border-bottom: 1px solid var(--line-2); padding-bottom: 2px; white-space: nowrap; overflow: hidden; }
 .gm-grp.gap { margin-left: 10px; }
 .gm-lab { flex: 0 0 96px; width: 96px; padding-left: 10px; }
@@ -333,7 +341,7 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
 #tip .t2 { color: var(--ink-2); font-size: 11.5px; font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .status.live i, .spin { animation: none; } }
 /* ---------- now line, records strip, research efficiency, newer engine states */
-.now { flex: 1 1 0; min-width: 0; text-align: right; padding-left: 8px; }
+.now { flex: 1 1 340px; min-width: 0; text-align: right; padding-left: 8px; }
 .now-1 { font-size: 12px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .now-2 { font-size: 11px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
 .now time { color: var(--ink-3); font-variant-numeric: tabular-nums; margin-right: 6px; }
@@ -518,17 +526,29 @@ body.snap #idea-form, body.snap #run-select { display: none; }
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   function trimZeros(t) { return t.includes('.') ? t.replace(/0+$/, '').replace(/\.$/, '') : t; }
-  function fmtSigned(x, d = 2) {
+  // Decimals used for effects and other score-unit numbers. 2 for most problems; more when the
+  // run's effects are small (set per render from the data, see effectDecimals).
+  let DEC = 2;
+  // A score at its own precision: whole numbers as they are, small decimals to three significant digits.
+  function fmtScore(x) {
+    if (!isNum(x)) return '–';
+    const a = Math.abs(x);
+    if (Number.isInteger(x)) return (x < 0 ? MINUS : '') + String(a);
+    const text = a >= 100 ? a.toFixed(1) : a >= 10 ? a.toFixed(2) : a >= 1 ? a.toFixed(3) : String(Number(a.toPrecision(3)));
+    return (x < 0 && Number(text) !== 0 ? MINUS : '') + trimZeros(text);
+  }
+  const fmtScoreSigned = (x) => (!isNum(x) ? '–' : x === 0 ? '0' : (x < 0 ? MINUS : '+') + fmtScore(Math.abs(x)));
+  function fmtSigned(x, d = DEC) {
     if (!isNum(x)) return '–';
     const t = Math.abs(x).toFixed(d);
     return Number(t) === 0 ? t : (x < 0 ? MINUS : '+') + t;
   }
-  function trimNum(x, d = 2) {
+  function trimNum(x, d = DEC) {
     if (!isNum(x)) return '–';
     const t = trimZeros(Math.abs(x).toFixed(d));
     return (x < 0 && Number(t) !== 0 ? MINUS : '') + t;
   }
-  function trimSigned(x, d = 2) {
+  function trimSigned(x, d = DEC) {
     if (!isNum(x)) return '–';
     const t = trimZeros(Math.abs(x).toFixed(d));
     return Number(t) === 0 ? '0' : (x < 0 ? MINUS : '+') + t;
@@ -684,14 +704,22 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       addedGen: g.gen, generality: {}, value: undefined, of: null, note: '', neutralRounds: null,
     }));
   }
+  // Two significant digits for the largest effect in the run: 0.5 -> 2 decimals, 0.0005 -> 5.
+  function effectDecimals() {
+    let max = 0;
+    for (const g of S.genes) for (const m of [g.ko, g.sc]) if (m) max = Math.max(max, Math.abs(m.effect), Math.abs(m.lo || 0), Math.abs(m.hi || 0));
+    if (!(max > 0)) { const d = obj(obj(S.state).decomposition); for (const k of ['tuning', 'ideas', 'compute']) if (isNum(d[k])) max = Math.max(max, Math.abs(d[k])); }
+    return max > 0 && max < 1 ? clamp(1 - Math.floor(Math.log10(max)), 2, 6) : 2;
+  }
   const byEffect = (a, b) => (b.m ? b.m.effect : -Infinity) - (a.m ? a.m.effect : -Infinity) || a.name.localeCompare(b.name);
   function instanceList(st) {
     const out = [], seen = new Set(), inst = obj(st.instances);
     const add = (k, split) => { if (typeof k !== 'string' || !k || seen.has(k)) return; seen.add(k); out.push({ key: k, split }); };
     arr(inst.train).forEach((k) => add(k, 'train'));
     arr(inst.heldout).forEach((k) => add(k, 'heldout'));
-    for (const name of Object.keys(inst)) if (name !== 'train' && name !== 'heldout') arr(inst[name]).forEach((k) => add(k, name));
-    Object.keys(obj(obj(st.champion).scores)).forEach((k) => add(k, 'other'));
+    const scored = obj(obj(st.champion).scores);
+    for (const name of Object.keys(inst)) if (name !== 'train' && name !== 'heldout') arr(inst[name]).forEach((k) => { if (scored[k]) add(k, name); });
+    Object.keys(scored).forEach((k) => add(k, 'other'));
     return out;
   }
   const splitName = (sp) => (sp === 'train' ? 'Train' : sp === 'heldout' ? 'Held-out' : sp === 'other' ? 'Other' : sp);
@@ -909,15 +937,15 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const chips = recs.map((r) => {
       const known = num(r.best_known) != null ? num(r.best_known) : num(bk[r.instance]);
       const checks = arr(r.checks).filter((c) => typeof c === 'string' && c);
-      const tip = [r.instance + ': ' + trimNum(r.value) + (known != null ? ', best published ' + trimNum(known) + ' (' + trimSigned(r.value - known) + ')' : '')];
+      const tip = [r.instance + ': ' + fmtScore(r.value) + (known != null ? ', best published ' + fmtScore(known) + ' (' + fmtScoreSigned(r.value - known) + ')' : '')];
       if (r.verified === true) tip.push(checks.length ? 'Verified by ' + plural(checks.length, 'independent checker') + ': ' + checks.join(', ') : 'Verified by the exact evaluator');
       else tip.push(r.verified === false ? 'Not verified yet' : 'Verification not reported');
       if (r.certificate) tip.push('Certificate: ' + str(r.certificate));
       if (known != null && !(minimise ? r.value < known : r.value > known)) tip.push('Note: this does not beat the published value');
       return h('div', { class: 'rc', tip: tip.join('\n') },
         h('span', { class: 'k', text: r.instance }),
-        h('span', { class: 'v', text: trimNum(r.value) }),
-        h('span', { class: 'bk', text: known != null ? 'vs ' + trimNum(known) : '' }),
+        h('span', { class: 'v', text: fmtScore(r.value) }),
+        h('span', { class: 'bk', text: known != null ? 'vs ' + fmtScore(known) : '' }),
         r.verified === true
           ? h('span', { class: 'ok' }, h('i', { text: '✓' }), checks.length > 1 ? '×' + checks.length : null)
           : h('span', { class: 'ok no' }, h('i', { text: '?' }), 'unverified'));
@@ -929,7 +957,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       shown--;
       list.removeChild(chips[shown]);
       more.textContent = '+' + (chips.length - shown) + ' more';
-      more.setAttribute('data-tip', 'More records\n' + recs.slice(shown).map((r) => r.instance + ': ' + trimNum(r.value)).join('\n'));
+      more.setAttribute('data-tip', 'More records\n' + recs.slice(shown).map((r) => r.instance + ': ' + fmtScore(r.value)).join('\n'));
       if (!more.parentNode) list.appendChild(more);
     }
   }
@@ -955,7 +983,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     if (!insts.length) { body.appendChild(empty('Scores appear here once the champion has been evaluated.')); return; }
     let nRec = 0, nEq = 0, nBehind = 0;
     const groups = [];
-    let longest = 1;
+    let longest = 1, whole = true;
     for (const it of insts) {
       let grp = groups.find((x) => x.split === it.split);
       if (!grp) { grp = { split: it.split, items: [] }; groups.push(grp); }
@@ -964,31 +992,39 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       it.rec = records.find((r) => r.instance === it.key);
       it.ours = num(it.sc.best) != null ? num(it.sc.best) : num(it.sc.mean);
       if (it.rec && isNum(it.rec.value) && (it.ours == null || (minimise ? it.rec.value < it.ours : it.rec.value > it.ours))) it.ours = it.rec.value;
-      it.text = it.ours != null ? trimNum(it.ours) : '–';
+      it.text = it.ours != null ? fmtScore(it.ours) : '–';
       longest = Math.max(longest, it.text.length);
+      it.known = num(bk[it.key]) != null ? num(bk[it.key]) : it.rec ? num(it.rec.best_known) : null;
+      if ((it.ours != null && !Number.isInteger(it.ours)) || (it.known != null && !Number.isInteger(it.known))) whole = false;
     }
+    // Whole-number scores (point counts) show the gap in points; anything else as a percentage of the published value.
+    const gap = (d, known) => {
+      if (whole || !known) return fmtScoreSigned(d);
+      const pc = (d / Math.abs(known)) * 100, a = Math.abs(pc);
+      return (pc > 0 ? '+' : MINUS) + (a < 0.1 ? String(Number(a.toPrecision(1))) : a < 10 ? a.toFixed(1) : String(Math.round(a))) + '%';
+    };
     // the big numerals shrink together when there are many instances or long values
     const tileW = (body.clientWidth - 14 * (groups.length - 1) - 6 * (insts.length - groups.length)) / insts.length;
-    const fontSize = clamp(Math.floor((tileW - 8) / (0.6 * longest)), 13, 34) + 'px';
-    const wrap = h('div', { class: 'groups' });
+    const fontSize = clamp(Math.floor((tileW - 8) / (0.6 * longest)), 10, 34) + 'px';
+    const longKey = insts.some((it) => it.key.length * 6.7 > tileW - 4);      // "triangle30" in a narrow tile
+    const wrap = h('div', { class: 'groups' + (tileW < 60 ? ' narrow' : '') });
     for (const grp of groups) {
       const tiles = h('div', { class: 'tiles' });
       for (const it of grp.items) {
-        const sc = it.sc, rec = it.rec, ours = it.ours;
-        const known = num(bk[it.key]) != null ? num(bk[it.key]) : rec ? num(rec.best_known) : null;
+        const sc = it.sc, rec = it.rec, ours = it.ours, known = it.known;
         const delta = ours != null && known != null ? ours - known : null;
         const better = delta != null && (minimise ? delta < 0 : delta > 0);
         let glyph = '', gcls = 'neu', dtext = '', cap = '';
         if (ours == null) cap = 'pending';
-        else if (known == null) cap = 'no reference';
+        else if (known == null) cap = tileW < 70 ? 'no ref.' : 'no reference';
         else if (better) {
-          nRec++; glyph = '★'; gcls = 'pos'; dtext = trimSigned(delta);
+          nRec++; glyph = '★'; gcls = 'pos'; dtext = gap(delta, known);
           cap = rec && rec.verified === false ? 'unverified' : tileW < 58 ? 'record' : 'new record';
         } else if (delta === 0) { nEq++; glyph = '='; dtext = ''; cap = 'matched'; }
-        else { nBehind++; glyph = minimise ? '▲' : '▼'; gcls = 'neg'; dtext = trimSigned(delta); cap = 'behind'; }
-        const tipLines = [it.key + ' (' + splitName(it.split).toLowerCase() + '): ' + (ours != null ? trimNum(ours) : 'no result yet')];
-        if (known != null) tipLines.push('best published ' + trimNum(known));
-        if (isNum(sc.mean)) tipLines.push('mean ' + trimNum(sc.mean) + (isNum(sc.runs) ? ' over ' + plural(sc.runs, 'run') : ''));
+        else { nBehind++; glyph = minimise ? '▲' : '▼'; gcls = 'neg'; dtext = gap(delta, known); cap = 'behind'; }
+        const tipLines = [it.key + ' (' + splitName(it.split).toLowerCase() + '): ' + (ours != null ? fmtScore(ours) : 'no result yet')];
+        if (known != null) tipLines.push('best published ' + fmtScore(known) + (delta ? ' (' + fmtScoreSigned(delta) + (whole || !known ? '' : ', ' + gap(delta, known)) + ')' : ''));
+        if (isNum(sc.mean)) tipLines.push('mean ' + fmtScore(sc.mean) + (isNum(sc.runs) ? ' over ' + plural(sc.runs, 'run') : ''));
         if (sc.budget) tipLines.push('budget ' + str(sc.budget));
         if (rec) tipLines.push(rec.verified === true ? 'Record verified by the exact evaluator' : rec.verified === false ? 'Record not verified yet' : 'Record');
         if (rec && rec.certificate) tipLines.push(str(rec.certificate));
@@ -1000,15 +1036,16 @@ body.snap #idea-form, body.snap #run-select { display: none; }
           onclick: canShow ? () => pickInstance(it.key) : null,
           onkeydown: canShow ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickInstance(it.key); } } : null,
         },
-          h('div', { class: 't-key', text: it.key }),
+          h('div', { class: 't-key' + (longKey ? ' long' : ''), text: longKey ? it.key.replace(/^([A-Za-z_]+)(\d)/, '$1\u200b$2') : it.key }),
           h('div', { class: 't-val', style: { fontSize }, text: it.text }),
-          h('div', { class: 't-bk', text: known != null ? 'vs ' + trimNum(known) : ' ' }),
+          h('div', { class: 't-bk', text: known != null ? 'vs ' + fmtScore(known) : ' ' }),
           h('div', { class: 't-delta' }, glyph ? h('span', { class: 'g ' + gcls, text: glyph }) : null, dtext),
           h('div', { class: 't-cap', text: cap }));
         tiles.appendChild(tile);
       }
       wrap.appendChild(h('div', { class: 'tgroup', style: { flex: grp.items.length + ' 1 0' } },
-        h('div', { class: 'tg-label', text: splitName(grp.split) + (grp.split === 'heldout' ? ' · never tuned on' : '') }), tiles));
+        h('div', { class: 'tg-label', text: splitName(grp.split) + (grp.split === 'heldout' && groups.length <= 2 && grp.items.length * tileW > 150 ? ' · never tuned on' : ''),
+          tip: grp.split === 'heldout' ? 'Held-out instances\nNever used for tuning or for choosing ideas' : grp.split === 'train' ? 'Training instances\nUsed for screening and tuning' : null }), tiles));
     }
     body.appendChild(wrap);
     const parts = [];
@@ -1293,10 +1330,10 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const lo = Math.min(0, sol.lo), hi = Math.max(0, sol.hi), span = hi - lo || 1;
     const Y = (val) => top + (1 - (val - lo) / span) * ph, X = (i) => left + (i / n) * pw, base = Y(0);
     if (n <= pw) {
-      const outline = () => { ctx.moveTo(X(0), Y(v[0])); for (let i = 0; i < n; i++) { ctx.lineTo(X(i), Y(v[i])); ctx.lineTo(X(i + 1), Y(v[i])); } };
+      const outline = () => { for (let i = 0; i < n; i++) { ctx.lineTo(X(i), Y(v[i])); ctx.lineTo(X(i + 1), Y(v[i])); } };
       ctx.beginPath(); ctx.moveTo(X(0), base); outline(); ctx.lineTo(X(n), base); ctx.closePath();
       ctx.fillStyle = WASH; ctx.fill();
-      ctx.beginPath(); outline();
+      ctx.beginPath(); ctx.moveTo(X(0), Y(v[0])); outline();
       ctx.strokeStyle = DOT; ctx.lineWidth = 1.5; ctx.lineJoin = 'round'; ctx.stroke();
     } else {
       // more steps than pixels: each pixel column spans its lowest to its highest step
@@ -1446,7 +1483,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const svg = s('svg', { class: 'fill', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Decomposition of the gain' });
     const bw = Math.min(40, cw - 14), name = (k) => k.charAt(0).toUpperCase() + k.slice(1);
     const xl = (i) => cw * i + (cw - bw) / 2;
-    const size = (text, big) => (text.length >= 6 ? 12 : text.length >= 5 ? Math.min(big, 14) : big) + 'px';   // long numbers shrink to their column
+    const size = (text, big) => (text.length >= 8 ? 10 : text.length >= 6 ? 11.5 : text.length >= 5 ? Math.min(big, 14) : big) + 'px';   // long numbers shrink to their column
     svg.appendChild(s('line', { x1: 0, x2: W, y1: Y(0), y2: Y(0), class: 'grid' }));
     // seed level
     const seedText = seed != null ? trimNum(seed) : '';
@@ -1531,8 +1568,8 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const right = left + pitch * pairs.length + gap * (groups.length - 1);
     const yl = (v, text) => s('text', { x: left - 7, y: Y(v) + 3.5, 'text-anchor': 'end', text });
     svg.appendChild(yl(0, '0'));
-    if (Y(0) - Y(hi) > 10) svg.appendChild(yl(hi, trimSigned(hi, 1)));
-    if (Y(lo) - Y(0) > 10) svg.appendChild(yl(lo, trimSigned(lo, 1)));
+    if (Y(0) - Y(hi) > 10) svg.appendChild(yl(hi, trimSigned(hi, Math.max(1, DEC - 1))));
+    if (Y(lo) - Y(0) > 10) svg.appendChild(yl(lo, trimSigned(lo, Math.max(1, DEC - 1))));
     if (m) {
       if (m.lo != null) svg.appendChild(s('rect', { x: left, y: Y(m.hi), width: right - left, height: Math.max(1, Y(m.lo) - Y(m.hi)), fill: 'var(--ink)', 'fill-opacity': 0.09, tip: '95% interval ' + ciText(m) }));
       svg.append(s('line', { x1: left, x2: right, y1: Y(m.effect), y2: Y(m.effect), stroke: 'var(--ink)', 'stroke-width': 1.5 }),
@@ -1633,9 +1670,10 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     let lastX = -99;
     for (const t of sc.ticks) {
       const x = sc.x(t);
-      if (x < 8 || x > BAR_W - 14 || x - lastX < 26) continue;
+      const label = trimSigned(t), half = label.length * 2.9 + 2;
+      if (x < 8 || x + half > BAR_W || x - lastX < half * 2 + 6) continue;
       lastX = x;
-      axis.append(s('text', { x, y: 24, 'text-anchor': 'middle', style: { letterSpacing: '0' }, text: trimSigned(t) }), s('line', { x1: x, x2: x, y1: 27, y2: 30, class: 'axis' }));
+      axis.append(s('text', { x, y: 24, 'text-anchor': 'middle', style: { letterSpacing: '0' }, text: label }), s('line', { x1: x, x2: x, y1: 27, y2: 30, class: 'axis' }));
     }
     head.append(h('div'), h('div', { text: 'Idea and hypothesis' }), h('div', null, axis),
       h('div', { text: 'Effect · interval' }), h('div', { text: 'Generality' }), h('div'));
@@ -1713,6 +1751,12 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     for (const g of rows) for (const c of cols) { const m = measure(g.generality[c.key]); if (m) max = Math.max(max, Math.abs(m.effect)); }
     max = max || 1;
     const gapAt = (i) => i > 0 && cols[i].split !== cols[i - 1].split;
+    // "triangle33" is shown on two lines; the cell is as wide as its label or its numbers need, within the panel
+    const parts = (key) => { const m = /^([A-Za-z_]+)(\d+)$/.exec(key); return m && key.length > 5 ? [m[1], m[2]] : [key]; };
+    const two = cols.some((c) => parts(c.key).length > 1);
+    const need = Math.max(37, DEC > 2 ? (DEC + 1) * 6.3 + 6 : 0, ...cols.map((c) => Math.max(...parts(c.key).map((x) => x.length)) * (two ? 5.6 : 6.4) + 4));
+    const cw = Math.round(clamp(need, 37, Math.max(37, Math.floor((body.clientWidth - 104) / cols.length) - 3)));
+    const cellStyle = (extra) => Object.assign({ flex: '0 0 ' + cw + 'px', width: cw + 'px' }, extra || {});
     const wrap = h('div', { class: 'gm' });
     // group header
     const hd = h('div', { class: 'gm-row head' }, h('div', { class: 'gm-name', style: { cursor: 'default' } }));
@@ -1721,11 +1765,11 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       let j = i;
       while (j + 1 < cols.length && cols[j + 1].split === cols[i].split) j++;
       const n = j - i + 1;
-      hd.appendChild(h('div', { class: 'gm-grp' + (i > 0 ? ' gap' : ''), style: { flex: '0 0 ' + (n * 37 + (n - 1) * 2) + 'px' }, text: splitName(cols[i].split) }));
+      hd.appendChild(h('div', { class: 'gm-grp' + (i > 0 ? ' gap' : ''), style: { flex: '0 0 ' + (n * cw + (n - 1) * 2) + 'px' }, text: splitName(cols[i].split) }));
       i = j + 1;
     }
-    const keys = h('div', { class: 'gm-row keys' }, h('div', { class: 'gm-name', style: { cursor: 'default' } }),
-      cols.map((c, n) => h('div', { class: 'gm-cell hd' + (gapAt(n) ? ' gap' : ''), text: c.key })));
+    const keys = h('div', { class: 'gm-row keys' + (two ? ' two' : '') }, h('div', { class: 'gm-name', style: { cursor: 'default' } }),
+      cols.map((c, n) => h('div', { class: 'gm-cell hd' + (gapAt(n) ? ' gap' : ''), style: cellStyle(), text: parts(c.key).join('\n'), tip: c.key + ' (' + splitName(c.split).toLowerCase() + ')' })));
     wrap.append(hd, keys);
     for (const g of rows) {
       const lab = LABELS[g.label];
@@ -1733,11 +1777,11 @@ body.snap #idea-form, body.snap #run-select { display: none; }
         tip: g.name + (g.label ? ': ' + g.label : '') + (lab ? '\n' + lab[1] : '') + '\nClick for details' }));
       cols.forEach((c, n) => {
         const m = measure(g.generality[c.key]), cls = 'gm-cell' + (gapAt(n) ? ' gap' : '');
-        if (!m) { row.appendChild(h('div', { class: cls + ' none', text: '·', tip: g.name + ' on ' + c.key + '\nnot measured' })); return; }
+        if (!m) { row.appendChild(h('div', { class: cls + ' none', style: cellStyle(), text: '·', tip: g.name + ' on ' + c.key + '\nnot measured' })); return; }
         const v = verdict(m), a = (0.2 + 0.62 * Math.min(1, Math.abs(m.effect) / max)).toFixed(2);
         row.appendChild(h('div', {
-          class: cls + (v === 'neu' ? ' neu' : ''), text: trimSigned(m.effect, 1),
-          style: v === 'neu' ? null : { background: v === 'pos' ? `rgba(57,135,229,${a})` : `rgba(230,103,103,${a})` },
+          class: cls + (v === 'neu' ? ' neu' : ''), text: DEC > 2 ? trimSigned(m.effect, DEC - 1).replace(/^([+−]?)0\./, '$1.') : trimSigned(m.effect, 1),
+          style: cellStyle(v === 'neu' ? null : { background: v === 'pos' ? `rgba(57,135,229,${a})` : `rgba(230,103,103,${a})` }),
           tip: measureTip(g.name + ' on ' + c.key + ' (' + splitName(c.split).toLowerCase() + ')', m),
         }));
       });
@@ -1915,6 +1959,9 @@ body.snap #idea-form, body.snap #run-select { display: none; }
   // --------------------------------------------------------------- main loop
   function renderPanels() {
     S.genes = prepGenes(S.state || {});
+    DEC = effectDecimals();
+    $('p-ledger').style.setProperty('--valw', (126 + (DEC - 2) * 20) + 'px');
+    $('p-ledger').style.setProperty('--effw', (44 + (DEC - 2) * 9) + 'px');
     renderViewer();
     renderRecords();
     renderChampion();
