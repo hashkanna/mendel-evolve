@@ -1,0 +1,2 @@
+problem = "minoverlap"
+run = "python solver.py"

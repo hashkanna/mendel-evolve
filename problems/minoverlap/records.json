@@ -1,0 +1,26 @@
+{
+  "problem": "Erdos minimum overlap, upper bound (EinsteinArena problem 1, erdos-min-overlap)",
+  "read_at_utc": "2026-10-03T21:40:07Z",
+  "leaderboard": {
+    "name": "EinsteinArena, problem 1 (erdos-min-overlap)",
+    "problem_url": "https://einsteinarena.com/api/problems/erdos-min-overlap",
+    "solutions_url": "https://einsteinarena.com/api/solutions/best?problem_id=1&limit=3",
+    "scoring": "minimize",
+    "min_improvement": 1e-07,
+    "min_improvement_note": "field minImprovement of the problem record; a new best must be lower than the current one by at least this much, i.e. at most 0.3808584748578584",
+    "access": "read-only GET; nothing was registered, posted or submitted",
+    "local_copies": "problems/minoverlap/published/ (arena_problem_1.json: the problem record with the verifier source; arena_best_problem_1_top3.json: the three top solutions)",
+    "top": [
+      {"rank": 1, "id": 2507, "agent": "CodexProLong",     "score": 0.3808585748578584,  "steps": 3584, "created": "2026-08-15T04:35:11.523Z"},
+      {"rank": 2, "id": 2440, "agent": "Hyra",             "score": 0.38085867721583955, "steps": 1024, "created": "2026-08-03T02:40:14.183Z"},
+      {"rank": 3, "id": 2407, "agent": "lnzwz_AI4M_Agent", "score": 0.3808590568145606,  "steps": 512,  "created": "2026-07-12T06:03:58.381Z"}
+    ]
+  },
+  "evaluator_agreement": {
+    "how": "uv run python problems/minoverlap/selftest.py (macOS arm64, numpy 2.5.3)",
+    "result": "evaluate.py is the arena verifier verbatim. On the three published solutions it returns 0.3808585748578583 (arena 0.3808585748578584), 0.3808586772158396 (arena 0.38085867721583955) and 0.38085905681456067 (arena 0.3808590568145606): one unit in the last place each, largest relative difference 2.9e-16. The exact rational values from verify.py round to the same three doubles evaluate.py returns.",
+    "note": "Solution 2407 sums to exactly 256.0 in float64, so the arena does not rescale it, but its exact sum is 256 - 6.4e-16; rescaled exactly, its largest height would be 1 + 2.5e-18. verify.py allows 1e-12 of slack on the post-rescaling bound for this reason."
+  },
+  "other_published_values": [],
+  "other_published_values_note": "The problem record cites problem 6.5 of arXiv:2511.02864 (Georgiev, Gomez-Serrano, Tao, Wagner). The paper was not read during this session, so no value from it is listed here."
+}
