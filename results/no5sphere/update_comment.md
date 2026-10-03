@@ -22,7 +22,7 @@ At n = 13, 14, 18, 19, 20, 22 and 27 the same search equals the public values (3
 
 For n = 33 to 40 I found no published point sets, so the only public baseline is the monotone closure of the n = 32 value. First sets from the same search: 86, 90, 91, 94, 96, 98, 100 and 103 points. Only 40 runs were made per size there, so I would read these as under-searched rather than hard.
 
-Certificates, with 0-based coordinates in `{0,...,n-1}^3` and the seed, CPU budget and solver configuration of the run that found each one: https://github.com/hashkanna/mendel-evolve/tree/028855ae67b01eb8d906cdf413b730413e67f05c/results/no5sphere/certificates
+Certificates, with 0-based coordinates in `{0,...,n-1}^3` and the seed, CPU budget and solver configuration of the run that found each one: https://github.com/hashkanna/mendel-evolve/tree/535aaac2dacdfd7b52285b77fd00945858c86871/results/no5sphere/certificates
 
 **Verification.** Every set passes three independent exact-integer checks over every 5-subset, with zero degenerate 5-subsets and minimum |det| = 2 in each:
 
