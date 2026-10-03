@@ -114,8 +114,9 @@ Applied to the best program of one OpenEvolve run on circle packing (its two-pha
 
 ## Third autocorrelation inequality: honest status
 
-From scratch our solver reaches 1.45742, short of the public leaderboard's 1.45081 and of AlphaEvolve's
-1.4557. Starting from the leaderboard's top solution and re-optimising it gives 1.4507562130316245, which is
+From scratch our solver reaches 1.45414 (the best of 43 runs of 600 CPU-seconds), short of the public
+leaderboard's 1.45081. We do not compare it with AlphaEvolve's published 1.4557, because the two may be
+stated for different variants of the inequality. Starting from the leaderboard's top solution and re-optimising it gives 1.4507562130316245, which is
 below the leaderboard value by 5.0e-5 (its minimum improvement is 1e-5) and passes the leaderboard's own
 verifier code. That is an improvement of someone else's construction, not a discovery from scratch, and we
 report it as such. Nothing has been submitted.
