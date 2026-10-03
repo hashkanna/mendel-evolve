@@ -1,0 +1,67 @@
+name = "distratio"
+title = "Max/min distance ratio (Tao et al. problem 50; EinsteinArena problem 5, min-distance-ratio-2d)"
+direction = "min"
+min_improvement = 1e-7
+statement = """Place n points in d-dimensional space so that the ratio of the largest to the smallest pairwise
+Euclidean distance, SQUARED, is as small as possible:
+
+    R = ( max_{i<j} |p_i - p_j| / min_{i<j} |p_i - p_j| )^2
+
+An instance is {"n": N, "d": D}. A solution is a list of N points, each a list of D finite floats.
+The points must be distinct: the smallest distance must be at least 1e-12. R is invariant under
+translation, rotation, reflection and scaling, so only the shape of the configuration matters.
+
+The score is computed exactly as the public EinsteinArena verifier for problem 5 computes it
+(float64, numpy):
+
+    diff = P[:, None, :] - P[None, :, :]
+    dist = sqrt(sum(diff**2, axis=-1));  pairwise = dist[upper triangle]
+    score = (max(pairwise) / min(pairwise))**2
+
+The arena fixes N = 16, D = 2; this pack uses the same formula for other N and D. The exact rational
+value max d^2 / min d^2 is also computed and must agree to 1e-12 relative. Lower is better.
+
+Facts worth knowing:
+- It is a min-max problem over all pairs. At a local optimum many pairs tie at the minimum distance
+  and several tie at the maximum (the published n = 16 optimum has the minimum attained by about 2n
+  pairs), and the configuration is the solution of that tie system.
+- The epigraph form "minimise t subject to |p_i - p_j|^2 >= 1 and |p_i - p_j|^2 <= t for all i < j"
+  is a smooth nonlinear program with C(n, 2) pairs of constraints; local NLP solvers converge to
+  machine precision from a good start. The difficulty is choosing the basin.
+- Optimal 2D configurations look like pieces of the hexagonal lattice bent into a roughly round
+  shape; 3D ones like pieces of close packings. Many records are asymmetric.
+- The arena only accepts a new best that improves by at least minImprovement = 1e-7.
+
+Sources: Georgiev, Gomez-Serrano, Tao, Wagner, "Mathematical exploration and discovery at scale",
+arXiv:2511.02864 (problem 50); AlphaEvolve results notebook, section B.8; EinsteinArena problem 5;
+Erich Friedman's Packing Center pages maxmin/ and maxmin3/.
+"""
+
+[instances]
+# n16 is the arena's instance, but the seed solver reaches its best value within a second, so at
+# budgets of a few seconds every idea is neutral there. n30 is where the ideas separate (5 CPU s,
+# seed 1: baseline 27.74, each idea alone 26.88). Held out: a 2D size and the paper's 3D instance.
+train   = [{ n = 16, d = 2 }, { n = 30, d = 2 }]
+heldout = [{ n = 28, d = 2 }, { n = 14, d = 3 }]
+# Small instances for the invariance gate: one per dimension.
+gate    = [{ n = 8, d = 2 }, { n = 8, d = 3 }]
+
+# Read 2026-10-03, see records.json for sources and times.
+#   n16    EinsteinArena problem 5, best entry (id 14, "Together-AI"), reproduced bit for bit here.
+#   d3n14  Friedman's maxmin3 page: "4.165+" by M. Sun and E. Samanta (June 2026), three decimals
+#          only. AlphaEvolve's 4.165849767 (notebook B.8, reproduced here from its coordinates) is
+#          older; Friedman lists the newer value instead, so it is at most 4.165849767 and at least
+#          4.165. Our seed solver finds 4.16578347, which may or may not beat it: no claim is made,
+#          and the truncated 4.165 is used as the (optimistic) reference.
+#   n15, n28, n30, d3n13  Friedman's pages; only three decimals are shown ("12.038+", "24.981+",
+#          "26.879+", "3.947+"), so these are truncated lower bounds of the true values, not exact.
+#   n8, d3n8   closed forms on Friedman's pages: 1 / (2 - 2 cos(pi/7)) and 1 + sqrt(2).
+[best_known]
+n16 = 12.889229907717521
+n30 = 26.879
+n28 = 24.981
+d3n14 = 4.165
+n15 = 12.038
+d3n13 = 3.947
+n8 = 5.048917339522307
+d3n8 = 2.414213562373095
