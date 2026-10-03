@@ -1,0 +1,49 @@
+{
+ "n": 6,
+ "K": 24,
+ "case": 0,
+ "t": 4,
+ "u": 4,
+ "level3_subcases": [
+  {
+   "status": "INFEASIBLE",
+   "conflicts": 18,
+   "lazy_rounds": 1,
+   "lazy_rows_added": 0,
+   "wall_seconds": 4.52,
+   "t": 4,
+   "u": 4,
+   "v": 0
+  },
+  {
+   "status": "INFEASIBLE",
+   "conflicts": 29,
+   "lazy_rounds": 1,
+   "lazy_rows_added": 0,
+   "wall_seconds": 5.85,
+   "t": 4,
+   "u": 4,
+   "v": 1
+  },
+  {
+   "status": "INFEASIBLE",
+   "conflicts": 967,
+   "lazy_rounds": 1,
+   "lazy_rows_added": 0,
+   "wall_seconds": 37.9,
+   "t": 4,
+   "u": 4,
+   "v": 2
+  },
+  {
+   "status": "UNKNOWN",
+   "conflicts": 5685,
+   "lazy_rounds": 1,
+   "lazy_rows_added": 0,
+   "wall_seconds": 200.03,
+   "t": 4,
+   "u": 4,
+   "v": 3
+  }
+ ]
+}

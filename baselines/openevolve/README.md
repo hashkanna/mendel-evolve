@@ -6,11 +6,11 @@ Mendel adds named ideas to one solver and measures each. Both start from the sam
 the same strict evaluator, `problems/circle_packing/evaluate.py`.
 
 The baseline is OpenEvolve's **own two-phase recipe** for this example, with every prompt hint it
-ships, on `claude-haiku-4-5`.
+ships, on `claude-haiku-4-5`, five seeds.
 
 ## Commands
 
-All from the project root. Steps 2 and 3 are the ones behind `results/two_phase_haiku.csv`.
+All from the project root. Steps 2 to 4 are the ones behind `results/two_phase_haiku.csv`.
 
 ```bash
 # 1. Set up (once): clone OpenEvolve at the pinned commit into baselines/openevolve/vendor/
@@ -18,11 +18,13 @@ All from the project root. Steps 2 and 3 are the ones behind `results/two_phase_
 bash baselines/openevolve/setup.sh
 
 # 2. Run the two-phase recipe, one command per seed. PAID: one claude-haiku-4-5 request per
-#    iteration, 100 + 100 iterations. Reads ANTHROPIC_API_KEY from .env. The three seeds can run
-#    at the same time; they share the cap because they share the group directory.
-for seed in 1 2 3; do
+#    iteration, 100 + 100 iterations, about $7 per seed. Reads ANTHROPIC_API_KEY from .env. Seeds can
+#    run at the same time; runs that share a group directory share the cap. --eval-timeout-factor 4
+#    is for a machine that other jobs are loading (see "Evaluation time limits"); on an idle machine
+#    leave it out and OpenEvolve's shipped limits apply.
+for seed in 1 2 3 4 5; do
   uv run python baselines/openevolve/run_openevolve.py --recipe two-phase --seed $seed \
-      --parallel-evaluations 2 --cap-usd 15 &
+      --parallel-evaluations 2 --eval-timeout-factor 4 --cap-usd 80 &
 done; wait
 #    -> baselines/openevolve/runs/two_phase_haiku/seed<S>/
 #         phase1/, phase2/    config.yaml, console.log and openevolve_output/ of each phase;
@@ -33,15 +35,33 @@ done; wait
 #         watch.log           spend, lost iterations and machine load, every 10 seconds
 #       baselines/openevolve/runs/two_phase_haiku/STOP   only if the runs were stopped (with the reason)
 
-# 3. Re-score every best-so-far program with the strict evaluator and summarise. No API calls.
+# 3. Re-run, offline, the programs OpenEvolve discarded because their evaluation timed out, under a
+#    CPU-time limit that does not depend on the load. No API calls.
+uv run python baselines/openevolve/rescue_timeouts.py --cpu-limit 360
+
+# 4. Re-score every best-so-far program with the strict evaluator and summarise; then measure the
+#    spread of the best programs that are not deterministic. No API calls.
 uv run python baselines/openevolve/two_phase_results.py
-#    -> baselines/openevolve/results/two_phase_haiku.csv            one row per seed, phase, checkpoint
-#       baselines/openevolve/results/two_phase_haiku_summary.json   per seed and over seeds
+uv run python baselines/openevolve/stochastic_reruns.py
+#    -> baselines/openevolve/results/two_phase_haiku.csv                     one row per seed, phase, checkpoint
+#       baselines/openevolve/results/two_phase_haiku_summary.json            per seed and over seeds
+#       baselines/openevolve/results/two_phase_haiku_rescued_timeouts.csv    one row per timed-out program
+#       baselines/openevolve/results/two_phase_haiku_stochastic_reruns.json  non-deterministic best programs
 ```
 
 Other entry points:
 
 ```bash
+# Continue runs that the cap stopped, with a new cap (remove the STOP file first). The cap counts
+# everything the group has logged, before and after; the configs of the first leg are kept, apart
+# from an evaluation limit asked for with --eval-timeout, which is recorded with the iteration it
+# starts at.
+rm baselines/openevolve/runs/two_phase_haiku/STOP
+for seed in 1 2 3; do
+  uv run python baselines/openevolve/run_openevolve.py --recipe two-phase --seed $seed --resume \
+      --cap-usd 80 --eval-timeout 360 &
+done; wait
+
 # One phase only, with config.yaml of this directory (phase 1 prompt, 100 iterations), and its re-score.
 uv run python baselines/openevolve/run_openevolve.py --iterations 100 --seed 1
 uv run python baselines/openevolve/rescore.py baselines/openevolve/runs/iter100_seed1
@@ -49,63 +69,60 @@ uv run python baselines/openevolve/rescore.py baselines/openevolve/runs/iter100_
 # The account's rate limits, from one 5-token request (about $0.00004).
 baselines/openevolve/vendor/venv/bin/python baselines/openevolve/probe_limits.py
 
-# The plumbing without spending anything: a local stub in place of the model. (Not on port 8765,
-# which is the Mendel dashboard's; stop the stub by its process id, never by port.)
-baselines/openevolve/vendor/venv/bin/python baselines/openevolve/fake_llm_server.py --port 8791 & STUB=$!
-uv run python baselines/openevolve/run_openevolve.py --recipe two-phase --seed 1 --iterations 4 \
-    --api-base http://127.0.0.1:8791/v1 --group /tmp/oe-stub
-uv run python baselines/openevolve/two_phase_results.py --group /tmp/oe-stub --out /tmp/oe-stub/results.csv
-kill $STUB
+# End evaluation subprocesses that OpenEvolve has already timed out but that keep running (only
+# needed for runs started by something other than run_openevolve.py, whose watchdog does this).
+uv run python baselines/openevolve/reap_orphans.py
 
-# Continue runs that the cap stopped, with a new cap (remove the STOP file first). The cap counts
-# everything the group has logged, before and after; the configs of the first leg are kept.
-rm baselines/openevolve/runs/two_phase_haiku/STOP
-for seed in 1 2 3; do
-  uv run python baselines/openevolve/run_openevolve.py --recipe two-phase --seed $seed --resume --cap-usd 22 &
-done; wait
-uv run python baselines/openevolve/two_phase_results.py
+# The plumbing without spending anything: a local stub in place of the model. Pick a free port
+# (8765 is the Mendel dashboard's) and stop the stub by its process id, never by port.
+baselines/openevolve/vendor/venv/bin/python baselines/openevolve/fake_llm_server.py --port 18793 & STUB=$!
+uv run python baselines/openevolve/run_openevolve.py --recipe two-phase --seed 1 --iterations 4 \
+    --api-base http://127.0.0.1:18793/v1 --group baselines/openevolve/runs/stub
+uv run python baselines/openevolve/two_phase_results.py --group baselines/openevolve/runs/stub \
+    --out baselines/openevolve/runs/stub/results.csv
+kill $STUB
 ```
 
 Options of `run_openevolve.py`: `--iterations N` (per phase), `--group DIR` or `--out DIR` (a run
 directory is never overwritten), `--checkpoint-interval K`, `--parallel-evaluations W`,
-`--cap-usd X --cap-margin M`, `--max-llm-failures K`, `--resume` (each unfinished phase continues
-from its last saved checkpoint, with OpenEvolve's `--checkpoint`, for the iterations it still
-lacks; `--cap-usd` then counts everything the group has spent, before and after), `--dry-run`
-(write the configs, print the commands, call nothing). With `--api-base` set to anything but the Anthropic endpoint, `.env` is
-not loaded and a dummy key is used, so the real key is never sent anywhere else.
+`--cap-usd X --cap-margin M`, `--max-llm-failures K`, `--eval-timeout S` or
+`--eval-timeout-factor F` (OpenEvolve's `evaluator.timeout`, as seconds or as a multiple of the
+shipped value; applied to every phase that still has iterations to run and recorded in
+`manifest.json` with the iteration it starts at), `--resume` (each unfinished phase continues from
+its last saved checkpoint, with OpenEvolve's `--checkpoint`, for the iterations it still lacks;
+`--cap-usd` then counts everything the group has spent, before and after), `--dry-run` (write the
+configs, print the commands, call nothing). With `--api-base` set to anything but the Anthropic
+endpoint, `.env` is not loaded and a dummy key is used, so the real key is never sent anywhere else.
 
-## The run of 2026-10-03 (`results/two_phase_haiku.csv`)
+## The runs of 2026-10-03 (`results/two_phase_haiku.csv`)
 
-Seeds 1, 2 and 3 ran at the same time under a shared cap of $15. Phase 1 finished on every seed
-(100 iterations each). **The cap stopped all three during phase 2**, after 37, 59 and 61 of its
-100 iterations, at $14.43 of logged spend. `--resume` continues them (see Commands).
+What was run, in order (all times local):
 
-| seed | best repaired score after phase 1 | after phase 2 (as far as it got) | requests | dollars | wall-clock |
-|---|---|---|---|---|---|
-| 1 | 2.171793 | 2.606686 | 100 + 37 | 4.05 | 47.7 min |
-| 2 | 2.270560 | 2.619368 | 100 + 59 | 5.26 | 47.7 min |
-| 3 | 2.290542 | 2.624480 | 100 + 61 | 5.12 | 47.7 min |
-| mean (sd) | 2.244299 (0.063581) | 2.616845 (0.009162) | 152 | 4.81 | |
+1. **19:53** Seeds 1, 2 and 3 started together with the shipped evaluation limits (60 s in phase
+   1, 90 s in phase 2), `parallel_evaluations: 2`, cap $15. Phase 1 completed on every seed. The
+   cap stopped all three during phase 2, after 37, 59 and 61 of its 100 iterations (20:41,
+   $14.43 logged).
+2. **20:53** The three were resumed (`--resume --cap-usd 25 --eval-timeout 360`): phase 2 went on
+   from its last checkpoint with `evaluator.timeout` raised from 90 s to 360 s, from iteration 38
+   (seed 1), 60 (seed 2) and 61 (seed 3). The change is in each `manifest.json` under
+   `changes_during_run`; the config it replaced is kept as `phase2/config.timeout90.yaml`. Phase 2
+   completed at 21:13 (seed 3), 21:22 (seed 2) and 21:53 (seed 1).
+3. **21:06** Seeds 4 and 5 started as a second group (`runs/two_phase_haiku_seeds45`, cap $50)
+   with `--eval-timeout-factor 4`: 240 s in phase 1 and 360 s in phase 2 from the first iteration,
+   everything else as for seeds 1 to 3. After they finished, their run directories were moved
+   under `runs/two_phase_haiku/` so that one directory holds the five seeds (the `manifest.json`
+   commands still show the old path). The two caps, $25 and $50, were the $80 guard against a
+   runaway loop; it was never approached.
+4. The programs that timed out were re-run offline (`rescue_timeouts.py`) under a limit of 180
+   CPU seconds, and those still unfinished under 360 CPU seconds.
 
-Best known: 2.635983. Cumulative dollars at which each seed's best repaired score first passed a
-level: 2.0 at $0.15 / $1.05 / $0.21; 2.5 at $2.88 / $2.91 / $2.97; 2.6 at $2.94 / $2.91 / $2.97;
-2.63 was not reached. Every seed passed 2.5 within its first four phase 2 requests, that is, as
-soon as the phase 2 prompt had told the model to use SLSQP.
+Why the limits were raised: OpenEvolve's evaluation limit is wall time, and the laptop was loaded
+by other jobs throughout (one-minute load average on 10 cores: median 6 during phase 1 of seeds
+1 to 3, median 33 and maximum 153 during the first leg of their phase 2, 5 to 30 afterwards).
+Mendel's own evaluations run on Modal, so a limit that the load could trip would have been unfair
+to OpenEvolve. See "Evaluation time limits and machine load" for what this does to the numbers.
 
-Conditions that the comparison should state:
-
-- **The machine was heavily loaded by other jobs during phase 2** (one-minute load average: median
-  33, maximum 153, on 10 cores; median 6 during phase 1). OpenEvolve's evaluation limit is wall
-  time, and 35 of the 157 phase 2 programs hit it (18 of 37 on seed 1, 6 of 59 on seed 2, 11 of 61
-  on seed 3); none did in phase 1. Some of those programs would have finished on a quiet machine.
-- From 20:25, `reap_orphans.py` ended evaluation subprocesses that OpenEvolve had already timed
-  out (19 of them); before that they ran on for up to ten minutes each. See that file.
-- Two of the 38 distinct best programs (both seed 2, phase 2) draw unseeded random numbers, so a
-  re-run does not reproduce what OpenEvolve evaluated. For seed 2's final program OpenEvolve
-  recorded 2.625856; the re-run in the CSV gave 2.619368, and five more re-runs gave 2.6159 to
-  2.6231 (`results/two_phase_haiku_stochastic_reruns.json`).
-- No iteration was lost to an API error. Requests in flight when the cap fired (at most two per
-  seed) were billed but are not in the logs, so the true spend is a little above $14.43.
+<!-- RESULTS -->
 
 ## What is being run
 
@@ -121,12 +138,13 @@ Conditions that the comparison should state:
   - `primary_model: claude-haiku-4-5` with weight 1.0, in place of Sonnet 4.5 (0.8) and Opus 4.5 (0.2);
   - `checkpoint_interval: 1` instead of 10, so that every best-so-far program is on disk;
   - `random_seed: <seed>`, the same in both phases (the shipped files leave it at the default, 42);
-  - `parallel_evaluations: 2` instead of 4, because three seeds ran at once on a shared 10-core
+  - `parallel_evaluations: 2` instead of 4, because several seeds ran at once on a shared 10-core
     machine. This is the number of OpenEvolve worker processes, so it also means that 2 rather
-    than 4 iterations are in flight at a time.
+    than 4 iterations are in flight at a time;
+  - `evaluator.timeout` raised in the later iterations, as described above.
 
   Everything else is as shipped: the system messages, population 60 then 70, 4 then 5 islands,
-  evaluation time-out 60 s then 90 s, full rewrites, `temperature: 0.7`, `max_tokens: 8192`.
+  full rewrites, `temperature: 0.7`, `max_tokens: 8192`.
 - **Endpoint** `https://api.anthropic.com/v1` (Anthropic's OpenAI-compatible endpoint), key from
   `ANTHROPIC_API_KEY`. `top_p` is not sent. OpenEvolve also sends a `seed` field, which the
   endpoint accepts and ignores, so a run is not reproducible from its seed: the seed fixes
@@ -134,7 +152,8 @@ Conditions that the comparison should state:
 - **Environment of the evolved programs**: OpenEvolve's virtual environment (numpy, scipy,
   matplotlib), with BLAS limited to one thread per process.
 - **Cost**: claude-haiku-4-5 at $1.00 per million input tokens and $5.00 per million output tokens
-  (`common.py`). One request per iteration; no prompt caching.
+  (`common.py`). One request per iteration; no prompt caching. Prompts grow to 14k to 20k tokens
+  as the programs grow, so a request costs about $0.028 in phase 1 and $0.033 to $0.047 in phase 2.
 
 ## Hints in OpenEvolve's shipped prompts
 
@@ -194,22 +213,49 @@ Consequences that the comparison should state:
   score is then 0. The number to quote is therefore the **repaired** score: the same centres, with
   radii shrunk by `repair.py` until the exact test passes (never enlarged; `repair.py` is a frozen
   copy of the Mendel seed solver's feasibility code, so these scores do not move when the solver
-  evolves). In the runs of 2026-10-03, 28 of the 38 distinct best programs were strictly valid as
-  returned (Haiku's programs tend to leave a safety margin), and the repair never cost more than
-  2e-13; the only visible changes are zero radii becoming 5e-7.
+  evolves). In these runs most distinct best programs were strictly valid as returned (Haiku's
+  programs tend to leave a safety margin) and the repair cost at most a few units in the last
+  place; the only visible changes are zero radii becoming 5e-7. The exact counts are in the results
+  section.
 - "Best so far" in the results ranges over the programs that were OpenEvolve's best at some
   checkpoint, by OpenEvolve's own metric. A program that OpenEvolve ranked lower is not re-scored.
 - Checkpoint `i` is the state when iteration `i` finished. Iterations run in parallel and finish
   out of order, so the CSVs are ordered by requests spent, not by iteration number. An iteration
   whose answer failed to parse or evaluate is billed but leaves no checkpoint; its cost shows up in
   the next row.
-- OpenEvolve gives each evaluation 60 seconds of wall time in phase 1 and 90 in phase 2
-  (`evaluator.timeout`), and the cascade runs each program twice. `program_wall_s` in the CSV
-  records what one run of each best program took when re-scored, to set against the `--time`
-  budget of the Mendel solver.
 - An evolved program that draws random numbers without a seed can return a different packing each
-  time it is run; the repaired score is of the run made when re-scoring (`rerun_sum_radii` next to
-  `openevolve_score` shows whether that happened).
+  time it is run. OpenEvolve scored such a program once; the CSV scores one re-run of it
+  (`rerun_sum_radii` next to `openevolve_score` shows when the two differ), and
+  `stochastic_reruns.py` gives the spread over five more re-runs.
+
+## Evaluation time limits and machine load
+
+OpenEvolve's `evaluator.timeout` is wall time: 60 s in phase 1 and 90 s in phase 2 as shipped,
+and the cascade evaluates each program twice. On a machine that other jobs are loading, a program
+that needs 50 CPU seconds can take more than 90 s of wall time and be thrown away with a score of
+zero. Three things were done about it:
+
+- **The limit was raised** for the later iterations (360 s), and seeds 4 and 5 ran with raised
+  limits throughout (240 s, then 360 s). A raised limit also lets slower programs through than
+  the shipped recipe would, so the results give each seed's best score three ways: **as run**;
+  **with rescued** (below); and **shipped limits only**, which counts only programs that the
+  shipped limits would have let through on an idle machine: programs whose own evaluation took
+  no longer than that, or that need no more CPU seconds than that when re-run. The last is the
+  number that neither penalises OpenEvolve for the load nor credits it for the raised limit.
+- **Timed-out programs were rescued**: `rescue_timeouts.py` re-runs every program whose metrics
+  say `timeout: true` under a CPU-second limit enforced by the kernel (`RLIMIT_CPU`), which the
+  load cannot trip, and `two_phase_results.py` scores the packings and reports, for each one,
+  whether it would have been a new best at the time (`results/two_phase_haiku_rescued_timeouts.csv`).
+  Rescued programs that need no more CPU seconds than the shipped limit are the ones the load
+  actually cost; those that need more would have timed out on an idle machine too.
+- **Orphaned evaluations were ended.** OpenEvolve's example evaluator leaves a timed-out program
+  running for up to ten minutes (its subprocess has its own 600 s limit), so every time-out kept
+  a core busy for nothing. From 20:25 `reap_orphans.py`, and after that the runner's watchdog,
+  killed evaluations older than the limit plus ten seconds. This changes no recorded result.
+
+`program_wall_s` and `program_cpu_s` in the CSV record what one run of each best program took
+when re-scored (CPU seconds measured by the program itself), to set against the `--time` budget of
+the Mendel solver.
 
 ## How requests, tokens and dollars are counted
 
@@ -218,7 +264,8 @@ response (`... | tokens: T (prompt: P, completion: C)`), including iterations wh
 failed to parse or evaluate. `usage.json` sums those lines; `at_checkpoint[i]` is the running total
 when checkpoint `i` was written, and phase 2 continues from the phase 1 total. Requests that ended
 without a response (rate limit, overload, time-out) carry no usage and are not counted; OpenEvolve
-retries them, and an iteration that still fails is listed under `llm_failures`.
+retries them, and an iteration that still fails is listed under `llm_failures`. Requests in flight
+when a run is stopped are billed but not logged (at most two per seed per stop).
 
 ## The spend cap
 

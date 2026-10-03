@@ -1,0 +1,40 @@
+{
+ "n": 6,
+ "K": 24,
+ "case": 0,
+ "t": 4,
+ "subcases": [
+  {
+   "status": "INFEASIBLE",
+   "conflicts": 26,
+   "lazy_rounds": 1,
+   "lazy_rows_added": 0,
+   "wall_seconds": 6.04,
+   "t": 4,
+   "u": 0
+  },
+  {
+   "status": "INFEASIBLE",
+   "conflicts": 23,
+   "lazy_rounds": 1,
+   "lazy_rows_added": 0,
+   "wall_seconds": 6.01,
+   "t": 4,
+   "u": 1
+  },
+  {
+   "status": "INFEASIBLE",
+   "conflicts": 30,
+   "lazy_rounds": 1,
+   "lazy_rows_added": 0,
+   "wall_seconds": 8.06,
+   "t": 4,
+   "u": 2
+  }
+ ],
+ "rows": {
+  "circles": 102488,
+  "hyperplanes": 61901,
+  "min_hyper_size": 9
+ }
+}

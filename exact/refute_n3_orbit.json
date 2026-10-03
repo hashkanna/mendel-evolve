@@ -1,0 +1,61 @@
+[
+ {
+  "n": 3,
+  "K": 9,
+  "mode": "orbit",
+  "verdict": "INFEASIBLE",
+  "cases": [
+   {
+    "status": "INFEASIBLE",
+    "conflicts": 42,
+    "lazy_rounds": 1,
+    "lazy_rows_added": 0,
+    "wall_seconds": 0.04,
+    "case": 0,
+    "rep": 1,
+    "orbit_size": 12
+   },
+   {
+    "status": "INFEASIBLE",
+    "conflicts": 9,
+    "lazy_rounds": 1,
+    "lazy_rows_added": 0,
+    "wall_seconds": 0.01,
+    "case": 1,
+    "rep": 0,
+    "orbit_size": 8
+   },
+   {
+    "status": "INFEASIBLE",
+    "conflicts": 0,
+    "lazy_rounds": 1,
+    "lazy_rows_added": 0,
+    "wall_seconds": 0.0,
+    "case": 2,
+    "rep": 4,
+    "orbit_size": 6
+   },
+   {
+    "status": "INFEASIBLE",
+    "conflicts": 0,
+    "lazy_rounds": 1,
+    "lazy_rows_added": 0,
+    "wall_seconds": 0.0,
+    "case": 3,
+    "rep": 13,
+    "orbit_size": 1
+   }
+  ],
+  "wall_seconds": 0.53,
+  "workers": 1,
+  "params": {},
+  "time_limit_per_solve": 60.0,
+  "rows": {
+   "circles": 364,
+   "hyperplanes": 342,
+   "min_hyper_size": 5,
+   "rows_file": null
+  },
+  "proves": "C(3) <= 8"
+ }
+]

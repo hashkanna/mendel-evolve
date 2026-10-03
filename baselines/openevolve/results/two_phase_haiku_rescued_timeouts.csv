@@ -1,0 +1,40 @@
+seed,phase,iteration,evaluator_timeout_s,cumulative_requests,cumulative_dollars,finished_offline,cpu_s,wall_s,cpu_limit_s,within_original_limit_cpu,rerun_sum_radii,repaired_strict_score,as_run_best_at_the_time,new_best_at_the_time,above_final_as_run_best,program_id,code_file,error
+1,2,1,90,104,2.897828,False,180.0,273.6,180,False,,,2.5969214268563787,False,False,3da44771-0442-460b-82ed-786fc048fc3e,rescue/seed1_phase2_it001_3da44771.py,stopped at the CPU limit of 180s
+1,2,7,90,108,2.986938,False,180.0,273.5,180,False,,,2.6058582239962784,False,False,f70eb5a9-2e2a-4854-8ba1-ed778f390ad4,rescue/seed1_phase2_it007_f70eb5a9.py,stopped at the CPU limit of 180s
+1,2,9,90,109,3.011015,False,180.0,274.0,180,False,,,2.6058582239962784,False,False,3788c194-6e56-4964-9773-e7a693db4905,rescue/seed1_phase2_it009_3788c194.py,stopped at the CPU limit of 180s
+1,2,10,90,110,3.039086,True,65.98,83.5,180,True,0.538175945098684,0.35821595115325466,2.6058582239962784,False,False,1252f8b2-59ad-4e12-8748-2295b3f6ca7d,rescue/seed1_phase2_it010_1252f8b2.py,
+1,2,11,90,112,3.097603,False,180.0,219.6,180,False,,,2.6058582239962784,False,False,e27db995-ae18-4992-b968-aee3d266c3d3,rescue/seed1_phase2_it011_e27db995.py,stopped at the CPU limit of 180s
+1,2,13,90,113,3.124590,False,180.0,218.5,180,False,,,2.6058582239962784,False,False,e8922f25-ae1c-433e-922b-5ec8f02874a6,rescue/seed1_phase2_it013_e8922f25.py,stopped at the CPU limit of 180s
+1,2,14,90,114,3.148464,True,0.18,0.2,180,True,1.120813684076543,0.656064814332305,2.6058582239962784,False,False,28c9fcb4-e428-47dc-84dd-3309d903fb31,rescue/seed1_phase2_it014_28c9fcb4.py,
+1,2,16,90,116,3.216616,False,180.0,203.8,180,False,,,2.606685919220951,False,False,47fd7dca-82f6-4030-8670-5ee8b66108c7,rescue/seed1_phase2_it016_47fd7dca.py,stopped at the CPU limit of 180s
+1,2,18,90,119,3.305641,True,29.3,30.6,180,True,5.84346721109991,0.04318654231579277,2.606685919220951,False,False,43235f59-4fe9-4a11-b685-d99ff3f97691,rescue/seed1_phase2_it018_43235f59.py,
+1,2,20,90,120,3.344281,True,79.83,83.9,180,True,2.5989370093967517,2.5989370093967517,2.606685919220951,False,False,15c22250-0d3e-4960-9314-7ed6d2dd4298,rescue/seed1_phase2_it020_15c22250.py,
+1,2,24,90,124,3.488130,False,180.0,191.0,180,False,,,2.606685919220951,False,False,699f463a-8b33-4fb5-8c7b-fed3f37a184f,rescue/seed1_phase2_it024_699f463a.py,stopped at the CPU limit of 180s
+1,2,25,90,125,3.529856,True,76.15,80.8,180,True,2.5989366333040627,2.5989366333040627,2.606685919220951,False,False,65c9a456-985a-4cda-8b24-ace20bf381db,rescue/seed1_phase2_it025_65c9a456.py,
+1,2,27,90,127,3.613348,True,134.12,142.7,180,False,2.609210233265612,2.6092102332656117,2.606685919220951,True,False,397bb44b-cbd0-49da-a4b0-d3361fc84ca6,rescue/seed1_phase2_it027_397bb44b.py,
+1,2,30,90,130,3.735754,True,29.34,32.1,180,True,2.5989482926290797,2.5989482926290797,2.606685919220951,False,False,61e32228-d51f-4ef1-b414-1c18dd950eb7,rescue/seed1_phase2_it030_61e32228.py,
+1,2,31,90,131,3.781311,False,180.0,197.9,180,False,,,2.606685919220951,False,False,c236bdd2-bef5-47b4-84ba-38119eefb935,rescue/seed1_phase2_it031_c236bdd2.py,stopped at the CPU limit of 180s
+1,2,34,90,134,3.901724,False,180.0,209.0,180,False,,,2.606685919220951,False,False,05bb0472-b720-41c9-8187-5d9ea7c2897f,rescue/seed1_phase2_it034_05bb0472.py,stopped at the CPU limit of 180s
+1,2,36,90,136,4.008192,False,180.0,210.1,180,False,,,2.606685919220951,False,False,0055ec0c-bfe2-4a7a-a833-245a15f3ddc0,rescue/seed1_phase2_it036_0055ec0c.py,stopped at the CPU limit of 180s
+1,2,37,90,137,4.049483,True,49.47,69.1,180,True,0.018136366548979196,0.00014043290225974995,2.606685919220951,False,False,139e7592-166a-47a8-9e34-ac99f42846e2,rescue/seed1_phase2_it037_139e7592.py,
+1,2,94,360,196,7.123141,False,180.0,183.4,180,False,,,2.611732099517389,False,False,6f8fb372-f42e-49fc-ba6a-562d7b65543d,rescue/seed1_phase2_it094_6f8fb372.py,stopped at the CPU limit of 180s
+2,2,8,90,110,3.075517,False,180.0,204.5,180,False,,,2.605019678271595,False,False,7c126e99-b9b4-44a4-9aa4-c93906e7e457,rescue/seed2_phase2_it008_7c126e99.py,stopped at the CPU limit of 180s
+2,2,13,90,114,3.194175,True,82.04,97.9,180,True,2.591317917064589,2.5913179170645892,2.605019678271595,False,False,14cafc34-7ba4-4ed1-b19d-ec20c700a829,rescue/seed2_phase2_it013_14cafc34.py,
+2,2,27,90,127,3.670652,False,180.0,199.4,180,False,,,2.6182673864734225,False,False,ff1c5b3e-46b5-405f-a3f4-f0336d2eb1b8,rescue/seed2_phase2_it027_ff1c5b3e.py,stopped at the CPU limit of 180s
+2,2,37,90,138,4.168392,False,180.0,189.9,180,False,,,2.6182673864734225,False,False,83d266ed-5a21-4186-8fe9-e596487c5f86,rescue/seed2_phase2_it037_83d266ed.py,stopped at the CPU limit of 180s
+2,2,56,90,157,5.140207,True,46.49,47.5,180,True,1.5334659848696253,1.533465984869625,2.6193682107482674,False,False,89b8d859-d190-4f33-a9ae-a39558dfb347,rescue/seed2_phase2_it056_89b8d859.py,
+2,2,58,90,158,5.203249,True,19.25,19.9,180,True,2.6132626846769598,2.6132626846769598,2.6193682107482674,False,False,8c2457be-1068-4f3d-bc3e-340f937fef45,rescue/seed2_phase2_it058_8c2457be.py,
+3,2,2,90,104,3.014316,True,126.02,128.2,180,False,2.613422488305989,2.6134224638966383,2.6196964521960795,False,False,7efb7ae2-313f-4dbe-b4d9-befc13addd2b,rescue/seed3_phase2_it002_7efb7ae2.py,
+3,2,6,90,106,3.059311,True,137.08,142.0,180,False,2.6273064369578747,2.627306436957875,2.6196964521960795,True,True,8451f0b0-d9db-424c-a2c3-fc498aaf6c56,rescue/seed3_phase2_it006_8451f0b0.py,
+3,2,7,90,107,3.078404,False,180.0,188.4,180,False,,,2.6196964521960795,False,False,a18f5213-e1dc-4bbe-80b6-4fbc1c5674b5,rescue/seed3_phase2_it007_a18f5213.py,stopped at the CPU limit of 180s
+3,2,8,90,109,3.115361,True,56.35,62.7,180,True,2.590754932488928,2.590754932488928,2.6196964521960795,False,False,4ed63c43-8d27-430d-88a1-3c2b616b125e,rescue/seed3_phase2_it008_4ed63c43.py,
+3,2,10,90,111,3.169552,True,114.8,121.0,180,False,2.5958487189185027,2.5958487189185027,2.6196964521960795,False,False,45c9fe4d-4083-430f-8c48-b56979250f7d,rescue/seed3_phase2_it010_45c9fe4d.py,
+3,2,12,90,112,3.198152,False,180.0,187.3,180,False,,,2.6196964521960795,False,False,5a7625aa-4c86-49a2-8694-bcbd0fb760bc,rescue/seed3_phase2_it012_5a7625aa.py,stopped at the CPU limit of 180s
+3,2,13,90,115,3.278002,False,213.18,77.7,180,False,,,2.6196964521960795,False,False,88a503ff-f66a-47c9-be95-0cdf4442dfe1,rescue/seed3_phase2_it013_88a503ff.py,"exit 1: File ""/Users/kanna/Sandbox/hackathons/autoresearch-for-discovery/baselines/openevolve/runs/two_phase_haiku/rescue/seed3_phase2_it013_88a503ff.py"", line 46, in construct_packing
+    best_result = (result.x, 'fallback')
+                   ^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'x'"
+3,2,22,90,125,3.593790,True,24.5,26.3,180,True,1.15895493711842,1.15895493711842,2.6244801577898937,False,False,16804f3e-2800-417c-aae3-2f43898a01a4,rescue/seed3_phase2_it022_16804f3e.py,
+3,2,41,90,142,4.266217,True,103.8,109.9,180,False,0.20382607154182097,0.20382607154182097,2.6244801577898937,False,False,4cf3ec6f-4c21-45b6-92a0-70148b8016c8,rescue/seed3_phase2_it041_4cf3ec6f.py,
+3,2,53,90,155,4.832458,True,104.18,111.0,180,False,0.9552835339073685,0.9552835339073686,2.6244801577898937,False,False,4fdbfa6d-6a61-4b1e-8f98-212414157b18,rescue/seed3_phase2_it053_4fdbfa6d.py,
+3,2,60,90,161,5.115014,True,67.24,72.2,180,True,0.2636005278396376,0.26358826117297096,2.6244801577898937,False,False,d131d540-8556-4130-9ba8-b15cbf854efa,rescue/seed3_phase2_it060_d131d540.py,

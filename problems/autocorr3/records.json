@@ -1,7 +1,7 @@
 {
   "problem": "Third autocorrelation inequality, upper bound, variant |max f*f| (abs outside the max)",
   "read_at_utc": "2026-10-03T19:14:06Z",
-  "rechecked_at_utc": "2026-10-03T19:55:12Z (top five unchanged)",
+  "rechecked_at_utc": "2026-10-03T19:55:12Z and 2026-10-03T20:39:03Z (top five, verifier source and minImprovement unchanged)",
   "leaderboard": {
     "name": "EinsteinArena, problem 4 (third-autocorrelation-inequality)",
     "problem_url": "https://einsteinarena.com/api/problems/third-autocorrelation-inequality",

@@ -1,81 +1,65 @@
 {
- "note": "Best programs of seed 2, phase 2 that draw unseeded random numbers, each re-run 5 times; every run repaired (repair.py) and scored by the strict evaluator.",
+ "note": "Best programs that draw unseeded random numbers, each re-run 1 times; every run repaired (repair.py) and scored by the strict evaluator.",
  "programs": {
   "seed2/phase2/checkpoint_17": {
+   "seed": 2,
+   "phase": 2,
+   "iteration": 17,
+   "program_sha256": "07b8b77770fb4581",
    "openevolve_recorded_sum_radii": 2.6132735940571314,
+   "repaired_score_in_csv": 2.6182673864734225,
    "runs": [
     {
-     "raw_sum_radii": 2.6191986469832838,
-     "repaired_strict_score": 2.6191986469832838,
-     "wall_s": 30.4,
-     "error": ""
-    },
-    {
-     "raw_sum_radii": 2.6132735940571314,
      "repaired_strict_score": 2.6132735940570626,
-     "wall_s": 31.5,
-     "error": ""
-    },
-    {
-     "raw_sum_radii": 2.613745775087758,
-     "repaired_strict_score": 2.613745775087744,
-     "wall_s": 30.4,
-     "error": ""
-    },
-    {
      "raw_sum_radii": 2.6132735940571314,
-     "repaired_strict_score": 2.6132735940570626,
-     "wall_s": 31.1,
-     "error": ""
-    },
-    {
-     "raw_sum_radii": 2.6132735940571314,
-     "repaired_strict_score": 2.6132735940570626,
-     "wall_s": 30.8,
+     "wall_s": 39.7,
+     "cpu_s": 21.2,
      "error": ""
     }
    ],
    "repaired_min": 2.6132735940570626,
    "repaired_median": 2.6132735940570626,
-   "repaired_max": 2.6191986469832838
+   "repaired_max": 2.6132735940570626
   },
   "seed2/phase2/checkpoint_40": {
+   "seed": 2,
+   "phase": 2,
+   "iteration": 40,
+   "program_sha256": "5e3feb5a140cff3c",
    "openevolve_recorded_sum_radii": 2.6258558872838473,
+   "repaired_score_in_csv": 2.6193682107482674,
    "runs": [
     {
-     "raw_sum_radii": 2.623089971047589,
-     "repaired_strict_score": 2.623089971047527,
-     "wall_s": 41.4,
-     "error": ""
-    },
-    {
-     "raw_sum_radii": 2.617650211846306,
-     "repaired_strict_score": 2.6176502118462976,
-     "wall_s": 31.3,
-     "error": ""
-    },
-    {
-     "raw_sum_radii": 2.6159320785815816,
-     "repaired_strict_score": 2.615931991746457,
-     "wall_s": 36.3,
-     "error": ""
-    },
-    {
-     "raw_sum_radii": 2.616067352480254,
-     "repaired_strict_score": 2.616067352480165,
-     "wall_s": 31.4,
-     "error": ""
-    },
-    {
-     "raw_sum_radii": 2.6170117475880055,
-     "repaired_strict_score": 2.6170117475879686,
-     "wall_s": 21.6,
+     "repaired_strict_score": 2.619368210748287,
+     "raw_sum_radii": 2.6193682107483824,
+     "wall_s": 43.1,
+     "cpu_s": 26.7,
      "error": ""
     }
    ],
-   "repaired_min": 2.615931991746457,
-   "repaired_median": 2.6170117475879686,
-   "repaired_max": 2.623089971047527
+   "repaired_min": 2.619368210748287,
+   "repaired_median": 2.619368210748287,
+   "repaired_max": 2.619368210748287
+  },
+  "seed2/phase2/checkpoint_62": {
+   "seed": 2,
+   "phase": 2,
+   "iteration": 62,
+   "program_sha256": "7f0fb6c422a45dc8",
+   "openevolve_recorded_sum_radii": 2.6260484259126313,
+   "repaired_score_in_csv": 2.613273594057067,
+   "runs": [
+    {
+     "repaired_strict_score": 2.628005040835026,
+     "raw_sum_radii": 2.62800504083526,
+     "wall_s": 27.8,
+     "cpu_s": 26.3,
+     "error": ""
+    }
+   ],
+   "repaired_min": 2.628005040835026,
+   "repaired_median": 2.628005040835026,
+   "repaired_max": 2.628005040835026
   }
  }
 }

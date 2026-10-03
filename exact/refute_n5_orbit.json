@@ -1,0 +1,105 @@
+[
+ {
+  "n": 5,
+  "K": 20,
+  "mode": "orbit",
+  "verdict": "INFEASIBLE",
+  "cases": [
+   {
+    "status": "INFEASIBLE",
+    "wall_seconds": 47.07,
+    "conflicts": 1983,
+    "branches": 56874,
+    "case": 0,
+    "rep": 1,
+    "orbit_size": 24
+   },
+   {
+    "status": "INFEASIBLE",
+    "wall_seconds": 7.79,
+    "conflicts": 30,
+    "branches": 11717,
+    "case": 1,
+    "rep": 6,
+    "orbit_size": 24
+   },
+   {
+    "status": "INFEASIBLE",
+    "wall_seconds": 2.66,
+    "conflicts": 16,
+    "branches": 26538,
+    "case": 2,
+    "rep": 7,
+    "orbit_size": 24
+   },
+   {
+    "status": "INFEASIBLE",
+    "wall_seconds": 0.93,
+    "conflicts": 4,
+    "branches": 16738,
+    "case": 3,
+    "rep": 2,
+    "orbit_size": 12
+   },
+   {
+    "status": "INFEASIBLE",
+    "wall_seconds": 0.52,
+    "conflicts": 82,
+    "branches": 6369,
+    "case": 4,
+    "rep": 32,
+    "orbit_size": 12
+   },
+   {
+    "status": "INFEASIBLE",
+    "wall_seconds": 0.25,
+    "conflicts": 0,
+    "branches": 0,
+    "case": 5,
+    "rep": 0,
+    "orbit_size": 8
+   },
+   {
+    "status": "INFEASIBLE",
+    "wall_seconds": 0.23,
+    "conflicts": 0,
+    "branches": 0,
+    "case": 6,
+    "rep": 31,
+    "orbit_size": 8
+   },
+   {
+    "status": "INFEASIBLE",
+    "wall_seconds": 0.2,
+    "conflicts": 0,
+    "branches": 0,
+    "case": 7,
+    "rep": 12,
+    "orbit_size": 6
+   },
+   {
+    "status": "INFEASIBLE",
+    "wall_seconds": 0.27,
+    "conflicts": 0,
+    "branches": 0,
+    "case": 8,
+    "rep": 37,
+    "orbit_size": 6
+   },
+   {
+    "status": "INFEASIBLE",
+    "wall_seconds": 0.23,
+    "conflicts": 0,
+    "branches": 0,
+    "case": 9,
+    "rep": 62,
+    "orbit_size": 1
+   }
+  ],
+  "wall_seconds": 71.98,
+  "workers": 1,
+  "params": {},
+  "time_limit_per_solve": 900.0,
+  "proves": "C(5) <= 19"
+ }
+]

@@ -1,0 +1,19 @@
+{
+ "n": 6,
+ "K": 24,
+ "case": 0,
+ "t": 4,
+ "u": 4,
+ "level3_subcases": [
+  {
+   "status": "UNKNOWN",
+   "conflicts": 6005,
+   "lazy_rounds": 1,
+   "lazy_rows_added": 0,
+   "wall_seconds": 200.04,
+   "t": 4,
+   "u": 4,
+   "v": 4
+  }
+ ]
+}

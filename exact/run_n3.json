@@ -1,0 +1,63 @@
+{
+ "n": 3,
+ "num_circle_rows": 364,
+ "num_hyperplane_rows": 342,
+ "enum_seconds": 0.06,
+ "workers": 3,
+ "symbreak": false,
+ "time_limit": 120.0,
+ "lower_cut": null,
+ "bruteforce_crosscheck_equal": true,
+ "zero_det_5_subsets": 16026,
+ "status": "OPTIMAL",
+ "wall_seconds": 0.04,
+ "objective": 8,
+ "best_bound": 8.0,
+ "solution": [
+  [
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   1,
+   2
+  ],
+  [
+   0,
+   2,
+   0
+  ],
+  [
+   1,
+   1,
+   0
+  ],
+  [
+   1,
+   2,
+   1
+  ],
+  [
+   2,
+   0,
+   1
+  ],
+  [
+   2,
+   2,
+   0
+  ],
+  [
+   2,
+   2,
+   2
+  ]
+ ],
+ "solution_exact_check": true,
+ "solution_exact_check_detail": {
+  "five_subsets_checked": 56,
+  "min_abs_det": 2
+ }
+}

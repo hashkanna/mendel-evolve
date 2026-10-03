@@ -374,6 +374,9 @@ def main(argv: list[str] | None = None) -> int:
                         help="set OpenEvolve's evaluator.timeout (wall seconds per evaluation stage) for every phase "
                              "that still has iterations to run; the change and the iteration it starts at are "
                              "recorded in manifest.json, and the config it replaces is kept next to it")
+    parser.add_argument("--eval-timeout-factor", type=float,
+                        help="like --eval-timeout, but as a multiple of each phase's shipped evaluator.timeout "
+                             "(4 gives 240 s in phase 1 and 360 s in phase 2); for a machine shared with other jobs")
     parser.add_argument("--dry-run", action="store_true", help="prepare the run and print the commands; call nothing")
     args = parser.parse_args(argv)
 
@@ -494,19 +497,22 @@ def main(argv: list[str] | None = None) -> int:
                 continue
             print(f"[{label}] resuming: {done} iterations logged, {todo} to go, from "
                   f"{checkpoint.name if checkpoint else 'the start'}", flush=True)
-        if args.eval_timeout is not None:
+        wanted = args.eval_timeout
+        if wanted is None and args.eval_timeout_factor is not None:
+            wanted = evaluator_timeout(sources[index]) * args.eval_timeout_factor  # a multiple of the shipped limit
+        if wanted is not None:
             config_path = phase_dir / "config.yaml"
             before = evaluator_timeout(config_path)
-            if before != args.eval_timeout:
+            if before != wanted:
                 # OpenEvolve numbers the first iteration after a checkpoint as that checkpoint's iteration + 1
                 first = int(checkpoint.name.split("_")[-1]) + 1 if checkpoint is not None else 1
-                print(f"[{label}] evaluator.timeout {before:g}s -> {args.eval_timeout:g}s from iteration {first}", flush=True)
+                print(f"[{label}] evaluator.timeout {before:g}s -> {wanted:g}s from iteration {first}", flush=True)
                 if not args.dry_run:
                     kept = phase_dir / f"config.timeout{before:g}.yaml"
                     kept.write_text(config_path.read_text())
-                    set_evaluator_timeout(config_path, args.eval_timeout)
+                    set_evaluator_timeout(config_path, wanted)
                     manifest.setdefault("changes_during_run", []).append({
-                        "phase": name, "setting": "evaluator.timeout", "before": before, "after": args.eval_timeout,
+                        "phase": name, "setting": "evaluator.timeout", "before": before, "after": wanted,
                         "from_iteration": first, "iterations_logged_before": iterations - todo,
                         "applied": time.strftime("%Y-%m-%dT%H:%M:%S"), "previous_config": kept.name,
                         "reason": "machine load: the limit is wall time"})

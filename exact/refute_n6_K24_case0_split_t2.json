@@ -1,0 +1,20 @@
+{
+ "n": 6,
+ "K": 24,
+ "case": 0,
+ "subcases": [
+  {
+   "status": "INFEASIBLE",
+   "conflicts": 10,
+   "lazy_rounds": 1,
+   "lazy_rows_added": 0,
+   "wall_seconds": 12.67,
+   "t": 2
+  }
+ ],
+ "rows": {
+  "circles": 102488,
+  "hyperplanes": 61901,
+  "min_hyper_size": 9
+ }
+}

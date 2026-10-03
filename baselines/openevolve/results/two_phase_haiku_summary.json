@@ -5,32 +5,103 @@
  "seeds": {
   "1": {
    "best_repaired_after_phase1": 2.1717930944569264,
-   "best_repaired_after_phase2": 2.606685919220951,
+   "best_repaired_after_phase2": 2.611732099517389,
    "openevolve_best_phase1": 2.1717930944569264,
-   "openevolve_best_phase2": 2.6066859192209515,
-   "requests": 137,
-   "dollars": 4.049483,
-   "tokens": 2377211,
+   "openevolve_best_phase2": 2.6117320995173894,
+   "requests": 200,
+   "dollars": 7.368908,
+   "tokens": 4527704,
    "requests_by_phase": {
     "phase1": 100,
-    "phase2": 37
+    "phase2": 100
    },
    "dollars_by_phase": {
     "phase1": 2.821423,
-    "phase2": 1.22806
+    "phase2": 4.547485
    },
    "iterations_by_phase": {
     "phase1": 100,
-    "phase2": 37
+    "phase2": 100
    },
    "iterations_lost_to_api_errors": 0,
-   "wall_seconds": 2861.6,
+   "wall_seconds": 6454.7,
    "wall_seconds_by_phase": {
     "phase1": 1072.0,
-    "phase2": 1787.5
+    "phase2": 5378.3
    },
-   "stopped": "stop requested: spend cap: $14.43 logged, limit $15.00 minus $0.60 for requests in flight",
+   "stopped": null,
+   "changes_during_run": [
+    {
+     "phase": "phase2",
+     "setting": "evaluator.timeout",
+     "before": 90.0,
+     "after": 360.0,
+     "from_iteration": 38,
+     "iterations_logged_before": 37,
+     "applied": "2026-10-03T20:53:06",
+     "previous_config": "config.timeout90.yaml",
+     "reason": "machine load: the limit is wall time"
+    }
+   ],
    "first_passed": {
+    "2.0": {
+     "dollars": 0.151176,
+     "requests": 10,
+     "phase": "1",
+     "iteration": 9
+    },
+    "2.5": {
+     "dollars": 2.878243,
+     "requests": 103,
+     "phase": "2",
+     "iteration": 4
+    },
+    "2.6": {
+     "dollars": 2.939674,
+     "requests": 106,
+     "phase": "2",
+     "iteration": 6
+    },
+    "2.63": null
+   },
+   "timed_out_programs": {
+    "count": 19,
+    "by_limit_in_force_s": {
+     "90": 18,
+     "360": 1
+    },
+    "finished_offline": 8,
+    "finished_within_original_limit_cpu": 7,
+    "new_best_at_the_time": 1,
+    "new_best_at_the_time_within_original_limit_cpu": 0,
+    "above_final_as_run_best": 0,
+    "best_rescued_score": 2.6092102332656117,
+    "best_rescued_score_within_original_limit_cpu": 2.5989482926290797
+   },
+   "best_repaired_after_phase2_with_rescued": 2.611732099517389,
+   "first_passed_with_rescued": {
+    "2.0": {
+     "dollars": 0.151176,
+     "requests": 10,
+     "phase": "1",
+     "iteration": 9
+    },
+    "2.5": {
+     "dollars": 2.878243,
+     "requests": 103,
+     "phase": "2",
+     "iteration": 4
+    },
+    "2.6": {
+     "dollars": 2.939674,
+     "requests": 106,
+     "phase": "2",
+     "iteration": 6
+    },
+    "2.63": null
+   },
+   "best_repaired_after_phase2_shipped_limit": 2.606685919220951,
+   "first_passed_shipped_limit": {
     "2.0": {
      "dollars": 0.151176,
      "requests": 10,
@@ -56,30 +127,100 @@
    "best_repaired_after_phase1": 2.2705600167956397,
    "best_repaired_after_phase2": 2.6193682107482674,
    "openevolve_best_phase1": 2.2705600167956392,
-   "openevolve_best_phase2": 2.6258558872838473,
-   "requests": 159,
-   "dollars": 5.263918,
-   "tokens": 3140098,
+   "openevolve_best_phase2": 2.6260484259126313,
+   "requests": 200,
+   "dollars": 7.60393,
+   "tokens": 4675646,
    "requests_by_phase": {
     "phase1": 100,
-    "phase2": 59
+    "phase2": 100
    },
    "dollars_by_phase": {
     "phase1": 2.849911,
-    "phase2": 2.414007
+    "phase2": 4.754019
    },
    "iterations_by_phase": {
     "phase1": 100,
-    "phase2": 59
+    "phase2": 100
    },
    "iterations_lost_to_api_errors": 0,
-   "wall_seconds": 2861.8,
+   "wall_seconds": 4600.3,
    "wall_seconds_by_phase": {
     "phase1": 1057.1,
-    "phase2": 1802.2
+    "phase2": 3538.6
    },
-   "stopped": "spend cap: $14.43 logged, limit $15.00 minus $0.60 for requests in flight",
+   "stopped": null,
+   "changes_during_run": [
+    {
+     "phase": "phase2",
+     "setting": "evaluator.timeout",
+     "before": 90.0,
+     "after": 360.0,
+     "from_iteration": 60,
+     "iterations_logged_before": 59,
+     "applied": "2026-10-03T20:53:06",
+     "previous_config": "config.timeout90.yaml",
+     "reason": "machine load: the limit is wall time"
+    }
+   ],
    "first_passed": {
+    "2.0": {
+     "dollars": 1.053235,
+     "requests": 44,
+     "phase": "1",
+     "iteration": 44
+    },
+    "2.5": {
+     "dollars": 2.91242,
+     "requests": 103,
+     "phase": "2",
+     "iteration": 1
+    },
+    "2.6": {
+     "dollars": 2.91242,
+     "requests": 103,
+     "phase": "2",
+     "iteration": 1
+    },
+    "2.63": null
+   },
+   "timed_out_programs": {
+    "count": 6,
+    "by_limit_in_force_s": {
+     "90": 6
+    },
+    "finished_offline": 3,
+    "finished_within_original_limit_cpu": 3,
+    "new_best_at_the_time": 0,
+    "new_best_at_the_time_within_original_limit_cpu": 0,
+    "above_final_as_run_best": 0,
+    "best_rescued_score": 2.6132626846769598,
+    "best_rescued_score_within_original_limit_cpu": 2.6132626846769598
+   },
+   "best_repaired_after_phase2_with_rescued": 2.6193682107482674,
+   "first_passed_with_rescued": {
+    "2.0": {
+     "dollars": 1.053235,
+     "requests": 44,
+     "phase": "1",
+     "iteration": 44
+    },
+    "2.5": {
+     "dollars": 2.91242,
+     "requests": 103,
+     "phase": "2",
+     "iteration": 1
+    },
+    "2.6": {
+     "dollars": 2.91242,
+     "requests": 103,
+     "phase": "2",
+     "iteration": 1
+    },
+    "2.63": null
+   },
+   "best_repaired_after_phase2_shipped_limit": 2.6193682107482674,
+   "first_passed_shipped_limit": {
     "2.0": {
      "dollars": 1.053235,
      "requests": 44,
@@ -103,32 +244,102 @@
   },
   "3": {
    "best_repaired_after_phase1": 2.2905423958966047,
-   "best_repaired_after_phase2": 2.6244801577898937,
+   "best_repaired_after_phase2": 2.6256592265046907,
    "openevolve_best_phase1": 2.2905423958966047,
-   "openevolve_best_phase2": 2.6244801577898933,
-   "requests": 161,
-   "dollars": 5.115014,
-   "tokens": 3062250,
+   "openevolve_best_phase2": 2.6256592265046916,
+   "requests": 200,
+   "dollars": 7.014942,
+   "tokens": 4286238,
    "requests_by_phase": {
     "phase1": 100,
-    "phase2": 61
+    "phase2": 100
    },
    "dollars_by_phase": {
     "phase1": 2.928886,
-    "phase2": 2.186128
+    "phase2": 4.086056
    },
    "iterations_by_phase": {
     "phase1": 100,
-    "phase2": 61
+    "phase2": 100
    },
    "iterations_lost_to_api_errors": 0,
-   "wall_seconds": 2861.9,
+   "wall_seconds": 4040.8,
    "wall_seconds_by_phase": {
     "phase1": 1110.4,
-    "phase2": 1749.0
+    "phase2": 2925.5
    },
-   "stopped": "stop requested: spend cap: $14.43 logged, limit $15.00 minus $0.60 for requests in flight",
+   "stopped": null,
+   "changes_during_run": [
+    {
+     "phase": "phase2",
+     "setting": "evaluator.timeout",
+     "before": 90.0,
+     "after": 360.0,
+     "from_iteration": 61,
+     "iterations_logged_before": 61,
+     "applied": "2026-10-03T20:53:06",
+     "previous_config": "config.timeout90.yaml",
+     "reason": "machine load: the limit is wall time"
+    }
+   ],
    "first_passed": {
+    "2.0": {
+     "dollars": 0.211743,
+     "requests": 13,
+     "phase": "1",
+     "iteration": 14
+    },
+    "2.5": {
+     "dollars": 2.972811,
+     "requests": 102,
+     "phase": "2",
+     "iteration": 3
+    },
+    "2.6": {
+     "dollars": 2.972811,
+     "requests": 102,
+     "phase": "2",
+     "iteration": 3
+    },
+    "2.63": null
+   },
+   "timed_out_programs": {
+    "count": 11,
+    "by_limit_in_force_s": {
+     "90": 11
+    },
+    "finished_offline": 8,
+    "finished_within_original_limit_cpu": 3,
+    "new_best_at_the_time": 1,
+    "new_best_at_the_time_within_original_limit_cpu": 0,
+    "above_final_as_run_best": 1,
+    "best_rescued_score": 2.627306436957875,
+    "best_rescued_score_within_original_limit_cpu": 2.590754932488928
+   },
+   "best_repaired_after_phase2_with_rescued": 2.627306436957875,
+   "first_passed_with_rescued": {
+    "2.0": {
+     "dollars": 0.211743,
+     "requests": 13,
+     "phase": "1",
+     "iteration": 14
+    },
+    "2.5": {
+     "dollars": 2.972811,
+     "requests": 102,
+     "phase": "2",
+     "iteration": 3
+    },
+    "2.6": {
+     "dollars": 2.972811,
+     "requests": 102,
+     "phase": "2",
+     "iteration": 3
+    },
+    "2.63": null
+   },
+   "best_repaired_after_phase2_shipped_limit": 2.6256592265046907,
+   "first_passed_shipped_limit": {
     "2.0": {
      "dollars": 0.211743,
      "requests": 13,
@@ -161,32 +372,47 @@
   },
   "best_repaired_after_phase2": {
    "n": 3,
-   "mean": 2.616844762586371,
+   "mean": 2.6189198455901157,
+   "min": 2.611732099517389,
+   "max": 2.6256592265046907,
+   "sd": 0.0069743809772904505
+  },
+  "best_repaired_after_phase2_with_rescued": {
+   "n": 3,
+   "mean": 2.619468915741177,
+   "min": 2.611732099517389,
+   "max": 2.627306436957875,
+   "sd": 0.007787657080228318
+  },
+  "best_repaired_after_phase2_shipped_limit": {
+   "n": 3,
+   "mean": 2.617237785491303,
    "min": 2.606685919220951,
-   "max": 2.6244801577898937,
-   "sd": 0.009161581442712098
+   "max": 2.6256592265046907,
+   "sd": 0.009664400196206494
   },
   "requests": {
    "n": 3,
-   "mean": 152.33333333333334,
-   "min": 137,
-   "max": 161,
-   "sd": 13.316656236958785
+   "mean": 200.0,
+   "min": 200,
+   "max": 200,
+   "sd": 0.0
   },
   "dollars": {
    "n": 3,
-   "mean": 4.809471666666667,
-   "min": 4.049483,
-   "max": 5.263918,
-   "sd": 0.6623671039539428
+   "mean": 7.3292600000000006,
+   "min": 7.014942,
+   "max": 7.60393,
+   "sd": 0.2964889356519062
   },
   "wall_seconds": {
    "n": 3,
-   "mean": 2861.7666666666664,
-   "min": 2861.6,
-   "max": 2861.9,
-   "sd": 0.15275252316530383
+   "mean": 5031.933333333333,
+   "min": 4040.8,
+   "max": 6454.7,
+   "sd": 1263.5105078048748
   }
  },
- "total_dollars": 14.428415
+ "total_dollars": 21.98778,
+ "rescued_timeouts_csv": "/Users/kanna/Sandbox/hackathons/autoresearch-for-discovery/baselines/openevolve/results/two_phase_haiku_rescued_timeouts.csv"
 }

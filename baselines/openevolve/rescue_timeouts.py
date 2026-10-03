@@ -12,11 +12,16 @@ load: CPU seconds, enforced by the kernel (RLIMIT_CPU).
 
 What it does. For every seed and phase under the group directory it reads the programs stored in
 the checkpoints (each program once, from the first checkpoint that has it), keeps those that timed
-out, writes their code to <group>/rescue/, runs each one with `--cpu-limit` CPU seconds (default
-180: twice OpenEvolve's 90 wall seconds, to allow for CPU seconds being worth less on a contended
-machine) and stores the packing, the CPU seconds it used and the wall time in
-<group>/rescue_cache.json. No API calls. `two_phase_results.py` then scores the packings with the
-strict evaluator after repair and reports which of them would have been a new best.
+out, writes their code to <group>/rescue/, runs each one with `--cpu-limit` CPU seconds and stores
+the packing, the CPU seconds it used and the wall time in <group>/rescue_cache.json. A program that
+finished is never run again; one that was stopped by the limit is run again only if a later call
+asks for a higher limit. No API calls. `two_phase_results.py` then scores the packings with the
+strict evaluator after repair and reports which of them would have been a new best, separately for
+programs that needed no more CPU seconds than OpenEvolve's shipped limit (the ones the load cost)
+and for those that needed more.
+
+The runs of 2026-10-03 were rescued with 180 CPU seconds and then 360 (the wall limit that was
+applied to the later iterations).
 """
 
 from __future__ import annotations
@@ -81,7 +86,10 @@ def main(argv: list[str] | None = None) -> int:
         if not path.exists():
             path.write_text(program["code"])
         entry = cache.get(key)
-        if entry is None or entry.get("cpu_limit") != args.cpu_limit:
+        # run it if it is new, or if it was stopped by a lower CPU limit than the one asked for now;
+        # a program that finished is not run again (it may be random, and its CPU seconds are known)
+        if entry is None or (entry["packing"] is None and entry["error"].startswith("stopped at the CPU limit")
+                             and entry["cpu_limit"] < args.cpu_limit):
             todo.append((key, program, path))
     by_seed = {}
     for program in programs:

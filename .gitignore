@@ -11,3 +11,4 @@ exact/rows_*.json
 exact/*.log
 exact/__pycache__/
 baselines/openevolve/runs/
+HANDOFF.md

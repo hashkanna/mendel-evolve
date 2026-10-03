@@ -21,7 +21,7 @@ own virtual environment and scores the packing it returns. No API calls are made
                                       evaluator; empty if the program failed when re-run
     best_so_far_repaired_score        running maximum of repaired_strict_score within the seed
     cumulative_tokens, raw_strict_score, raw_strict_valid, rerun_sum_radii, program_sha256,
-    program_wall_s, program_cpu_s, evaluator_timeout_s
+    program_wall_s, program_cpu_s, evaluator_timeout_s, openevolve_eval_time_s, within_shipped_time_limit
 
 `raw_strict_score` is the strict evaluator's verdict on the packing exactly as the program returned
 it. `rerun_sum_radii` is the plain sum of the radii of the re-run, to compare with
@@ -35,9 +35,15 @@ Rescued. If rescue_timeouts.py has been run, <out stem>_rescued_timeouts.csv lis
 OpenEvolve discarded because its evaluation timed out, with the strict score (after repair) of its
 offline re-run under a CPU-time limit, the CPU seconds it needed, the best score OpenEvolve had at
 that moment, and whether the program would have been a new best. The summary then gives each seed's
-best score twice: as run, and with the timed-out programs counted (all of them, and only those that
-needed no more CPU seconds than OpenEvolve's original wall-time limit, which are the ones the
-machine load actually cost).
+best score three ways:
+
+    as run          whatever OpenEvolve's best programs were, under the limits actually in force
+    with rescued    the same, plus every timed-out program that finished offline
+    shipped limits  only programs that OpenEvolve's shipped limits (60 s, then 90 s) would have let
+                    through on an idle machine: as-run best programs whose own evaluation took no
+                    longer than that or which need no more CPU seconds than that, plus rescued
+                    programs that need no more CPU seconds than that. This is the number that neither
+                    penalises OpenEvolve for the machine load nor credits it for a raised limit.
 
 <out stem>_summary.json has all of this per seed and over seeds; the table is also printed.
 """
@@ -106,7 +112,7 @@ def checkpoint_rows(seed: int, phase: str, output_dir: Path, before: dict) -> li
             continue
         rows.append({"seed": seed, "phase": phase, "iteration": iteration, "usage": add_usage(before, spent),
                      "program": program, "openevolve_score": info.get("metrics", {}).get("sum_radii"),
-                     "saved_at": info.get("saved_at")})
+                     "eval_time": info.get("metrics", {}).get("eval_time"), "saved_at": info.get("saved_at")})
     rows.sort(key=lambda r: (r["usage"]["requests"], r["iteration"]))
     return rows
 
@@ -172,7 +178,8 @@ def main(argv: list[str] | None = None) -> int:
         manifest = json.loads((run / "manifest.json").read_text()) if (run / "manifest.json").exists() else {}
         seeds[seed] = {"manifest": manifest, "phase_usage": {}, "phase_iterations": {}, "schedule": {}, "lost": 0}
         rows.append({"seed": seed, "phase": "phase1", "iteration": 0, "usage": ZERO,
-                     "program": EXAMPLE / "initial_program.py", "openevolve_score": None, "saved_at": None})
+                     "program": EXAMPLE / "initial_program.py", "openevolve_score": None, "eval_time": 0.0,
+                     "saved_at": None})
         before = ZERO
         for phase in ("phase1", "phase2"):
             output_dir = run / phase / "openevolve_output"
@@ -221,7 +228,7 @@ def main(argv: list[str] | None = None) -> int:
     fields = ["seed", "phase", "iteration", "cumulative_requests", "cumulative_dollars", "openevolve_score",
               "repaired_strict_score", "best_so_far_repaired_score", "cumulative_tokens", "raw_strict_score",
               "raw_strict_valid", "rerun_sum_radii", "program_sha256", "program_wall_s", "program_cpu_s",
-              "evaluator_timeout_s"]
+              "evaluator_timeout_s", "openevolve_eval_time_s", "within_shipped_time_limit"]
     table = []
     for row in rows:
         result = scores[row["sha"]]
@@ -230,6 +237,12 @@ def main(argv: list[str] | None = None) -> int:
             best[row["seed"]] = max(best.get(row["seed"], -math.inf), repaired)
         openevolve_score = row["openevolve_score"] if row["openevolve_score"] is not None else result["rerun_sum"]
         schedule = seeds[row["seed"]]["schedule"].get(row["phase"], [(0.0, 0.0)])
+        shipped = schedule[0][1]
+        # Would OpenEvolve's shipped limit have let this program through on an idle machine? Yes if its own
+        # evaluation took no longer than that (wall time, under whatever load there was), or if a re-run
+        # needs no more CPU seconds than that.
+        fits = ((row["eval_time"] is not None and row["eval_time"] <= shipped)
+                or (result["cpu"] is not None and repaired is not None and result["cpu"] <= shipped))
         table.append({
             "seed": row["seed"], "phase": row["phase"].removeprefix("phase"), "iteration": row["iteration"],
             "cumulative_requests": row["usage"]["requests"], "cumulative_dollars": f"{row['usage']['usd']:.6f}",
@@ -241,6 +254,8 @@ def main(argv: list[str] | None = None) -> int:
             "rerun_sum_radii": "" if result["rerun_sum"] is None else repr(result["rerun_sum"]),
             "program_sha256": row["sha"][:16], "program_wall_s": result["wall"], "program_cpu_s": result["cpu"],
             "evaluator_timeout_s": f"{timeout_at(schedule, row['saved_at']):g}",
+            "openevolve_eval_time_s": "" if row["eval_time"] is None else f"{row['eval_time']:.1f}",
+            "within_shipped_time_limit": fits,
             "_saved_at": row["saved_at"],
         })
     with out.open("w", newline="") as f:
@@ -334,16 +349,22 @@ def main(argv: list[str] | None = None) -> int:
                 "best_rescued_score": max((float(r["repaired_strict_score"]) for r in done), default=None),
                 "best_rescued_score_within_original_limit_cpu": max((float(r["repaired_strict_score"]) for r in fair), default=None),
             }
-            for name, pool in (("with_rescued", done), ("with_rescued_within_original_limit_cpu", fair)):
-                top = max((float(r["repaired_strict_score"]) for r in pool), default=None)
-                entry[f"best_repaired_after_phase2_{name}"] = final if top is None else max(final, top)
-                # the best-so-far curve had these programs counted when they were evaluated
-                events = sorted(as_run_events + [(float(r["cumulative_dollars"]), r["cumulative_requests"], r["phase"],
-                                                  r["iteration"], float(r["repaired_strict_score"])) for r in pool])
+            # "with_rescued": everything as run, plus the timed-out programs that finished offline.
+            # "shipped_limit": only programs that OpenEvolve's shipped time limits would have let through on
+            # an idle machine: as-run best programs that fit them, plus rescued programs that fit them.
+            own = [(float(r["cumulative_dollars"]), r["cumulative_requests"], r["phase"], r["iteration"],
+                    float(r["repaired_strict_score"])) for r in mine if r["repaired_strict_score"] != ""]
+            fitting = [(float(r["cumulative_dollars"]), r["cumulative_requests"], r["phase"], r["iteration"],
+                        float(r["repaired_strict_score"])) for r in mine
+                       if r["repaired_strict_score"] != "" and r["within_shipped_time_limit"]]
+            for name, base, pool in (("with_rescued", own, done), ("shipped_limit", fitting, fair)):
+                events = sorted(base + [(float(r["cumulative_dollars"]), r["cumulative_requests"], r["phase"],
+                                         r["iteration"], float(r["repaired_strict_score"])) for r in pool])
                 running, merged = -math.inf, []
                 for e in events:
                     running = max(running, e[4])
                     merged.append((e[0], e[1], e[2], e[3], running))
+                entry[f"best_repaired_after_phase2_{name}"] = running if merged else None
                 entry[f"first_passed_{name}"] = first_passed(merged)
         summary["seeds"][str(seed)] = entry
 
@@ -355,7 +376,7 @@ def main(argv: list[str] | None = None) -> int:
                 "sd": statistics.stdev(values) if len(values) > 1 else 0.0}
 
     keys = ["best_repaired_after_phase1", "best_repaired_after_phase2", "best_repaired_after_phase2_with_rescued",
-            "best_repaired_after_phase2_with_rescued_within_original_limit_cpu", "requests", "dollars", "wall_seconds"]
+            "best_repaired_after_phase2_shipped_limit", "requests", "dollars", "wall_seconds"]
     summary["over_seeds"] = {key: spread(key) for key in keys if spread(key) is not None}
     summary["total_dollars"] = round(sum(s["dollars"] for s in summary["seeds"].values()), 6)
     if rescued:
@@ -381,14 +402,14 @@ def main(argv: list[str] | None = None) -> int:
     if rescue:
         print(f"\ntimed-out programs re-run offline ({rescued_path.name}):")
         print(f"{'seed':>4s} {'timed out':>9s} {'finished':>9s} {'<= limit CPU':>12s} {'new best then':>13s} {'> final best':>12s} "
-              f"{'as run':>10s} {'with rescued':>13s} {'rescued, <= limit CPU':>22s}")
+              f"{'as run':>10s} {'with rescued':>13s} {'shipped limits only':>20s}")
         for seed, s in summary["seeds"].items():
             t = s["timed_out_programs"]
             print(f"{seed:>4s} {t['count']:>9d} {t['finished_offline']:>9d} {t['finished_within_original_limit_cpu']:>12d} "
                   f"{t['new_best_at_the_time']:>13d} {t['above_final_as_run_best']:>12d} "
                   f"{show(s['best_repaired_after_phase2']):>10s} {show(s['best_repaired_after_phase2_with_rescued']):>13s} "
-                  f"{show(s['best_repaired_after_phase2_with_rescued_within_original_limit_cpu']):>22s}")
-        for key in ("best_repaired_after_phase2_with_rescued", "best_repaired_after_phase2_with_rescued_within_original_limit_cpu"):
+                  f"{show(s['best_repaired_after_phase2_shipped_limit']):>20s}")
+        for key in ("best_repaired_after_phase2_with_rescued", "best_repaired_after_phase2_shipped_limit"):
             sp = summary["over_seeds"].get(key)
             if sp:
                 print(f"{key}: mean {sp['mean']:.6f}, sd {sp['sd']:.6f}, min {sp['min']:.6f}, max {sp['max']:.6f}")

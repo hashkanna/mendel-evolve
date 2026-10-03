@@ -1,0 +1,124 @@
+[
+ {
+  "n": 6,
+  "K": 24,
+  "mode": "orbit",
+  "verdict": "INFEASIBLE",
+  "cases": [
+   {
+    "status": "INFEASIBLE",
+    "conflicts": 0,
+    "lazy_rounds": 1,
+    "lazy_rows_added": 0,
+    "wall_seconds": 0.43,
+    "case": 9,
+    "rep": 86,
+    "orbit_size": 8
+   },
+   {
+    "status": "INFEASIBLE",
+    "conflicts": 0,
+    "lazy_rounds": 1,
+    "lazy_rows_added": 0,
+    "wall_seconds": 0.48,
+    "case": 8,
+    "rep": 43,
+    "orbit_size": 8
+   },
+   {
+    "status": "INFEASIBLE",
+    "conflicts": 0,
+    "lazy_rounds": 1,
+    "lazy_rows_added": 0,
+    "wall_seconds": 0.68,
+    "case": 7,
+    "rep": 0,
+    "orbit_size": 8
+   },
+   {
+    "status": "INFEASIBLE",
+    "conflicts": 0,
+    "lazy_rounds": 1,
+    "lazy_rows_added": 0,
+    "wall_seconds": 0.5,
+    "case": 6,
+    "rep": 50,
+    "orbit_size": 24
+   },
+   {
+    "status": "INFEASIBLE",
+    "conflicts": 0,
+    "lazy_rounds": 1,
+    "lazy_rows_added": 0,
+    "wall_seconds": 0.69,
+    "case": 5,
+    "rep": 44,
+    "orbit_size": 24
+   },
+   {
+    "status": "INFEASIBLE",
+    "conflicts": 1506,
+    "lazy_rounds": 1,
+    "lazy_rows_added": 0,
+    "wall_seconds": 11.7,
+    "case": 4,
+    "rep": 14,
+    "orbit_size": 24
+   },
+   {
+    "status": "INFEASIBLE",
+    "conflicts": 8,
+    "lazy_rounds": 1,
+    "lazy_rows_added": 0,
+    "wall_seconds": 12.49,
+    "case": 3,
+    "rep": 7,
+    "orbit_size": 24
+   },
+   {
+    "status": "INFEASIBLE",
+    "conflicts": 9,
+    "lazy_rounds": 1,
+    "lazy_rows_added": 0,
+    "wall_seconds": 9.94,
+    "case": 2,
+    "rep": 2,
+    "orbit_size": 24
+   },
+   {
+    "status": "INFEASIBLE",
+    "conflicts": 25,
+    "lazy_rounds": 1,
+    "lazy_rows_added": 0,
+    "wall_seconds": 12.67,
+    "case": 1,
+    "rep": 1,
+    "orbit_size": 24
+   }
+  ],
+  "cases_run": [
+   9,
+   8,
+   7,
+   6,
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "num_orbit_cases": 10,
+  "implied_layers": true,
+  "partial": true,
+  "wall_seconds": 76.75,
+  "workers": 1,
+  "params": {},
+  "time_limit_per_solve": 700.0,
+  "rows": {
+   "circles": 102488,
+   "hyperplanes": 61901,
+   "min_hyper_size": 9,
+   "rows_file": null
+  }
+ }
+]
