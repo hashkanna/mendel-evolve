@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mendel</title>
+<title>MendelEvolve</title>
 <link rel="icon" href="data:,">
 <style>
 :root {
@@ -39,7 +39,7 @@ button, input, select { font: inherit; color: inherit; }
 
 #app {
   height: 100vh; min-height: 800px; min-width: 1240px; padding: 14px;
-  display: grid; grid-template-rows: 56px 218px minmax(0, 1fr); gap: 10px;
+  display: grid; grid-template-rows: 50px 46px 198px minmax(0, 1fr); gap: 10px;
 }
 
 /* ---------- header */
@@ -331,6 +331,52 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
 #tip .t1 { color: var(--ink); font-weight: 650; font-variant-numeric: tabular-nums; }
 #tip .t2 { color: var(--ink-2); font-size: 11.5px; font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .status.live i, .spin { animation: none; } }
+/* ---------- now line, records strip, research efficiency, newer engine states */
+.now { flex: 1 1 0; min-width: 0; text-align: right; padding-left: 8px; }
+.now-1 { font-size: 12px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.now-2 { font-size: 11px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+.now time { color: var(--ink-3); font-variant-numeric: tabular-nums; margin-right: 6px; }
+.now .ago { color: var(--ink-3); }
+.tag-now { display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); border: 1px solid var(--line-2); border-radius: 4px; padding: 0 5px; margin-right: 8px; line-height: 15px; vertical-align: 1px; }
+.tag-now.on { color: var(--ink); border-color: var(--pos); }
+.tag-now.bad { color: var(--ink); border-color: var(--neg); }
+.status.stop { color: var(--ink); border-color: #fab219; }
+.status.stop i { background: #fab219; border-radius: 1.5px; }
+.brief { display: flex; gap: 10px; min-height: 0; min-width: 0; }
+.rec, .eff { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; display: flex; align-items: center; min-width: 0; padding: 0 12px; gap: 12px; }
+.rec { flex: 1 1 0; border-color: rgba(57,135,229,.6); background: linear-gradient(90deg, rgba(57,135,229,.24), rgba(57,135,229,.05) 72%), var(--panel); }
+.rec-title { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; white-space: nowrap; flex: 0 0 auto; line-height: 1.25; }
+.rec-title .star { color: var(--pos); font-size: 17px; }
+.rec-sub { font-size: 10.5px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--ink-2); }
+.rec-list { display: flex; gap: 8px; min-width: 0; flex: 1 1 0; overflow: hidden; }
+.rc { display: flex; align-items: baseline; gap: 6px; flex: 0 0 auto; white-space: nowrap; padding: 3px 8px 3px 9px; border-radius: 7px; background: rgba(9,11,15,.5); border: 1px solid rgba(57,135,229,.4); }
+.rc .k { font: 12px var(--mono); color: var(--ink-2); }
+.rc .v { font-size: 20px; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
+.rc .bk { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.rc .ok { align-self: center; display: inline-flex; align-items: center; gap: 3px; font-size: 10.5px; font-weight: 700; color: var(--ink); }
+.rc .ok i { width: 14px; height: 14px; border-radius: 50%; background: var(--pos); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 9.5px; font-style: normal; }
+.rc .ok.no { color: var(--ink-3); font-weight: 500; }
+.rc .ok.no i { background: none; border: 1.5px solid var(--neu); color: var(--ink-3); }
+.rc.more { color: var(--ink-2); font-size: 11px; align-items: center; }
+.eff { flex: 0 1 auto; }
+.rec[hidden] + .eff { flex: 1 1 0; }
+.eff-title { font-size: 11px; font-weight: 650; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-2); line-height: 1.25; flex: 0 0 auto; }
+.eff-list { display: flex; gap: 11px; flex: 1 1 auto; justify-content: space-between; min-width: 0; }
+.ef { white-space: nowrap; }
+.ef .k { font-size: 9px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); }
+.ef .v { font-size: 16px; font-weight: 650; line-height: 1.2; }
+.lhead { height: 30px; }
+.lrow { grid-template-rows: 22px auto; padding-top: 3px; padding-bottom: 3px; }
+.lrow > .c-src { grid-column: 4 / span 2; grid-row: 2; font-size: 10.5px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lrow.has-src > .hyp { grid-column: 2 / span 2; }
+.dimhead { padding: 7px 6px; }
+.author { text-transform: none; letter-spacing: .01em; font-size: 10.5px; font-weight: 600; }
+.gm-row { height: 15px; }
+.gm-cell { height: 15px; }
+.d-note { margin: 0; font-size: 12.5px; line-height: 1.4; color: var(--ink); border-left: 2px solid #fab219; padding-left: 9px; }
+.idea-note { font-size: 12px; color: var(--ink-2); line-height: 1.4; }
+body.snap .status.live i { animation: none; box-shadow: none; }
+body.snap #idea-form, body.snap #run-select { display: none; }
 </style>
 </head>
 <body>
@@ -340,23 +386,29 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
       <svg width="30" height="26" viewBox="0 0 30 26" aria-hidden="true">
         <circle cx="5" cy="13" r="3.6" fill="#3987e5"/><circle cx="15" cy="13" r="3" fill="none" stroke="#737d8e" stroke-width="1.5"/><circle cx="25" cy="13" r="3.6" fill="#3987e5"/>
       </svg>
-      <span>Mendel</span>
+      <span>MendelEvolve</span>
     </div>
     <div class="hsep"></div>
     <div class="titles">
-      <div class="title-line"><h1 id="h-title">Waiting for a run</h1><span id="h-demo" class="demo" hidden>Demo data</span></div>
+      <div class="title-line"><h1 id="h-title">Waiting for a run</h1><span id="h-demo" class="demo" hidden>Demo data</span><span id="h-snap" class="demo" hidden>Snapshot</span></div>
       <div class="sub" id="h-sub">No run found yet. Start one and this page picks it up within seconds.</div>
     </div>
     <select id="run-select" hidden aria-label="Run"></select>
-    <div class="grow"></div>
+    <div class="now" id="h-now"><div class="now-1" id="now-1"></div><div class="now-2" id="now-2"></div></div>
     <div id="h-status" class="status"><i></i><span>No run</span></div>
     <div class="kpi"><div class="k">Generation</div><div class="v" id="k-gen">–</div></div>
-    <div class="hsep"></div>
-    <div class="kpi"><div class="k">LLM calls</div><div class="v" id="k-calls">–</div></div>
-    <div class="kpi"><div class="k">LLM spend</div><div class="v" id="k-usd">–</div></div>
-    <div class="kpi"><div class="k">CPU-hours</div><div class="v" id="k-cpu">–</div></div>
-    <div class="kpi"><div class="k">Evaluations</div><div class="v" id="k-evals">–</div></div>
   </header>
+
+  <section class="brief">
+    <div class="rec" id="p-rec" hidden>
+      <div class="rec-title"><span class="star">★</span><div>New records<div class="rec-sub">ours vs published</div></div></div>
+      <div class="rec-list" id="rec-list"></div>
+    </div>
+    <div class="eff" id="p-eff">
+      <div class="eff-title">Research<br>efficiency</div>
+      <div class="eff-list" id="eff-list"></div>
+    </div>
+  </section>
 
   <section class="row-top">
     <div class="panel" id="p-champ">
@@ -407,12 +459,13 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
         <div class="p-body" id="int-body" style="min-height:44px"></div>
       </div>
       <div class="panel" id="p-idea">
-        <div class="p-head"><div class="p-title">Idea box</div><div class="p-note">Mendel turns it into a gene and measures it</div></div>
+        <div class="p-head"><div class="p-title">Idea box</div><div class="p-note">MendelEvolve turns it into a gene and measures it</div></div>
         <form class="idea-form" id="idea-form" autocomplete="off">
           <input id="idea-text" type="text" maxlength="2000" placeholder="Suggest an idea in plain words" aria-label="Your idea">
           <input id="idea-author" type="text" maxlength="80" placeholder="Your name" aria-label="Your name">
           <button class="btn primary" type="submit" id="idea-send">Queue idea</button>
         </form>
+        <div class="idea-note" id="idea-note" hidden></div>
         <div class="idea-msg" id="idea-msg" role="status"></div>
         <div class="idea-list" id="idea-list"></div>
       </div>
@@ -422,6 +475,7 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
 </div>
 <div id="tip" hidden></div>
 
+<!--MENDEL_SNAPSHOT-->
 <script>
 'use strict';
 (() => {
@@ -545,11 +599,17 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
     if (extra) lines.push(extra);
     return lines.join('\n');
   }
+  // "claude-fable-5-1" reads "Fable 5.1"; anything else keeps the text after "llm:"
+  function llmName(who) {
+    const m = /^claude-([a-z]+)-(\d+)(?:-(\d{1,2})(?!\d))?/i.exec(who);
+    if (!m) return who || 'LLM';
+    return m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase() + ' ' + m[2] + (m[3] ? '.' + m[3] : '');
+  }
   function parseAuthor(a) {
     a = str(a);
     const i = a.indexOf(':'), kind = (i < 0 ? a : a.slice(0, i)).toLowerCase(), who = i < 0 ? '' : a.slice(i + 1);
     if (kind === 'seed') return { kind: 'seed', text: 'seed', tip: 'Part of the seed solver' };
-    if (kind === 'llm') return { kind: 'llm', text: 'LLM', tip: 'Invented by ' + (who || 'a language model') };
+    if (kind === 'llm') return { kind: 'llm', text: llmName(who), tip: 'Invented by ' + (who || 'a language model') };
     if (kind === 'human') return { kind: 'human', text: who || 'human', tip: 'Suggested by ' + (who || 'a person') };
     return { kind: 'other', text: a || 'unknown', tip: 'Author: ' + (a || 'unknown') };
   }
@@ -557,6 +617,10 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
   const STATUS = {
     active: ['on in the champion', 'In the solver and switched on in the champion'],
     inactive: ['off in champion', 'In the solver, switched off in the champion'],
+    queued: ['queued', 'Screened positive; waiting to be ported onto the new trunk'],
+    proposed: ['proposed', 'Proposed in this generation; being checked by the invariance gate'],
+    screening: ['screening', 'Passed the gate; its effect is being measured now'],
+    screened: ['screened', 'Screened; waiting for the merge decision'],
     rejected: ['rejected', 'Failed screening and was not merged'],
     pruned: ['pruned', 'Removed from the solver after repeated null knockouts'],
     'failed-gate': ['failed gate', 'Broke the invariance rule or crashed, so it was never measured'],
@@ -571,16 +635,53 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
   };
   function prepGenes(st) {
     const cfg = obj(obj(st.champion).config);
-    return arr(st.genes).filter((g) => g && typeof g === 'object' && typeof g.name === 'string' && g.name).map((g) => {
+    const list = arr(st.genes).filter((g) => g && typeof g === 'object' && typeof g.name === 'string' && g.name).map((g) => {
       const kind = str(g.kind) || 'switch';
       const ko = measure(g.knockout), sc = measure(g.screen);
       return {
         raw: g, name: g.name, kind, isIdea: kind !== 'int' && kind !== 'float',
-        author: parseAuthor(g.author), status: str(g.status), ko, sc, m: ko || sc, src: ko ? 'knockout' : sc ? 'screen' : null,
+        author: parseAuthor(g.author), status: str(g.status), ko, sc, m: ko || sc,
+        // for an idea that is off in the champion, `knockout` holds what switching it on would add
+        src: ko ? (str(g.status) === 'inactive' ? 'switch-on' : 'knockout') : sc ? 'screen' : null,
+        note: str(g.note).trim(), neutralRounds: num(g.neutral_rounds),
         label: str(g.label), hypothesis: str(g.hypothesis), predicted: str(g.predicted), addedGen: num(g.added_gen),
         generality: obj(g.generality), value: cfg[g.name] !== undefined ? cfg[g.name] : g.value, of: typeof g.of === 'string' ? g.of : null,
       };
     });
+    return list.concat(inFlightGenes(st, new Set(list.map((g) => g.name))));
+  }
+  // "effect +0.1042, 95% interval [-0.083, +0.29], 96 runs" as written in the history
+  function parseEffectDetail(detail) {
+    const m = /effect\s+([+-]?[\d.]+(?:e[+-]?\d+)?)\s*,?\s*95% interval\s*\[\s*([^,\]]+),\s*([^\]]+)\](?:\s*,\s*(\d+)\s*runs)?/i.exec(str(detail));
+    if (!m) return null;
+    const v = [Number(m[1]), Number(m[2]), Number(m[3])];
+    return v.every((x) => isFinite(x)) ? { effect: v[0], ci: [v[1], v[2]], runs: m[4] ? Number(m[4]) : null } : null;
+  }
+  // Ideas of the current generation that the history mentions but the gene list does not hold yet
+  // (being gated, screened, or queued): shown in the ledger so the work in progress is visible.
+  function inFlightGenes(st, known) {
+    const evs = arr(st.history).map(obj), found = new Map();
+    let latest = -Infinity;
+    for (const ev of evs) if (isNum(ev.generation)) latest = Math.max(latest, ev.generation);
+    for (const ev of evs) {
+      const name = typeof ev.gene === 'string' ? ev.gene : '';
+      if (!name || known.has(name) || (isNum(ev.generation) && ev.generation !== latest)) continue;
+      let g = found.get(name);
+      if (!g) { g = { name, status: 'proposed', hypothesis: '', sc: null, gen: num(ev.generation) }; found.set(name, g); }
+      const what = str(ev.event), detail = str(ev.detail);
+      if (what === 'gene_proposed') g.hypothesis = detail;
+      else if (what === 'gate_passed') g.status = 'screening';
+      else if (what === 'gene_screened') { g.status = 'screened'; g.sc = measure(Object.assign({ generation: g.gen }, parseEffectDetail(detail))); }
+      else if (what === 'gene_queued') g.status = 'queued';
+      else if (what === 'gene_rejected') g.status = 'rejected';
+      else if (what === 'step_failed' && /^gate/.test(detail)) g.status = 'failed-gate';
+    }
+    return [...found.values()].map((g) => ({
+      raw: {}, name: g.name, kind: 'switch', isIdea: true, derived: true,
+      author: { kind: 'other', text: 'new', tip: 'Proposed in this generation. The state does not list it as a gene yet, so its author is not known here.' },
+      status: g.status, ko: null, sc: g.sc, m: g.sc, src: g.sc ? 'screen' : null, label: '', hypothesis: g.hypothesis, predicted: '',
+      addedGen: g.gen, generality: {}, value: undefined, of: null, note: '', neutralRounds: null,
+    }));
   }
   const byEffect = (a, b) => (b.m ? b.m.effect : -Infinity) - (a.m ? a.m.effect : -Infinity) || a.name.localeCompare(b.name);
   function instanceList(st) {
@@ -590,12 +691,13 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
     arr(inst.heldout).forEach((k) => add(k, 'heldout'));
     for (const name of Object.keys(inst)) if (name !== 'train' && name !== 'heldout') arr(inst[name]).forEach((k) => add(k, name));
     Object.keys(obj(obj(st.champion).scores)).forEach((k) => add(k, 'other'));
-    arr(st.records).forEach((r) => add(obj(r).instance, 'other'));
     return out;
   }
   const splitName = (sp) => (sp === 'train' ? 'Train' : sp === 'heldout' ? 'Held-out' : sp === 'other' ? 'Other' : sp);
 
   // ------------------------------------------------------------------- state
+  // A saved snapshot embeds its data here and the page then runs read-only, without a server.
+  const SNAP = obj(window.MENDEL_SNAPSHOT).state ? window.MENDEL_SNAPSHOT : null;
   const S = {
     runs: [], run: null, wanted: new URLSearchParams(location.search).get('run'),
     state: null, stateText: '', bodyKey: '', genes: [],
@@ -712,8 +814,13 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
       if (run.direction) bits.push(run.direction === 'min' ? 'lower is better' : 'higher is better');
       const sv = obj(st.champion).solver_version;
       if (sv) bits.push('solver ' + str(sv));
-      const ago = agoText(run.updated);
-      if (ago) bits.push('updated ' + ago);
+      if (SNAP) {
+        const d = parseTime(SNAP.taken);
+        if (d) bits.push('snapshot of ' + d.toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }));
+      } else {
+        const ago = agoText(run.updated);
+        if (ago) bits.push('updated ' + ago);
+      }
       $('h-sub').textContent = bits.join('  ·  ');
     } else {
       $('h-sub').textContent = !S.online ? 'The dashboard server is not answering. Retrying.'
@@ -721,21 +828,111 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
         : 'No run found yet. Start one and this page picks it up within seconds.';
     }
     $('h-demo').hidden = S.run !== 'demo';
+    $('h-snap').hidden = !SNAP;
     const pill = $('h-status'), status = str(run.status).toLowerCase();
     let cls = '', text = status ? status.charAt(0).toUpperCase() + status.slice(1) : S.run ? 'Starting' : 'No run';
     if (!S.online) { cls = 'bad'; text = 'Server offline'; }
-    else if (/run|search|evolv|progress/.test(status)) cls = 'live';
-    else if (/done|finish|complete|stopp/.test(status)) cls = 'done';
-    else if (/err|fail|crash/.test(status)) cls = 'bad';
+    else if (/fail|err|crash/.test(status)) cls = 'bad';                 // "failed"
+    else if (/stop|interrupt|paus/.test(status)) cls = 'stop';            // "stopped", "stopped: budget"
+    else if (/done|finish|complete/.test(status)) cls = 'done';
+    else if (/run|search|evolv|progress|resum/.test(status)) cls = 'live';
+    if (SNAP && cls === 'live') text = 'Running when saved';
     pill.className = 'status ' + cls;
     pill.lastElementChild.textContent = text;
+    pill.setAttribute('data-tip', { live: 'The engine is working on this run', done: 'The run finished all its generations',
+      stop: 'The run was stopped before finishing; it can be resumed', bad: S.online ? 'The run failed' : 'The dashboard server is not answering' }[cls] || 'Run status');
     $('k-gen').textContent = isNum(run.generation) ? String(run.generation) : '–';
-    $('k-calls').textContent = fmtInt(spend.llm_calls);
-    $('k-usd').textContent = isNum(spend.llm_usd) ? '$' + spend.llm_usd.toFixed(2) : '–';
-    $('k-cpu').textContent = isNum(spend.cpu_seconds) ? (spend.cpu_seconds / 3600).toFixed(spend.cpu_seconds < 36000 ? 2 : 1) : '–';
-    $('k-evals').textContent = fmtInt(spend.evaluations);
-    document.title = (S.state && str(run.title) ? str(run.title) + ' · ' : '') + 'Mendel';
+    renderEfficiency();
+    renderNow();
+    document.title = (S.state && str(run.title) ? str(run.title) + ' · ' : '') + 'MendelEvolve';
   }
+  // Research efficiency: what the run spent and what it got for it.
+  function renderEfficiency() {
+    const st = S.state || {}, spend = obj(obj(st.run).spend), list = clear($('eff-list'));
+    const invented = S.genes.filter((g) => g.isIdea && g.author.kind !== 'seed');
+    const proposed = new Set(invented.map((g) => g.name));       // ideas still being gated or screened are only in the history
+    for (const ev of arr(st.history).map(obj)) if (ev.event === 'gene_proposed' && typeof ev.gene === 'string' && ev.gene) proposed.add(ev.gene);
+    const kept = invented.filter((g) => g.status === 'active').length;
+    const calls = num(spend.llm_calls), usd = num(spend.llm_usd), cpu = num(spend.cpu_seconds), evals = num(spend.evaluations);
+    const money = (v) => '$' + (v < 100 ? v.toFixed(2) : Math.round(v).toLocaleString('en-US'));
+    const items = [
+      ['LLM calls', fmtInt(calls), 'Calls made to the language model'],
+      ['LLM spend', usd != null ? money(usd) : '–', 'Dollars spent on the language model'],
+      ['CPU-hours', cpu != null ? (cpu / 3600).toFixed(cpu < 36000 ? 2 : 1) : '–', 'Solver CPU time used by the experiments'],
+      ['Evaluations', fmtInt(evals), 'Solver runs scored by the exact evaluator'],
+      ['Evals per call', calls && evals != null ? fmtInt(evals / calls) : '–', 'Evaluations divided by LLM calls: how much measurement each call led to'],
+      ['Ideas proposed', S.state ? String(proposed.size) : '–', 'Ideas invented during the run, not counting the seed solver'],
+      ['Ideas kept', S.state ? String(kept) : '–', 'Invented ideas that are switched on in the champion'],
+      ['$ per kept idea', usd != null && kept ? money(usd / kept) : '–', 'LLM dollars divided by the ideas kept'],
+    ];
+    for (const [k, v, tip] of items) list.appendChild(h('div', { class: 'ef', tip: k + ': ' + v + '\n' + tip }, h('div', { class: 'k', text: k }), h('div', { class: 'v', text: v })));
+  }
+
+  // The "now" line: the last few history events, so a viewer can see the system working.
+  function effectFromDetail(detail) {
+    const e = parseEffectDetail(detail);
+    return e ? trimSigned(e.effect) + ' [' + trimSigned(e.ci[0]) + ', ' + trimSigned(e.ci[1]) + ']' : '';
+  }
+  function eventPhrase(ev) {
+    const name = str(ev.event), gene = str(ev.gene), detail = str(ev.detail).trim();
+    const cut = (text, n) => (text.length > n ? text.slice(0, n - 1).trimEnd() + '…' : text);
+    if (name === 'gene_screened') { const e = effectFromDetail(detail); return 'screened ' + gene + (e ? ': ' + e : detail ? ': ' + cut(detail, 60) : ''); }
+    if (name === 'gene_proposed') return 'proposed ' + gene;
+    if (name === 'gate_passed') return 'gate passed: ' + gene;
+    if (name === 'inventing') return 'inventing: ' + cut(detail.split(':')[0], 50);
+    const words = name.replace(/_/g, ' ').replace(/^gene /, '');
+    return words + (gene ? ' ' + gene : '') + (detail ? ': ' + cut(detail, 72) : '');
+  }
+  function renderNow() {
+    const st = S.state || {}, l1 = clear($('now-1')), l2 = clear($('now-2')), box = $('h-now');
+    const evs = arr(st.history).map(obj).filter((e) => e.event);
+    box.removeAttribute('data-tip');
+    if (!evs.length) return;
+    const last = evs[evs.length - 1], running = !SNAP && $('h-status').classList.contains('live'), failed = /fail/.test(str(last.event));
+    const ago = SNAP ? '' : agoText(last.t);
+    append(l1, [h('span', { class: 'tag-now' + (failed ? ' bad' : running ? ' on' : ''), text: running ? 'Now' : 'Last' }),
+      clock(last.t) ? h('time', { text: clock(last.t) }) : null, eventPhrase(last),
+      ago && running ? h('span', { class: 'ago', text: '  ·  ' + ago }) : null]);
+    evs.slice(-3, -1).reverse().forEach((e, i) => append(l2, [i ? '   ·   ' : null, clock(e.t) ? h('time', { text: clock(e.t) }) : null, eventPhrase(e)]));
+    box.setAttribute('data-tip', 'Latest events\n' + evs.slice(-7).reverse().map((e) => (clock(e.t) ? clock(e.t) + '  ' : '') + eventPhrase(e)).join('\n'));
+  }
+
+  // Records strip: new best values, including sizes that are not train or held-out instances.
+  function renderRecords() {
+    const st = S.state || {}, panel = $('p-rec'), list = clear($('rec-list'));
+    const minimise = obj(st.run).direction === 'min', bk = obj(st.best_known);
+    const recs = arr(st.records).map(obj).filter((r) => typeof r.instance === 'string' && r.instance && isNum(r.value))
+      .sort((a, b) => a.instance.localeCompare(b.instance, undefined, { numeric: true }));
+    panel.hidden = !recs.length;
+    if (!recs.length) return;
+    const chips = recs.map((r) => {
+      const known = num(r.best_known) != null ? num(r.best_known) : num(bk[r.instance]);
+      const checks = arr(r.checks).filter((c) => typeof c === 'string' && c);
+      const tip = [r.instance + ': ' + trimNum(r.value) + (known != null ? ', best published ' + trimNum(known) + ' (' + trimSigned(r.value - known) + ')' : '')];
+      if (r.verified === true) tip.push(checks.length ? 'Verified by ' + plural(checks.length, 'independent checker') + ': ' + checks.join(', ') : 'Verified by the exact evaluator');
+      else tip.push(r.verified === false ? 'Not verified yet' : 'Verification not reported');
+      if (r.certificate) tip.push('Certificate: ' + str(r.certificate));
+      if (known != null && !(minimise ? r.value < known : r.value > known)) tip.push('Note: this does not beat the published value');
+      return h('div', { class: 'rc', tip: tip.join('\n') },
+        h('span', { class: 'k', text: r.instance }),
+        h('span', { class: 'v', text: trimNum(r.value) }),
+        h('span', { class: 'bk', text: known != null ? 'vs ' + trimNum(known) : '' }),
+        r.verified === true
+          ? h('span', { class: 'ok' }, h('i', { text: '✓' }), checks.length > 1 ? '×' + checks.length : null)
+          : h('span', { class: 'ok no' }, h('i', { text: '?' }), 'unverified'));
+    });
+    chips.forEach((c) => list.appendChild(c));
+    let shown = chips.length;                                    // keep to one line: fold the tail into "+N more"
+    const more = h('div', { class: 'rc more' });
+    while (shown > 1 && list.scrollWidth > list.clientWidth + 1) {
+      shown--;
+      list.removeChild(chips[shown]);
+      more.textContent = '+' + (chips.length - shown) + ' more';
+      more.setAttribute('data-tip', 'More records\n' + recs.slice(shown).map((r) => r.instance + ': ' + trimNum(r.value)).join('\n'));
+      if (!more.parentNode) list.appendChild(more);
+    }
+  }
+
   function renderRunSelect() {
     const sel = $('run-select');
     sel.hidden = S.runs.length < 2;
@@ -785,7 +982,7 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
         else if (known == null) cap = 'no reference';
         else if (better) {
           nRec++; glyph = '★'; gcls = 'pos'; dtext = trimSigned(delta);
-          cap = rec && rec.verified === false ? 'unverified' : 'new record';
+          cap = rec && rec.verified === false ? 'unverified' : tileW < 58 ? 'record' : 'new record';
         } else if (delta === 0) { nEq++; glyph = '='; dtext = ''; cap = 'matched'; }
         else { nBehind++; glyph = minimise ? '▲' : '▼'; gcls = 'neg'; dtext = trimSigned(delta); cap = 'behind'; }
         const tipLines = [it.key + ' (' + splitName(it.split).toLowerCase() + '): ' + (ours != null ? trimNum(ours) : 'no result yet')];
@@ -1039,44 +1236,51 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
     for (const sp of steps) { sp.from = cum; cum += sp.v; sp.to = cum; levels.push(cum); }
     const gain = cum, ideas = steps.find((x) => x.key === 'ideas');
     if (ideas && gain > 0 && ideas.v > 0) cap.appendChild(h('div', null, 'Ideas gave ', h('b', { text: Math.round((ideas.v / gain) * 100) + '%' }), ' of the ', h('b', { text: trimSigned(gain) }), ' gain over the seed'));
-    else cap.appendChild(h('div', null, 'Gain over the seed solver: ', h('b', { text: trimSigned(gain) })));
-    if (dcm.unit) cap.appendChild(h('div', { text: str(dcm.unit) }));
+    else if (steps.every((sp) => Math.abs(sp.v) < 1e-12)) cap.appendChild(h('div', { text: 'No gain over the seed solver measured yet' }));
+    else cap.appendChild(h('div', null, gain < 0 ? 'Change against the seed solver: ' : 'Gain over the seed solver: ', h('b', { text: trimSigned(gain) })));
+    const unitBits = [str(dcm.unit), dcm.provisional === true ? 'provisional' : ''].filter(Boolean);
+    if (unitBits.length) cap.appendChild(h('div', { text: unitBits.join(' · ') }));
     const W = body.clientWidth, H = body.clientHeight;
     if (W < 60 || H < 60) return;
-    const cols = steps.length + 2, cw = W / cols, top = 26, bottom = H - 24;
-    const lo = Math.min(...levels), hi = Math.max(...levels), span = hi - lo || 1;
-    const Y = (v) => bottom - ((v - lo) / span) * (bottom - top);
+    const cols = steps.length + 2, cw = W / cols, anyDown = steps.some((sp) => sp.v < 0);
+    const top = 30, bottom = H - 24 - (anyDown ? 15 : 0);          // room above for numerals, below for labels of falling bars
+    const lo = Math.min(...levels), hi = Math.max(...levels), span = hi - lo;
+    const Y = span > 1e-12 ? (v) => bottom - ((v - lo) / span) * (bottom - top) : () => Math.round((top + bottom) / 2 + 12);
     const svg = s('svg', { class: 'fill', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Decomposition of the gain' });
     const bw = Math.min(40, cw - 14), name = (k) => k.charAt(0).toUpperCase() + k.slice(1);
     const xl = (i) => cw * i + (cw - bw) / 2;
+    const size = (text, big) => (text.length >= 6 ? 12 : text.length >= 5 ? Math.min(big, 14) : big) + 'px';   // long numbers shrink to their column
     svg.appendChild(s('line', { x1: 0, x2: W, y1: Y(0), y2: Y(0), class: 'grid' }));
     // seed level
+    const seedText = seed != null ? trimNum(seed) : '';
     svg.append(s('line', { x1: xl(0), x2: xl(0) + bw, y1: Y(0), y2: Y(0), stroke: 'var(--ink-3)', 'stroke-width': 2.5, 'stroke-linecap': 'round' }),
-      s('text', { x: cw / 2, y: Y(0) - 8, 'text-anchor': 'middle', class: 'lbl', style: { fontSize: '15px', fontWeight: 650 }, text: seed != null ? trimNum(seed) : '' }),
+      s('text', { x: cw / 2, y: Y(0) - 8, 'text-anchor': 'middle', class: 'lbl', style: { fontSize: size(seedText, 15), fontWeight: 650 }, text: seedText }),
       s('text', { x: cw / 2, y: H - 6, 'text-anchor': 'middle', class: 'lbl', text: 'Seed' }));
     let prevX = xl(0) + bw, prevY = Y(0);
     steps.forEach((sp, i) => {
-      const x = xl(i + 1), y1 = Y(Math.max(sp.from, sp.to)), y2 = Y(Math.min(sp.from, sp.to)), up = sp.v >= 0;
+      const x = xl(i + 1), y1 = Y(Math.max(sp.from, sp.to)), y2 = Y(Math.min(sp.from, sp.to)), up = sp.v >= 0, zero = Math.abs(sp.v) < 1e-12;
       svg.appendChild(s('line', { x1: prevX, x2: x, y1: prevY, y2: prevY, class: 'axis' }));
       const hh = Math.max(2, y2 - y1), r = Math.min(4, hh / 2);
       const dpath = up
         ? `M${x},${y1 + hh}V${y1 + r}Q${x},${y1} ${x + r},${y1}H${x + bw - r}Q${x + bw},${y1} ${x + bw},${y1 + r}V${y1 + hh}Z`
         : `M${x},${y1}V${y1 + hh - r}Q${x},${y1 + hh} ${x + r},${y1 + hh}H${x + bw - r}Q${x + bw},${y1 + hh} ${x + bw},${y1 + hh - r}V${y1}Z`;
-      const main = sp.key === 'ideas';
-      let tipText = name(sp.key) + ': ' + trimSigned(sp.v) + (gain > 0 ? '\n' + Math.round((sp.v / gain) * 100) + '% of the gain' : '');
+      const main = sp.key === 'ideas', label = trimSigned(sp.v);
+      let tipText = name(sp.key) + ': ' + label + (gain > 0 ? '\n' + Math.round((sp.v / gain) * 100) + '% of the gain' : '');
       if (sp.key === 'tuning') {
         const consts = S.genes.filter((c) => !c.isIdea && c.value != null);
         if (consts.length) tipText += '\nTuned constants: ' + consts.map((c) => c.name + ' = ' + str(c.value)).join(', ');
       }
-      svg.appendChild(s('path', { d: dpath, class: 'bar ' + (up ? 'pos' : 'neg'), 'fill-opacity': main ? 1 : 0.42, tip: tipText }));
-      svg.append(s('text', { x: x + bw / 2, y: up ? y1 - 6 : y1 + hh + 14, 'text-anchor': 'middle', class: 'lbl strong', style: { fontSize: main ? '15px' : '12px' }, text: trimSigned(sp.v) }),
+      if (zero) svg.appendChild(s('line', { x1: x, x2: x + bw, y1: y1, y2: y1, class: 'axis', tip: tipText }));
+      else svg.appendChild(s('path', { d: dpath, class: 'bar ' + (up ? 'pos' : 'neg'), 'fill-opacity': main ? 1 : 0.42, tip: tipText }));
+      svg.append(s('text', { x: x + bw / 2, y: up ? y1 - 6 : y1 + hh + 13, 'text-anchor': 'middle', class: zero ? 'lbl' : 'lbl strong',
+          style: { fontSize: size(label, main && !zero ? 15 : 12) }, text: label }),
         s('text', { x: x + bw / 2, y: H - 6, 'text-anchor': 'middle', class: main ? 'lbl strong' : 'lbl', text: name(sp.key) }));
       prevX = x + bw; prevY = Y(sp.to);
     });
-    const cxl = xl(cols - 1);
+    const cxl = xl(cols - 1), total = seed != null ? trimNum(seed + gain) : trimSigned(gain);
     svg.append(s('line', { x1: prevX, x2: cxl, y1: prevY, y2: prevY, class: 'axis' }),
       s('line', { x1: cxl, x2: cxl + bw, y1: Y(gain), y2: Y(gain), stroke: 'var(--ink)', 'stroke-width': 2.5, 'stroke-linecap': 'round' }),
-      s('text', { x: cxl + bw / 2, y: Y(gain) + 22, 'text-anchor': 'middle', class: 'lbl strong', style: { fontSize: '19px' }, text: seed != null ? trimNum(seed + gain) : trimSigned(gain) }),
+      s('text', { x: cxl + bw / 2, y: Y(gain) - 9, 'text-anchor': 'middle', class: 'lbl strong', style: { fontSize: size(total, 19) }, text: total }),
       s('text', { x: cxl + bw / 2, y: H - 6, 'text-anchor': 'middle', class: 'lbl', text: 'Champion' }));
     body.appendChild(svg);
   }
@@ -1190,7 +1394,8 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
     const info = stripInfo(g.name), busy = knockoutBusy();
     const on = g.status === 'active';
     let action;
-    if (dim || DIM.has(g.status)) action = statusChip(g);
+    if (dim || DIM.has(g.status) || g.status === 'queued' || g.derived) action = statusChip(g);
+    else if (on && S.readonly) action = null;
     else if (on) {
       const mine = info && info.status === 'running';
       action = h('button', { class: 'btn', disabled: busy, tip: mine ? null : 'Switch this idea off and re-run the solver on paired seeds, live',
@@ -1199,18 +1404,24 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
     const val = g.m
       ? [h('span', { class: 'v-eff', text: fmtSigned(g.m.effect) }), h('span', { class: 'v-ci', text: ciText(g.m) })]
       : h('span', { class: 'v-ci', text: 'not measured' });
+    // what the number means when it is not a knockout of something in the champion
+    const srcNote = !g.m ? '' : g.src === 'switch-on' ? 'would add if switched on' : g.src === 'screen' ? 'measured at screening' : '';
+    const srcTitle = g.src === 'switch-on' ? 'Effect of switching it on' : g.src === 'screen' ? 'Screening effect' : 'Knockout effect';
+    const srcTip = g.src === 'switch-on' ? 'Off in the champion: this is what switching it on would add'
+      : g.src === 'screen' ? 'Measured at screening only: never knocked out' : null;
     const row = h('div', {
-      class: 'lrow' + (dim ? ' dim' : '') + (S.drawer === g.name ? ' sel' : ''), tabindex: 0, role: 'button', 'aria-label': 'Details for ' + g.name,
+      class: 'lrow' + (dim ? ' dim' : '') + (srcNote ? ' has-src' : '') + (S.drawer === g.name ? ' sel' : ''), tabindex: 0, role: 'button', 'aria-label': 'Details for ' + g.name,
       onclick: () => openDrawer(g.name), onkeydown: (e) => { if (e.target === row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openDrawer(g.name); } },
     },
       h('div', { class: 'c-sw' }, h('span', { class: 'switch' + (on ? ' on' : '') + (dim ? ' gone' : ''), tip: (STATUS[g.status] || [])[1] || 'Status: ' + (g.status || 'not set yet') })),
       h('div', { class: 'l1' }, h('span', { class: 'gname', text: g.name }), authorBadge(g.author),
         g.kind === 'choice' && g.value != null ? h('span', { class: 'muted', style: { fontSize: '11px' }, text: '= ' + str(g.value) }) : null),
-      h('div', { class: 'c-bar', tip: measureTip(g.src === 'screen' ? 'Screening effect' : 'Knockout effect', g.m, g.src === 'screen' ? 'Measured at screening only: never knocked out' : null) },
-        effectBar(g.m, sc, { hollow: g.src === 'screen', h: 24 })),
+      h('div', { class: 'c-bar', tip: measureTip(srcTitle, g.m, srcTip) },
+        effectBar(g.m, sc, { hollow: g.src !== 'knockout', h: 22 })),
       h('div', { class: 'c-val' }, val),
       h('div', { class: 'c-label' }, labelChip(g.label)),
       h('div', { class: 'c-act' }, action),
+      srcNote ? h('div', { class: 'c-src', text: srcNote, tip: srcTip }) : null,
       h('div', { class: 'hyp', text: g.hypothesis || 'No hypothesis recorded.', tip: g.hypothesis ? g.hypothesis + (g.predicted ? '\nPredicted: ' + g.predicted : '') : null }));
     return info ? [row, liveStrip(g, info, plotW)] : row;
   }
@@ -1220,14 +1431,14 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
     const ideas = S.genes.filter((g) => g.isIdea);
     // One shared scale for the rows on screen: the collapsed "did not work" rows join it when opened.
     const sc = makeScale(ideas.filter((g) => !S.collapsed || !DIM.has(g.status)).map((g) => g.m), BAR_W);
-    const axis = s('svg', { width: BAR_W, height: 34, viewBox: `0 0 ${BAR_W} 34` });
-    axis.appendChild(s('text', { x: 0, y: 12, style: { fontSize: '10px', letterSpacing: '.09em' }, text: 'KNOCKOUT EFFECT' }));
+    const axis = s('svg', { width: BAR_W, height: 30, viewBox: `0 0 ${BAR_W} 30` });
+    axis.appendChild(s('text', { x: 0, y: 10, style: { fontSize: '10px', letterSpacing: '.09em' }, text: 'KNOCKOUT EFFECT' }));
     let lastX = -99;
     for (const t of sc.ticks) {
       const x = sc.x(t);
-      if (x < 8 || x > BAR_W - 8 || x - lastX < 26) continue;
+      if (x < 8 || x > BAR_W - 14 || x - lastX < 26) continue;
       lastX = x;
-      axis.append(s('text', { x, y: 27, 'text-anchor': 'middle', style: { letterSpacing: '0' }, text: trimSigned(t) }), s('line', { x1: x, x2: x, y1: 30, y2: 34, class: 'axis' }));
+      axis.append(s('text', { x, y: 24, 'text-anchor': 'middle', style: { letterSpacing: '0' }, text: trimSigned(t) }), s('line', { x1: x, x2: x, y1: 27, y2: 30, class: 'axis' }));
     }
     head.append(h('div'), h('div', { text: 'Idea and hypothesis' }), h('div', null, axis),
       h('div', { text: 'Effect · interval' }), h('div', { text: 'Generality' }), h('div'));
@@ -1258,7 +1469,7 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
   const stripKey = () => [S.pending ? S.pending.gene : '', S.live.gene || '', S.live.status || '', arr(S.live.pairs).length, S.live.t || '', S.dismissed === S.liveText, S.localError ? S.localError.gene : ''].join('|');
 
   async function knockOut(name) {
-    if (knockoutBusy() || !S.run) return;
+    if (knockoutBusy() || !S.run || S.readonly) return;
     S.pending = { gene: name, since: Date.now(), prevT: S.live.gene === name ? S.live.t : undefined, saw: false };
     S.dismissed = S.liveText;      // fold away the previous result; this run's updates will differ
     S.localError = null;
@@ -1353,7 +1564,7 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
     list.forEach((p) => { involved.add(p.a); involved.add(p.b); });
     const order = S.genes.filter((g) => involved.has(g.name)).sort(byEffect).map((g) => g.name);
     for (const n of involved) if (!order.includes(n)) order.push(n);
-    const top = order.slice(0, 6), N = top.length, c = 20;
+    const top = order.slice(0, 6), N = top.length, c = 18;
     const find = (a, b) => list.find((p) => (p.a === a && p.b === b) || (p.a === b && p.b === a));
     const maxAbs = Math.max(...list.map((p) => Math.abs(p.m.effect))) || 1;
     const labelW = Math.max(...top.map((n) => n.length)) * 6.7 + 8, W = Math.ceil((N - 1) * c + labelW + 4), H = N * c;
@@ -1437,7 +1648,7 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
       await postJSON('/api/idea', { run: S.run, text, author });
       $('idea-text').value = '';
       try { localStorage.setItem('mendel-author', author); } catch (err) { /* private mode */ }
-      clear(msg).append(h('i', { class: 'sw dot pos' }), 'Queued. Mendel will turn it into a gene and measure it in the next generation.');
+      clear(msg).append(h('i', { class: 'sw dot pos' }), 'Queued. MendelEvolve will turn it into a gene and measure it in the next generation.');
       S.ideas = S.ideas.concat([{ text, author }]);
       renderIdeas();
       refreshIdeas();
@@ -1464,17 +1675,21 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
       h('span', { class: 'd-k' + (opts && opts.mono ? ' mono' : '') }, key, opts && opts.small ? h('small', { text: ' ' + opts.small }) : null),
       effectBar(m, sc, { h: 22, bh: 8 }),
       h('span', { class: 'd-v' }, h('b', { text: fmtSigned(m.effect) }), ' ', h('span', { text: ciText(m) })));
-    el.append(
+    append(el, [
       h('div', { class: 'd-head' }, h('div', { class: 'd-name' }, h('span', { class: 'gname big', text: g.name }), authorBadge(g.author)),
         h('button', { class: 'd-x', 'aria-label': 'Close', onclick: closeDrawer }, '×')),
       h('div', { class: 'd-meta' }, statusChip(g), g.label ? labelChip(g.label) : null,
-        g.addedGen != null ? h('span', { class: 'muted', text: g.addedGen === 0 ? 'in the seed solver' : 'added in generation ' + g.addedGen }) : null),
+        g.addedGen != null ? h('span', { class: 'muted', text: g.addedGen === 0 ? 'in the seed solver' : 'added in generation ' + g.addedGen }) : null,
+        g.neutralRounds ? h('span', { class: 'muted', tip: 'Attribution rounds in a row in which its effect was indistinguishable from zero',
+          text: '· ' + plural(g.neutralRounds, 'null round') + ' in a row' }) : null),
+      g.note ? sec('Note', h('p', { class: 'd-note', text: g.note })) : null,
       sec('Hypothesis', h('p', { class: 'd-p', text: g.hypothesis || 'None recorded.' })),
-      g.predicted ? sec('Predicted before measuring', h('p', { class: 'd-p', text: g.predicted })) : null);
-    const ms = [['Screening', g.sc], ['Knockout', g.ko]].filter((r) => r[1]);
+      g.predicted ? sec('Predicted before measuring', h('p', { class: 'd-p', text: g.predicted })) : null]);
+    const ms = [['Screening', g.sc], [g.src === 'switch-on' ? 'If switched on' : 'Knockout', g.ko]].filter((r) => r[1]);
     if (ms.length) {
       const sc = makeScale(ms.map((r) => r[1]), 150);
-      el.appendChild(sec('Measured', ms.map(([name, m]) => row(name, m, sc, { small: m.runs != null ? m.runs + ' runs' : '', tip: name + ' effect' }))));
+      el.appendChild(sec('Measured', ms.map(([name, m]) => row(name, m, sc, { small: m.runs != null ? m.runs + ' runs' : '',
+        tip: name === 'If switched on' ? 'What switching it on would add' : name + ' effect' }))));
     } else {
       el.appendChild(sec('Measured', h('p', { class: 'd-p muted', text: /failed/.test(g.status)
         ? 'Never measured. It failed the invariance gate, so switching it off would not have been a clean test.' : 'Not measured yet.' })));
@@ -1504,6 +1719,7 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
   function renderPanels() {
     S.genes = prepGenes(S.state || {});
     renderViewer();
+    renderRecords();
     renderChampion();
     renderTimeline();
     renderWaterfall();
@@ -1560,12 +1776,29 @@ svg .po.pos { stroke: var(--pos); } svg .po.neg { stroke: var(--neg); } svg .po.
     setTimeout(loop, 2000);
   }
   let resizeTimer = 0;
-  addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { renderTimeline(); renderWaterfall(); renderLedger(); }, 120); });
+  addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { renderRecords(); renderChampion(); renderTimeline(); renderWaterfall(); renderLedger(); }, 120); });
 
-  renderHeader();
-  renderPanels();
-  requestAnimationFrame(drawViewer);
-  loop().then(() => pollLive());
+  if (SNAP) {
+    // Saved snapshot: everything comes from the embedded data; nothing is fetched and nothing can be changed.
+    document.body.classList.add('snap');
+    S.readonly = true;
+    S.state = obj(SNAP.state);
+    S.run = str(SNAP.run) || str(obj(S.state.run).id) || 'snapshot';
+    S.live = obj(SNAP.live); S.liveText = JSON.stringify(S.live); S.liveSeen = true;
+    S.ideas = arr(SNAP.ideas);
+    const note = $('idea-note');
+    note.hidden = false;
+    note.textContent = 'Saved snapshot: read-only. Live knockouts and the idea box work on the live dashboard only.';
+    $('h-snap').setAttribute('data-tip', 'Saved snapshot\nA read-only copy of the run at the moment it was saved. Nothing here talks to a server.');
+    renderPanels();
+    renderHeader();
+    requestAnimationFrame(drawViewer);
+  } else {
+    renderHeader();
+    renderPanels();
+    requestAnimationFrame(drawViewer);
+    loop().then(() => pollLive());
+  }
 })();
 </script>
 </body>

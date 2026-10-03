@@ -1,4 +1,4 @@
-"""Mendel dashboard server.
+"""MendelEvolve dashboard server.
 
 Standard library only. Serves the single-page dashboard and a small JSON API over
 the run-state files the engine writes (PROTOCOL.md, section 3).
@@ -75,6 +75,32 @@ def _bootstrap_ci(diffs: list[float], rng: random.Random, resamples: int = 400) 
         return [0.0, 0.0]
     means = sorted(sum(rng.choice(diffs) for _ in range(n)) / n for _ in range(resamples))
     return [round(means[int(0.025 * resamples)], 3), round(means[int(0.975 * resamples) - 1], 3)]
+
+
+def read_ideas(path: Path) -> list[dict]:
+    """The idea queue in an ideas.jsonl file, oldest first.
+
+    Same reading rules as the engine, so that position N here is the engine's idea N (it
+    reports how many it has taken): a line that is not JSON counts as plain text.
+    """
+    out: list[dict] = []
+    try:
+        with open(path, encoding="utf-8") as fh:
+            for raw in fh:
+                raw = raw.strip()
+                if not raw:
+                    continue
+                try:
+                    record = json.loads(raw)
+                except ValueError:
+                    record = {"text": raw}
+                if isinstance(record, dict) and str(record.get("text") or "").strip():
+                    out.append({"text": str(record["text"]),
+                                "author": str(record.get("author") or ""),
+                                "t": record.get("t")})
+    except OSError:
+        pass
+    return out[:MAX_IDEAS_RETURNED]
 
 
 class Dashboard:
@@ -363,31 +389,12 @@ class Dashboard:
         if run_dir is None:
             with self._lock:
                 return list(self._mock_ideas[-MAX_IDEAS_RETURNED:])
-        # Same reading rules as the engine, so that position N here is the engine's idea N
-        # (it reports how many it has taken): a line that is not JSON counts as plain text.
-        out: list[dict] = []
-        try:
-            with open(run_dir / "ideas.jsonl", encoding="utf-8") as fh:
-                for raw in fh:
-                    raw = raw.strip()
-                    if not raw:
-                        continue
-                    try:
-                        record = json.loads(raw)
-                    except ValueError:
-                        record = {"text": raw}
-                    if isinstance(record, dict) and str(record.get("text") or "").strip():
-                        out.append({"text": str(record["text"]),
-                                    "author": str(record.get("author") or ""),
-                                    "t": record.get("t")})
-        except OSError:
-            pass
-        return out[:MAX_IDEAS_RETURNED]
+        return read_ideas(run_dir / "ideas.jsonl")
 
 
 def _make_handler(app: Dashboard, quiet: bool):
     class Handler(BaseHTTPRequestHandler):
-        server_version = "MendelDashboard/0.1"
+        server_version = "MendelEvolve/0.1"
 
         def log_message(self, format, *args):  # noqa: A002 - signature of the base class
             if not quiet:
@@ -496,7 +503,7 @@ def serve(runs_dir: str = "runs", port: int = 8765, mock: bool = False,
     httpd = ThreadingHTTPServer((host, port), _make_handler(app, quiet))
     httpd.daemon_threads = True
     source = "demo data (mock)" if mock else f"runs in {Path(runs_dir).resolve()}"
-    print(f"Mendel dashboard: http://{host}:{port}/   [{source}]", flush=True)
+    print(f"MendelEvolve dashboard: http://{host}:{port}/   [{source}]", flush=True)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
@@ -508,7 +515,7 @@ def serve(runs_dir: str = "runs", port: int = 8765, mock: bool = False,
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         prog="python -m mendel.dashboard.server",
-        description="Serve the Mendel dashboard.")
+        description="Serve the MendelEvolve dashboard.")
     parser.add_argument("--runs", "--runs-dir", dest="runs_dir", default="runs",
                         help="directory that holds the runs (default: runs)")
     parser.add_argument("--port", type=int, default=8765)

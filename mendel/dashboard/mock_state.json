@@ -7,7 +7,7 @@
     "started": "2026-10-03T19:20:00",
     "updated": "2026-10-03T21:36:40",
     "status": "running",
-    "generation": 7,
+    "generation": 8,
     "spend": {
       "llm_calls": 46,
       "llm_usd": 11.8,
@@ -28,12 +28,26 @@
     ]
   },
   "best_known": {
+    "n7": 21,
+    "n8": 23,
+    "n9": 26,
     "n10": 28,
+    "n11": 31,
     "n12": 33,
+    "n13": 36,
     "n14": 38,
+    "n15": 40,
     "n16": 42,
+    "n17": 45,
     "n18": 48,
-    "n20": 53
+    "n19": 50,
+    "n20": 53,
+    "n21": 55,
+    "n22": 58,
+    "n23": 59,
+    "n24": 62,
+    "n25": 65,
+    "n26": 67
   },
   "champion": {
     "config": {
@@ -43,11 +57,10 @@
       "centrosymmetric": true,
       "orbit_moves": true,
       "conflict_weighting": true,
-      "tabu": true,
       "layer_shift": true,
       "late_acceptance": false,
       "ruin_fraction": 0.31,
-      "tabu_tenure": 9,
+      "patience": 650,
       "weight_decay": 0.92
     },
     "solver_version": "7c41e9b2",
@@ -77,14 +90,14 @@
         "budget": "time=60"
       },
       "n18": {
-        "mean": 47.8,
-        "best": 49,
+        "mean": 47.2,
+        "best": 48,
         "runs": 16,
         "budget": "time=60"
       },
       "n20": {
-        "mean": 52.6,
-        "best": 54,
+        "mean": 52.1,
+        "best": 53,
         "runs": 16,
         "budget": "time=60"
       }
@@ -94,15 +107,15 @@
       "n12": [[11, 5, 8], [0, 6, 3], [8, 6, 11], [3, 5, 0], [6, 8, 11], [5, 3, 0], [11, 2, 5], [0, 9, 6], [9, 6, 0], [2, 5, 11], [7, 4, 8], [4, 7, 3], [2, 1, 3], [9, 10, 8], [8, 7, 0], [3, 4, 11], [6, 1, 0], [5, 10, 11], [10, 3, 1], [1, 8, 10], [6, 7, 2], [5, 4, 9], [10, 11, 3], [1, 0, 8], [9, 0, 7], [2, 11, 4], [1, 3, 4], [10, 8, 7], [10, 2, 8], [1, 9, 3], [2, 6, 7], [9, 5, 4], [3, 8, 5]],
       "n14": [[13, 11, 3], [0, 2, 10], [8, 1, 1], [5, 12, 12], [10, 2, 3], [3, 11, 10], [1, 0, 8], [12, 13, 5], [7, 11, 1], [6, 2, 12], [8, 13, 8], [5, 0, 5], [3, 6, 3], [10, 7, 10], [13, 9, 13], [0, 4, 0], [10, 6, 8], [3, 7, 5], [6, 8, 8], [7, 5, 5], [4, 0, 4], [9, 13, 9], [2, 9, 5], [11, 4, 8], [6, 10, 13], [7, 3, 0], [4, 7, 8], [9, 6, 5], [9, 9, 8], [4, 4, 5], [10, 3, 12], [3, 10, 1], [11, 2, 7], [2, 11, 6], [0, 11, 2], [13, 2, 11], [5, 1, 0], [8, 12, 13]],
       "n16": [[5, 4, 6], [10, 11, 9], [5, 14, 8], [10, 1, 7], [3, 7, 2], [12, 8, 13], [13, 13, 7], [2, 2, 8], [0, 8, 3], [15, 7, 12], [1, 4, 13], [14, 11, 2], [4, 7, 6], [11, 8, 9], [5, 9, 2], [10, 6, 13], [2, 15, 6], [13, 0, 9], [8, 6, 4], [7, 9, 11], [13, 15, 2], [2, 0, 13], [0, 3, 5], [15, 12, 10], [9, 6, 15], [6, 9, 0], [7, 12, 0], [8, 3, 15], [6, 5, 8], [9, 10, 7], [5, 3, 14], [10, 12, 1], [15, 14, 11], [0, 1, 4], [11, 7, 1], [4, 8, 14], [5, 13, 12], [10, 2, 3], [0, 15, 10], [15, 0, 5], [1, 12, 2]],
-      "n18": [[16, 14, 17], [1, 3, 0], [7, 12, 6], [10, 5, 11], [3, 8, 11], [14, 9, 6], [1, 2, 6], [16, 15, 11], [10, 10, 17], [7, 7, 0], [4, 9, 3], [13, 8, 14], [17, 14, 3], [0, 3, 14], [6, 6, 0], [11, 11, 17], [14, 3, 5], [3, 14, 12], [15, 6, 5], [2, 11, 12], [6, 9, 8], [11, 8, 9], [17, 16, 11], [0, 1, 6], [0, 2, 17], [17, 15, 0], [15, 14, 14], [2, 3, 3], [10, 0, 8], [7, 17, 9], [16, 16, 10], [1, 1, 7], [5, 2, 2], [12, 15, 15], [17, 0, 2], [0, 17, 15], [15, 16, 15], [2, 1, 2], [4, 11, 16], [13, 6, 1], [4, 13, 5], [13, 4, 12], [0, 0, 4], [17, 17, 13], [3, 11, 8], [14, 6, 9], [15, 13, 16], [2, 4, 1], [4, 15, 14]],
-      "n20": [[5, 7, 7], [14, 12, 12], [11, 10, 0], [8, 9, 19], [12, 17, 10], [7, 2, 9], [18, 10, 9], [1, 9, 10], [8, 15, 10], [11, 4, 9], [1, 18, 13], [18, 1, 6], [1, 0, 3], [18, 19, 16], [16, 7, 17], [3, 12, 2], [0, 6, 4], [19, 13, 15], [17, 6, 16], [2, 13, 3], [10, 8, 12], [9, 11, 7], [7, 10, 7], [12, 9, 12], [15, 6, 8], [4, 13, 11], [5, 11, 8], [14, 8, 11], [8, 7, 9], [11, 12, 10], [12, 16, 15], [7, 3, 4], [8, 11, 16], [11, 8, 3], [17, 13, 12], [2, 6, 7], [8, 6, 12], [11, 13, 7], [1, 16, 14], [18, 3, 5], [11, 19, 5], [8, 0, 14], [6, 2, 14], [13, 17, 5], [12, 4, 5], [7, 15, 14], [8, 3, 8], [11, 16, 11], [1, 8, 0], [18, 11, 19], [11, 11, 15], [8, 8, 4], [16, 4, 11], [3, 15, 8]]
+      "n18": [[16, 14, 17], [1, 3, 0], [7, 12, 6], [10, 5, 11], [3, 8, 11], [14, 9, 6], [1, 2, 6], [16, 15, 11], [10, 10, 17], [7, 7, 0], [4, 9, 3], [13, 8, 14], [17, 14, 3], [0, 3, 14], [6, 6, 0], [11, 11, 17], [14, 3, 5], [3, 14, 12], [15, 6, 5], [2, 11, 12], [6, 9, 8], [11, 8, 9], [17, 16, 11], [0, 1, 6], [0, 2, 17], [17, 15, 0], [15, 14, 14], [2, 3, 3], [10, 0, 8], [7, 17, 9], [16, 16, 10], [1, 1, 7], [5, 2, 2], [12, 15, 15], [17, 0, 2], [0, 17, 15], [15, 16, 15], [2, 1, 2], [4, 11, 16], [13, 6, 1], [4, 13, 5], [13, 4, 12], [0, 0, 4], [17, 17, 13], [3, 11, 8], [14, 6, 9], [15, 13, 16], [2, 4, 1]],
+      "n20": [[4, 15, 14], [15, 4, 5], [5, 7, 7], [14, 12, 12], [11, 10, 0], [8, 9, 19], [12, 17, 10], [7, 2, 9], [18, 10, 9], [1, 9, 10], [8, 15, 10], [11, 4, 9], [1, 18, 13], [18, 1, 6], [1, 0, 3], [18, 19, 16], [16, 7, 17], [3, 12, 2], [0, 6, 4], [19, 13, 15], [17, 6, 16], [2, 13, 3], [10, 8, 12], [9, 11, 7], [7, 10, 7], [12, 9, 12], [15, 6, 8], [4, 13, 11], [5, 11, 8], [14, 8, 11], [8, 7, 9], [11, 12, 10], [12, 16, 15], [7, 3, 4], [8, 11, 16], [11, 8, 3], [17, 13, 12], [2, 6, 7], [8, 6, 12], [11, 13, 7], [1, 16, 14], [18, 3, 5], [11, 19, 5], [8, 0, 14], [6, 2, 14], [13, 17, 5], [8, 3, 8], [11, 16, 11], [1, 8, 0], [18, 11, 19], [11, 11, 15], [8, 8, 4], [16, 4, 11]]
     }
   },
   "genes": [
     {
       "name": "sphere_hash",
       "kind": "switch",
-      "author": "llm:claude-sonnet-4-5",
+      "author": "llm:claude-fable-5-1",
       "added_gen": 1,
       "hypothesis": "Remember the sphere through every four chosen points in a hash table, so testing a new point is one lookup instead of a scan.",
       "predicted": "+1 to +2 points at a fixed time budget, more for larger n",
@@ -192,7 +205,7 @@
     {
       "name": "algebraic_seed",
       "kind": "switch",
-      "author": "llm:claude-sonnet-4-5",
+      "author": "llm:claude-fable-5-1",
       "added_gen": 5,
       "hypothesis": "Start from points on a twisted cubic taken modulo a prime, which rarely puts five on one sphere, instead of from a random set.",
       "predicted": "+1 point for n >= 14",
@@ -330,7 +343,7 @@
     {
       "name": "conflict_weighting",
       "kind": "switch",
-      "author": "llm:claude-sonnet-4-5",
+      "author": "llm:claude-sonnet-5-5",
       "added_gen": 2,
       "hypothesis": "Keep a running penalty on points that keep completing a fifth point on a sphere, and steer the search away from them.",
       "predicted": "+0.5 to +1 point",
@@ -376,51 +389,9 @@
       "label": "general"
     },
     {
-      "name": "tabu",
-      "kind": "switch",
-      "author": "seed",
-      "added_gen": 0,
-      "hypothesis": "Forbid putting back a point that was just removed, so the search does not walk in circles.",
-      "predicted": "+0.5 points",
-      "status": "active",
-      "knockout": {
-        "effect": 0.4,
-        "ci": [0.1, 0.7],
-        "runs": 96,
-        "generation": 7
-      },
-      "generality": {
-        "n10": {
-          "effect": 0.3,
-          "ci": [0.02, 0.58]
-        },
-        "n12": {
-          "effect": 0.4,
-          "ci": [0.1, 0.7]
-        },
-        "n14": {
-          "effect": 0.5,
-          "ci": [0.1, 0.9]
-        },
-        "n16": {
-          "effect": 0.3,
-          "ci": [-0.2, 0.8]
-        },
-        "n18": {
-          "effect": 0.5,
-          "ci": [0.05, 0.95]
-        },
-        "n20": {
-          "effect": 0.6,
-          "ci": [0.05, 1.15]
-        }
-      },
-      "label": "general"
-    },
-    {
       "name": "layer_shift",
       "kind": "switch",
-      "author": "llm:claude-sonnet-4-5",
+      "author": "llm:claude-sonnet-5-5",
       "added_gen": 3,
       "hypothesis": "Stack shifted copies of one good two-dimensional layer as the starting set, instead of starting empty.",
       "predicted": "+1 point on all sizes",
@@ -468,7 +439,7 @@
     {
       "name": "late_acceptance",
       "kind": "switch",
-      "author": "llm:claude-sonnet-4-5",
+      "author": "llm:claude-sonnet-5-5",
       "added_gen": 6,
       "hypothesis": "Accept a move if it is no worse than the set from fifty steps ago, a cheaper stand-in for annealing.",
       "predicted": "+0.5 points",
@@ -499,28 +470,44 @@
           "ci": [-0.8, 0.6]
         }
       },
-      "label": "inconclusive"
+      "label": "inconclusive",
+      "neutral_rounds": 1
+    },
+    {
+      "name": "double_swap",
+      "kind": "switch",
+      "author": "human:priya",
+      "added_gen": 8,
+      "hypothesis": "When a single swap is blocked, swap two symmetric pairs at once.",
+      "predicted": "+0.3 points",
+      "status": "queued",
+      "screen": {
+        "effect": 0.4,
+        "ci": [0.1, 0.7],
+        "runs": 48,
+        "generation": 8
+      }
     },
     {
       "name": "plane_first",
       "kind": "switch",
-      "author": "llm:claude-sonnet-4-5",
+      "author": "llm:claude-sonnet-5-5",
       "added_gen": 3,
       "hypothesis": "Run the cheap same-plane test before the sphere test, so most bad points are thrown out early.",
       "predicted": "10% more iterations per second, +0.3 points",
       "status": "rejected",
       "screen": {
-        "effect": 0.1,
-        "ci": [-0.3, 0.5],
+        "effect": 0.3,
+        "ci": [0.02, 0.58],
         "runs": 48,
         "generation": 3
       },
-      "label": "inconclusive"
+      "note": "screened positive, but its port onto the new trunk did not come back"
     },
     {
       "name": "simulated_annealing",
       "kind": "switch",
-      "author": "llm:claude-sonnet-4-5",
+      "author": "llm:claude-fable-5-1",
       "added_gen": 4,
       "hypothesis": "Accept slightly worse sets early on and cool down over time, as in simulated annealing.",
       "predicted": "+1 point from escaping local optima",
@@ -553,12 +540,13 @@
         "runs": 192,
         "generation": 6
       },
-      "label": "neutral"
+      "label": "neutral",
+      "neutral_rounds": 3
     },
     {
       "name": "incremental_delta",
       "kind": "switch",
-      "author": "llm:claude-sonnet-4-5",
+      "author": "llm:claude-sonnet-5-5",
       "added_gen": 6,
       "hypothesis": "Update the conflict counts in place after each move instead of recounting them.",
       "predicted": "2x more iterations per second",
@@ -573,17 +561,17 @@
       "status": "active"
     },
     {
-      "name": "tabu_tenure",
+      "name": "patience",
       "kind": "int",
       "author": "seed",
       "added_gen": 0,
-      "hypothesis": "Number of steps a removed point stays forbidden.",
+      "hypothesis": "Steps without improvement before the search is kicked.",
       "status": "active"
     },
     {
       "name": "weight_decay",
       "kind": "float",
-      "author": "llm:claude-sonnet-4-5",
+      "author": "llm:claude-sonnet-5-5",
       "added_gen": 2,
       "hypothesis": "How quickly old conflict penalties fade.",
       "status": "active"
@@ -609,20 +597,6 @@
       "b": "layer_shift",
       "synergy": -0.5,
       "ci": [-0.9, -0.1],
-      "runs": 96
-    },
-    {
-      "a": "ruin_recreate",
-      "b": "tabu",
-      "synergy": 0.4,
-      "ci": [0.05, 0.75],
-      "runs": 96
-    },
-    {
-      "a": "conflict_weighting",
-      "b": "tabu",
-      "synergy": -0.4,
-      "ci": [-0.75, -0.05],
       "runs": 96
     },
     {
@@ -705,18 +679,40 @@
   },
   "records": [
     {
-      "instance": "n20",
-      "value": 54,
-      "best_known": 53,
+      "instance": "n21",
+      "value": 56,
+      "best_known": 55,
       "verified": true,
-      "certificate": "certificates/n20_54.json"
+      "certificate": "certificates/n21_56p0.json",
+      "checks": [
+        "evaluate.py",
+        "verify.py",
+        "no5sphere_exact.py"
+      ]
     },
     {
-      "instance": "n18",
-      "value": 49,
-      "best_known": 48,
+      "instance": "n23",
+      "value": 60,
+      "best_known": 59,
       "verified": true,
-      "certificate": "certificates/n18_49.json"
+      "certificate": "certificates/n23_60p0.json",
+      "checks": [
+        "evaluate.py",
+        "verify.py",
+        "no5sphere_exact.py"
+      ]
+    },
+    {
+      "instance": "n26",
+      "value": 68,
+      "best_known": 67,
+      "verified": true,
+      "certificate": "certificates/n26_68p0.json",
+      "checks": [
+        "evaluate.py",
+        "verify.py",
+        "no5sphere_exact.py"
+      ]
     }
   ],
   "history": [
@@ -724,13 +720,25 @@
       "t": "2026-10-03T19:20:00",
       "generation": 0,
       "event": "run_started",
-      "detail": "Seed solver: 3 ideas (ruin_recreate, centrosymmetric, tabu) and 2 tuned constants."
+      "detail": "seed solver with 2 ideas (ruin_recreate, centrosymmetric) and 2 tuned constants"
     },
     {
       "t": "2026-10-03T19:27:00",
       "generation": 0,
-      "event": "tuning_done",
-      "detail": "ruin_fraction 0.20 -> 0.31, tabu_tenure 6 -> 9. Mean train score 27.4 -> 28.1."
+      "event": "tuned",
+      "detail": "normalised score 0.830 -> 0.851; ruin_fraction: 0.2 -> 0.31, patience: 400 -> 650"
+    },
+    {
+      "t": "2026-10-03T19:27:10",
+      "generation": 1,
+      "event": "generation_started",
+      "detail": "trunk gen000"
+    },
+    {
+      "t": "2026-10-03T19:27:20",
+      "generation": 1,
+      "event": "inventing",
+      "detail": "4 proposals: inventor, inventor, inventor, inventor"
     },
     {
       "t": "2026-10-03T19:31:40",
@@ -740,139 +748,173 @@
       "detail": "Hash the sphere through every four chosen points."
     },
     {
+      "t": "2026-10-03T19:32:40",
+      "generation": 1,
+      "event": "gate_passed",
+      "gene": "sphere_hash",
+      "detail": "gate passed"
+    },
+    {
       "t": "2026-10-03T19:36:50",
       "generation": 1,
       "event": "gene_screened",
       "gene": "sphere_hash",
-      "detail": "Effect +1.2 [0.6, 1.8] over 48 runs. Passed."
+      "detail": "effect +1.2, 95% interval [+0.6, +1.8], 48 runs"
     },
     {
       "t": "2026-10-03T19:39:10",
       "generation": 1,
       "event": "gene_merged",
       "gene": "sphere_hash",
-      "detail": "On in the champion."
+      "detail": "effect +1.2; new trunk gen001"
     },
     {
       "t": "2026-10-03T19:48:20",
       "generation": 2,
       "event": "gene_screened",
       "gene": "conflict_weighting",
-      "detail": "Effect +0.6 [0.1, 1.1] over 48 runs. Passed."
+      "detail": "effect +0.6, 95% interval [+0.1, +1.1], 48 runs"
     },
     {
       "t": "2026-10-03T19:51:30",
       "generation": 2,
       "event": "gene_screened",
       "gene": "boundary_bias",
-      "detail": "Effect +0.3 [0.02, 0.58] over 48 runs. Passed."
+      "detail": "effect +0.3, 95% interval [+0.02, +0.58], 48 runs"
     },
     {
       "t": "2026-10-03T19:53:30",
       "generation": 2,
       "event": "gene_merged",
       "gene": "conflict_weighting",
-      "detail": "On in the champion."
+      "detail": "effect +0.6; new trunk gen002"
     },
     {
       "t": "2026-10-03T20:05:00",
       "generation": 3,
       "event": "gene_screened",
       "gene": "plane_first",
-      "detail": "Effect +0.1 [-0.3, 0.5] over 48 runs. Interval spans zero."
-    },
-    {
-      "t": "2026-10-03T20:05:10",
-      "generation": 3,
-      "event": "gene_rejected",
-      "gene": "plane_first",
-      "detail": "No measurable effect at screening."
+      "detail": "effect +0.3, 95% interval [+0.02, +0.58], 48 runs"
     },
     {
       "t": "2026-10-03T20:09:10",
       "generation": 3,
       "event": "gene_merged",
       "gene": "layer_shift",
-      "detail": "On in the champion."
+      "detail": "effect +0.5; new trunk gen003"
+    },
+    {
+      "t": "2026-10-03T20:11:40",
+      "generation": 4,
+      "event": "gene_rejected",
+      "gene": "plane_first",
+      "detail": "screened positive, but its port onto the new trunk did not come back"
     },
     {
       "t": "2026-10-03T20:20:00",
       "generation": 4,
       "event": "gene_rejected",
       "gene": "simulated_annealing",
-      "detail": "Effect -0.5 [-0.9, -0.1] over 48 runs. Hurts."
+      "detail": "effect -0.5 is not positive"
     },
     {
       "t": "2026-10-03T20:24:50",
       "generation": 4,
       "event": "gene_merged",
       "gene": "orbit_moves",
-      "detail": "On in the champion. Needs centrosymmetric."
+      "detail": "effect +0.5; new trunk gen004"
     },
     {
       "t": "2026-10-03T20:45:20",
       "generation": 5,
       "event": "gene_merged",
       "gene": "algebraic_seed",
-      "detail": "On in the champion."
+      "detail": "effect +0.7; new trunk gen005"
     },
     {
-      "t": "2026-10-03T20:48:20",
-      "generation": 5,
-      "event": "record_found",
-      "detail": "n18: 49 points, best known 48. Verified by the exact evaluator."
+      "t": "2026-10-03T20:55:00",
+      "generation": 6,
+      "event": "gate_retry",
+      "gene": "incremental_delta",
+      "detail": "solutions differ with the gene at its default on 2 of 8 seeds"
     },
     {
       "t": "2026-10-03T20:58:20",
       "generation": 6,
-      "event": "gate_failed",
+      "event": "step_failed",
       "gene": "incremental_delta",
-      "detail": "Solutions differ with the gene at its default: not a clean switch."
+      "detail": "gate: solutions differ with the gene at its default: not a clean switch"
     },
     {
       "t": "2026-10-03T21:01:40",
       "generation": 6,
       "event": "gene_pruned",
       "gene": "boundary_bias",
-      "detail": "Knockout 0.0 [-0.3, 0.3] over 192 runs. Removed from the solver."
+      "detail": "knockout 0.0 [-0.3, +0.3]: null in 3 attribution rounds in a row"
     },
     {
       "t": "2026-10-03T21:04:00",
       "generation": 6,
       "event": "gene_merged",
       "gene": "late_acceptance",
-      "detail": "Merged, off in the champion after tuning."
+      "detail": "effect +0.3; new trunk gen006, off in the champion after tuning"
     },
     {
       "t": "2026-10-03T21:21:40",
       "generation": 7,
-      "event": "knockout",
-      "gene": "sphere_hash",
-      "detail": "Effect +1.3 [0.9, 1.7] over 96 runs."
+      "event": "knockouts",
+      "detail": "sphere_hash +1.3; ruin_recreate +1.1; algebraic_seed +0.9; centrosymmetric +0.8; orbit_moves +0.6"
     },
     {
-      "t": "2026-10-03T21:27:30",
+      "t": "2026-10-03T21:23:20",
       "generation": 7,
-      "event": "record_found",
-      "detail": "n20: 54 points, best known 53. Verified by the exact evaluator."
+      "event": "generality",
+      "detail": "sphere_hash: general; algebraic_seed: general; layer_shift: specific"
     },
     {
-      "t": "2026-10-03T21:31:40",
+      "t": "2026-10-03T21:24:10",
       "generation": 7,
-      "event": "idea_started",
-      "detail": "Priya: when a single swap is blocked, swap two pairs at once."
+      "event": "generation_finished",
+      "detail": "trunk gen006"
     },
     {
-      "t": "2026-10-03T21:34:10",
-      "generation": 7,
+      "t": "2026-10-03T21:24:20",
+      "generation": 8,
+      "event": "generation_started",
+      "detail": "trunk gen006"
+    },
+    {
+      "t": "2026-10-03T21:24:30",
+      "generation": 8,
       "event": "idea_queued",
       "detail": "Sam: add mirror symmetry in one axis on top of the point symmetry."
     },
     {
+      "t": "2026-10-03T21:24:40",
+      "generation": 8,
+      "event": "inventing",
+      "detail": "4 proposals: human, inventor, inventor, inventor"
+    },
+    {
+      "t": "2026-10-03T21:31:40",
+      "generation": 8,
+      "event": "gene_proposed",
+      "gene": "double_swap",
+      "detail": "When a single swap is blocked, swap two symmetric pairs at once."
+    },
+    {
+      "t": "2026-10-03T21:32:40",
+      "generation": 8,
+      "event": "gate_passed",
+      "gene": "double_swap",
+      "detail": "gate passed"
+    },
+    {
       "t": "2026-10-03T21:35:00",
-      "generation": 7,
-      "event": "champion_updated",
-      "detail": "Mean train score 32.4, 98.2% of best known."
+      "generation": 8,
+      "event": "gene_screened",
+      "gene": "double_swap",
+      "detail": "effect +0.4, 95% interval [+0.1, +0.7], 48 runs"
     }
   ],
   "timeline": [

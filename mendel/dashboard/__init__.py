@@ -1,6 +1,10 @@
-"""Mendel dashboard: a single-page view of a run's state.json.
+"""MendelEvolve dashboard: a single-page view of a run's state.json.
 
-Run it with ``python -m mendel.dashboard.server`` (add ``--mock`` for demo data).
+    python -m mendel.dashboard.server [--mock]                      the live dashboard
+    python -m mendel.dashboard.snapshot --run ID --out FILE.html    one read-only HTML file
+
+In code: `from mendel.dashboard import serve` and
+`from mendel.dashboard.snapshot import snapshot`.
 """
 
 
