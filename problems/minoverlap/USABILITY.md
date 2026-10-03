@@ -1,7 +1,7 @@
 # Usability report: adding `minoverlap` to MendelEvolve
 
 Tester: Devin (an AI coding agent), working from a fresh clone, with README.md and PROTOCOL.md as the
-starting point. Session 2026-10-03, 22:40 to about 23:35 local time. Times are wall clock as measured by
+starting point. Session 2026-10-03, 22:40 to about 23:20 local time. Times are wall clock as measured by
 the shell, on a laptop with load average about 87 on 10 cores. An agent reads and types faster than a
 person, so the time per step is less informative than where I got stuck and why.
 
@@ -37,8 +37,8 @@ README) suggests:
 | `mendel gate X X`: fails by design; read gate.py; build three one-idea-removed trunks and gate them | 3 min | |
 | Required attribution run (`--generations 1`) | 4 min wall, 1821 CPU s | |
 | Read engine.py to understand why nothing was tuned; second run with `--tune-every 1` | 9 min wall, 2835 CPU s | |
-| Modal campaign (two configs, 64 runs of 300 s) | see below | |
-| This report, branch, PR | 10 min | |
+| Read `campaign.py` and `backends/modal_backend.py`; launch two Modal campaigns (64 runs of 300 s) | 3 min + 15 min wait | ran while I did the other steps; no output at all until the end |
+| This report, branch, PR | 15 min | |
 
 ## What was easy
 
@@ -207,7 +207,21 @@ I did not measure that.
 
 ### Modal campaign
 
-CAMPAIGN_RESULTS_PLACEHOLDER
+Two campaigns, each `python -m mendel.campaign ... --instances n512 n1024 --seeds 16 --time 300
+--executor modal --no-deploy --max-cpu-hours 20`, one with all three switches on and one with
+`coarse_to_fine` + `lp_polish`. Together that is 64 runs of 300 CPU seconds, 5.3 CPU-hours requested,
+about 15 minutes wall clock each, and an estimated $0.15 each according to the campaign. The app was
+not redeployed. Every run came back valid, and every best result passed both the local re-evaluation
+and `verify.py` (I also re-ran `verify.py` on the certificates by hand):
+
+| config | n512 best (mean of 16) | n1024 best (mean of 16) |
+|---|---|---|
+| symmetric + coarse_to_fine + lp_polish | 0.38098342730461465 (0.3812891) | 0.38112486513529914 (0.3813870) |
+| coarse_to_fine + lp_polish | 0.3809903878330488 (0.3812767) | 0.3812340052793916 (0.3814010) |
+
+The best, 0.3809834 at n = 512, is 1.25e-4 above the published best of 0.3808586 (EinsteinArena,
+CodexProLong, read 2026-10-03T21:40:07Z). **No record**: the campaign correctly reported none.
+Summaries, raw results and certificates are in `results/minoverlap/`.
 
 ## What I would change, in order
 
