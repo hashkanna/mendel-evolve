@@ -64,3 +64,12 @@ n29 = 75
 n30 = 76
 n31 = 79
 n32 = 82
+# n = 33 to 40: no published sets; C(n) is non-decreasing, so the n = 32 set gives 82.
+n33 = 82
+n34 = 82
+n35 = 82
+n36 = 82
+n37 = 82
+n38 = 82
+n39 = 82
+n40 = 82

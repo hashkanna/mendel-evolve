@@ -282,6 +282,78 @@
    "date": "2026-09-25",
    "certificate": null,
    "note": "published point set re-verified with evaluate.py on 2026-10-03; certificate not copied into published/"
+  },
+  "n33": {
+   "n": 33,
+   "value": 82,
+   "source": "monotone closure of the published n = 32 set (C(n) is non-decreasing); no set published for this n",
+   "url": "https://github.com/hraness/algal-lab/blob/main/research/extremal/claims/no-five-on-sphere-frontier.json",
+   "claimed_by": "closure",
+   "date": "2026-09-25",
+   "certificate": null
+  },
+  "n34": {
+   "n": 34,
+   "value": 82,
+   "source": "monotone closure of the published n = 32 set (C(n) is non-decreasing); no set published for this n",
+   "url": "https://github.com/hraness/algal-lab/blob/main/research/extremal/claims/no-five-on-sphere-frontier.json",
+   "claimed_by": "closure",
+   "date": "2026-09-25",
+   "certificate": null
+  },
+  "n35": {
+   "n": 35,
+   "value": 82,
+   "source": "monotone closure of the published n = 32 set (C(n) is non-decreasing); no set published for this n",
+   "url": "https://github.com/hraness/algal-lab/blob/main/research/extremal/claims/no-five-on-sphere-frontier.json",
+   "claimed_by": "closure",
+   "date": "2026-09-25",
+   "certificate": null
+  },
+  "n36": {
+   "n": 36,
+   "value": 82,
+   "source": "monotone closure of the published n = 32 set (C(n) is non-decreasing); no set published for this n",
+   "url": "https://github.com/hraness/algal-lab/blob/main/research/extremal/claims/no-five-on-sphere-frontier.json",
+   "claimed_by": "closure",
+   "date": "2026-09-25",
+   "certificate": null
+  },
+  "n37": {
+   "n": 37,
+   "value": 82,
+   "source": "monotone closure of the published n = 32 set (C(n) is non-decreasing); no set published for this n",
+   "url": "https://github.com/hraness/algal-lab/blob/main/research/extremal/claims/no-five-on-sphere-frontier.json",
+   "claimed_by": "closure",
+   "date": "2026-09-25",
+   "certificate": null
+  },
+  "n38": {
+   "n": 38,
+   "value": 82,
+   "source": "monotone closure of the published n = 32 set (C(n) is non-decreasing); no set published for this n",
+   "url": "https://github.com/hraness/algal-lab/blob/main/research/extremal/claims/no-five-on-sphere-frontier.json",
+   "claimed_by": "closure",
+   "date": "2026-09-25",
+   "certificate": null
+  },
+  "n39": {
+   "n": 39,
+   "value": 82,
+   "source": "monotone closure of the published n = 32 set (C(n) is non-decreasing); no set published for this n",
+   "url": "https://github.com/hraness/algal-lab/blob/main/research/extremal/claims/no-five-on-sphere-frontier.json",
+   "claimed_by": "closure",
+   "date": "2026-09-25",
+   "certificate": null
+  },
+  "n40": {
+   "n": 40,
+   "value": 82,
+   "source": "monotone closure of the published n = 32 set (C(n) is non-decreasing); no set published for this n",
+   "url": "https://github.com/hraness/algal-lab/blob/main/research/extremal/claims/no-five-on-sphere-frontier.json",
+   "claimed_by": "closure",
+   "date": "2026-09-25",
+   "certificate": null
   }
  }
 }
