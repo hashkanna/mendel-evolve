@@ -1,0 +1,513 @@
+{
+ "problem": "C(n): largest subset of {0..n-1}^3 with no 5 points on a common sphere or plane",
+ "results": [
+  {
+   "n": 2,
+   "proven_upper_bound": 4,
+   "verified_lower_bound": 4,
+   "exact": 4,
+   "set": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     1,
+     1
+    ],
+    [
+     1,
+     0,
+     1
+    ],
+    [
+     1,
+     1,
+     0
+    ]
+   ],
+   "upper_bound_proof": "all 56 five-subsets of {0,1}^3 have zero determinant (the 8 points lie on one sphere); checked exhaustively",
+   "status": "exhaustive determinant check (no solver needed)",
+   "seconds": 0.0
+  },
+  {
+   "n": 3,
+   "trivial_upper_bound_4n": 12,
+   "public_lower_bound": 8,
+   "rows_verified": [
+    {
+     "n": 3,
+     "min_hyper_size": 5,
+     "circle_rows_verified": 364,
+     "hyperplane_rows_verified": 342,
+     "all_valid": true,
+     "mutants_rejected": 706,
+     "mutants_tested": 706,
+     "seconds": 0.0
+    }
+   ],
+   "refutation": {
+    "refuted_K": 9,
+    "orbit_cases": 4,
+    "total_solver_seconds": 0.05,
+    "total_conflicts": 51,
+    "files": [
+     "refute_n3_orbit.json"
+    ],
+    "cases": {
+     "0": {
+      "wall_seconds": 0.04,
+      "conflicts": 42,
+      "file": "refute_n3_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": {
+       "circles": 364,
+       "hyperplanes": 342,
+       "min_hyper_size": 5,
+       "rows_file": null
+      }
+     },
+     "1": {
+      "wall_seconds": 0.01,
+      "conflicts": 9,
+      "file": "refute_n3_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": {
+       "circles": 364,
+       "hyperplanes": 342,
+       "min_hyper_size": 5,
+       "rows_file": null
+      }
+     },
+     "2": {
+      "wall_seconds": 0.0,
+      "conflicts": 0,
+      "file": "refute_n3_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": {
+       "circles": 364,
+       "hyperplanes": 342,
+       "min_hyper_size": 5,
+       "rows_file": null
+      }
+     },
+     "3": {
+      "wall_seconds": 0.0,
+      "conflicts": 0,
+      "file": "refute_n3_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": {
+       "circles": 364,
+       "hyperplanes": 342,
+       "min_hyper_size": 5,
+       "rows_file": null
+      }
+     }
+    }
+   },
+   "optimisation_run": {
+    "value": 8,
+    "seconds": 0.04,
+    "workers": 3,
+    "file": "run_n3.json",
+    "rows": [
+     364,
+     342
+    ],
+    "bruteforce_crosscheck_equal": true
+   },
+   "proven_upper_bound": 8,
+   "verified_lower_bound": 8,
+   "set": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     1,
+     2
+    ],
+    [
+     0,
+     2,
+     0
+    ],
+    [
+     1,
+     1,
+     0
+    ],
+    [
+     1,
+     2,
+     1
+    ],
+    [
+     2,
+     0,
+     1
+    ],
+    [
+     2,
+     2,
+     0
+    ],
+    [
+     2,
+     2,
+     2
+    ]
+   ],
+   "set_source": "run_n3.json",
+   "set_exact_check": {
+    "five_subsets_checked": 56,
+    "min_abs_det": 2
+   },
+   "set_project_evaluate": {
+    "valid": true,
+    "score": 8.0
+   },
+   "exact": 8
+  },
+  {
+   "n": 4,
+   "trivial_upper_bound_4n": 16,
+   "public_lower_bound": 11,
+   "rows_verified": [
+    {
+     "n": 4,
+     "min_hyper_size": 5,
+     "circle_rows_verified": 3848,
+     "hyperplane_rows_verified": 13674,
+     "all_valid": true,
+     "mutants_rejected": 4000,
+     "mutants_tested": 4000,
+     "seconds": 0.4
+    }
+   ],
+   "optimisation_run": {
+    "value": 11,
+    "seconds": 223.54,
+    "workers": 3,
+    "file": "run_n4.json",
+    "rows": [
+     3848,
+     13674
+    ],
+    "bruteforce_crosscheck_equal": true
+   },
+   "proven_upper_bound": 11,
+   "verified_lower_bound": 11,
+   "set": [
+    [
+     0,
+     3,
+     0
+    ],
+    [
+     0,
+     3,
+     3
+    ],
+    [
+     1,
+     0,
+     0
+    ],
+    [
+     1,
+     0,
+     2
+    ],
+    [
+     1,
+     2,
+     3
+    ],
+    [
+     2,
+     0,
+     0
+    ],
+    [
+     2,
+     1,
+     2
+    ],
+    [
+     2,
+     2,
+     1
+    ],
+    [
+     3,
+     1,
+     1
+    ],
+    [
+     3,
+     1,
+     3
+    ],
+    [
+     3,
+     2,
+     3
+    ]
+   ],
+   "set_source": "run_n4.json",
+   "set_exact_check": {
+    "five_subsets_checked": 462,
+    "min_abs_det": 2
+   },
+   "set_project_evaluate": {
+    "valid": true,
+    "score": 11.0
+   },
+   "exact": 11
+  },
+  {
+   "n": 5,
+   "trivial_upper_bound_4n": 20,
+   "public_lower_bound": 14,
+   "rows_verified": [
+    {
+     "n": 5,
+     "min_hyper_size": 5,
+     "circle_rows_verified": 24048,
+     "hyperplane_rows_verified": 196688,
+     "all_valid": true,
+     "mutants_rejected": 4000,
+     "mutants_tested": 4000,
+     "seconds": 6.7
+    }
+   ],
+   "refutation": {
+    "refuted_K": 20,
+    "orbit_cases": 10,
+    "total_solver_seconds": 60.15,
+    "total_conflicts": 2115,
+    "files": [
+     "refute_n5_orbit.json"
+    ],
+    "cases": {
+     "0": {
+      "wall_seconds": 47.07,
+      "conflicts": 1983,
+      "file": "refute_n5_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": null
+     },
+     "1": {
+      "wall_seconds": 7.79,
+      "conflicts": 30,
+      "file": "refute_n5_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": null
+     },
+     "2": {
+      "wall_seconds": 2.66,
+      "conflicts": 16,
+      "file": "refute_n5_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": null
+     },
+     "3": {
+      "wall_seconds": 0.93,
+      "conflicts": 4,
+      "file": "refute_n5_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": null
+     },
+     "4": {
+      "wall_seconds": 0.52,
+      "conflicts": 82,
+      "file": "refute_n5_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": null
+     },
+     "5": {
+      "wall_seconds": 0.25,
+      "conflicts": 0,
+      "file": "refute_n5_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": null
+     },
+     "6": {
+      "wall_seconds": 0.23,
+      "conflicts": 0,
+      "file": "refute_n5_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": null
+     },
+     "7": {
+      "wall_seconds": 0.2,
+      "conflicts": 0,
+      "file": "refute_n5_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": null
+     },
+     "8": {
+      "wall_seconds": 0.27,
+      "conflicts": 0,
+      "file": "refute_n5_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": null
+     },
+     "9": {
+      "wall_seconds": 0.23,
+      "conflicts": 0,
+      "file": "refute_n5_orbit.json",
+      "lazy_rows_added": 0,
+      "rows": null
+     }
+    }
+   },
+   "proven_upper_bound": 19,
+   "verified_lower_bound": 14,
+   "set": [
+    [
+     0,
+     0,
+     2
+    ],
+    [
+     0,
+     1,
+     0
+    ],
+    [
+     0,
+     2,
+     1
+    ],
+    [
+     0,
+     3,
+     4
+    ],
+    [
+     1,
+     3,
+     0
+    ],
+    [
+     1,
+     4,
+     4
+    ],
+    [
+     2,
+     1,
+     3
+    ],
+    [
+     2,
+     2,
+     1
+    ],
+    [
+     3,
+     2,
+     2
+    ],
+    [
+     3,
+     3,
+     0
+    ],
+    [
+     3,
+     4,
+     1
+    ],
+    [
+     4,
+     0,
+     0
+    ],
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     4,
+     1,
+     3
+    ]
+   ],
+   "set_source": "run_n5_opt.json",
+   "set_exact_check": {
+    "five_subsets_checked": 2002,
+    "min_abs_det": 2
+   },
+   "set_project_evaluate": {
+    "valid": true,
+    "score": 14.0
+   },
+   "exact": null
+  },
+  {
+   "n": 6,
+   "trivial_upper_bound_4n": 24,
+   "public_lower_bound": 18,
+   "unfinished_refutations": {
+    "23": {
+     "orbit_cases_refuted": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "orbit_cases_total": 10,
+     "note": "NOT a proof: the remaining orbit cases did not finish",
+     "files": [
+      "refute_n6_K23_cases1to9_layers.json"
+     ]
+    },
+    "24": {
+     "orbit_cases_refuted": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "orbit_cases_total": 10,
+     "note": "NOT a proof: the remaining orbit cases did not finish",
+     "files": [
+      "refute_n6_K24_cases1to9_layers.json"
+     ]
+    }
+   },
+   "rows_verified": [
+    {
+     "n": 6,
+     "min_hyper_size": 9,
+     "circle_rows_verified": 102488,
+     "hyperplane_rows_verified": 61901,
+     "all_valid": true,
+     "mutants_rejected": 4000,
+     "mutants_tested": 4000,
+     "seconds": 6.3
+    }
+   ],
+   "proven_upper_bound": 24,
+   "exact": null
+  }
+ ]
+}

@@ -7,3 +7,7 @@ __pycache__/
 solvers/*/solver
 *.o
 .pytest_cache/
+exact/rows_*.json
+exact/*.log
+exact/__pycache__/
+baselines/openevolve/runs/
