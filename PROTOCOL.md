@@ -1,6 +1,6 @@
-# Mendel protocol
+# MendelEvolve protocol
 
-Mendel evolves **ideas**, not programs. Every idea is a *gene*: a named switch in a solver, with a
+MendelEvolve (Mendel for short) evolves **ideas**, not programs. Every idea is a *gene*: a named switch in a solver, with a
 stated hypothesis. The framework measures what each gene is worth by switching it off (a *knockout*).
 
 This file is the contract between the three parts of the system: a **problem pack**, a **solver**,

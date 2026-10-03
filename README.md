@@ -1,7 +1,7 @@
-# Mendel
+# MendelEvolve
 
-**Genetics for algorithm discovery.** Mendel is an autoresearch framework that evolves *ideas* instead of
-whole programs, and measures what each idea is worth.
+**Genetics for algorithm discovery.** MendelEvolve (Mendel for short; the command is `mendel`) is an
+autoresearch framework that evolves *ideas* instead of whole programs, and measures what each idea is worth.
 
 Evolutionary coding agents such as AlphaEvolve and OpenEvolve mutate programs and keep the high scorers.
 They find good algorithms, but afterwards nobody can say which idea produced the result, and recent studies

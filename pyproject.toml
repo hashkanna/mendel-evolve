@@ -1,7 +1,7 @@
 [project]
 name = "mendel"
 version = "0.1.0"
-description = "Genetics for algorithm discovery: evolve ideas, not programs, and measure what each idea is worth."
+description = "MendelEvolve: genetics for algorithm discovery. Evolve ideas, not programs, and measure what each idea is worth."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
