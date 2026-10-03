@@ -1,0 +1,696 @@
+{
+ "run": {
+  "id": "diffbasis-devin-tune1",
+  "problem": "diffbasis",
+  "title": "Difference bases (Tao et al. problem 6.7; EinsteinArena problem 19)",
+  "direction": "min",
+  "started": "2026-10-03T22:58:31",
+  "updated": "2026-10-03T23:10:06",
+  "status": "finished",
+  "generation": 1,
+  "spend": {
+   "llm_calls": 0,
+   "llm_usd": 0.0,
+   "cpu_seconds": 2731.325,
+   "evaluations": 256
+  },
+  "problem_dir": "/Users/kanna/Sandbox/hackathons/devin-work/diffbasis/problems/diffbasis"
+ },
+ "instances": {
+  "train": [
+   "n40",
+   "n64"
+  ],
+  "heldout": [
+   "n32",
+   "n52",
+   "n80"
+  ],
+  "gate": [
+   "n12",
+   "n20"
+  ]
+ },
+ "best_known": {
+  "n12": 2.639027469506608,
+  "n20": 2.639027469506608,
+  "n32": 2.639027469506608,
+  "n40": 2.639027469506608,
+  "n52": 2.639027469506608,
+  "n64": 2.639027469506608,
+  "n80": 2.639027469506608,
+  "n128": 2.639027469506608,
+  "n200": 2.639027469506608,
+  "n360": 2.639027469506608,
+  "n500": 2.639027469506608
+ },
+ "champion": {
+  "config": {
+   "wichmann_init": true,
+   "hole_directed": true,
+   "restart_from_best": false,
+   "temp": 0.11789365363233689,
+   "width_factor": 1.5183410905645716,
+   "hole_prob": 0.4070907268076029,
+   "stall_iters": 200000,
+   "kick_size": 2
+  },
+  "solver_version": "8b0e4ae0b48532c5",
+  "solver_dir": "/Users/kanna/Sandbox/hackathons/devin-work/diffbasis/runs/diffbasis-devin-tune1/trunk/gen000",
+  "scores": {
+   "n40": {
+    "mean": 2.93040293040293,
+    "best": 2.93040293040293,
+    "runs": 4,
+    "budget": "time=5"
+   },
+   "n64": {
+    "mean": 2.9552669552669553,
+    "best": 2.9552669552669553,
+    "runs": 4,
+    "budget": "time=5"
+   },
+   "n32": {
+    "mean": 2.9257142857142857,
+    "best": 2.9257142857142857,
+    "runs": 2,
+    "budget": "time=5"
+   },
+   "n52": {
+    "mean": 2.945533769063181,
+    "best": 2.945533769063181,
+    "runs": 2,
+    "budget": "time=5"
+   },
+   "n80": {
+    "mean": 2.9657089898053752,
+    "best": 2.9657089898053752,
+    "runs": 2,
+    "budget": "time=5"
+   }
+  },
+  "solutions": {
+   "n40": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    13,
+    26,
+    39,
+    52,
+    65,
+    78,
+    91,
+    118,
+    145,
+    172,
+    199,
+    226,
+    253,
+    280,
+    307,
+    334,
+    361,
+    388,
+    415,
+    442,
+    456,
+    470,
+    484,
+    498,
+    512,
+    526,
+    540,
+    541,
+    542,
+    543,
+    544,
+    545,
+    546
+   ],
+   "n64": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    21,
+    42,
+    63,
+    84,
+    105,
+    126,
+    147,
+    168,
+    189,
+    210,
+    231,
+    274,
+    317,
+    360,
+    403,
+    446,
+    489,
+    532,
+    575,
+    618,
+    661,
+    704,
+    747,
+    790,
+    833,
+    876,
+    919,
+    962,
+    1005,
+    1048,
+    1091,
+    1134,
+    1156,
+    1178,
+    1200,
+    1222,
+    1244,
+    1266,
+    1288,
+    1310,
+    1332,
+    1354,
+    1376,
+    1377,
+    1378,
+    1379,
+    1380,
+    1381,
+    1382,
+    1383,
+    1384,
+    1385,
+    1386
+   ],
+   "n32": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    11,
+    22,
+    33,
+    44,
+    55,
+    66,
+    89,
+    112,
+    135,
+    158,
+    181,
+    204,
+    227,
+    250,
+    273,
+    285,
+    297,
+    309,
+    321,
+    333,
+    345,
+    346,
+    347,
+    348,
+    349,
+    350
+   ],
+   "n52": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    17,
+    34,
+    51,
+    68,
+    85,
+    102,
+    119,
+    136,
+    153,
+    188,
+    223,
+    258,
+    293,
+    328,
+    363,
+    398,
+    433,
+    468,
+    503,
+    538,
+    573,
+    608,
+    643,
+    678,
+    713,
+    748,
+    766,
+    784,
+    802,
+    820,
+    838,
+    856,
+    874,
+    892,
+    910,
+    911,
+    912,
+    913,
+    914,
+    915,
+    916,
+    917,
+    918
+   ],
+   "n80": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    27,
+    54,
+    81,
+    108,
+    135,
+    162,
+    189,
+    216,
+    243,
+    270,
+    297,
+    324,
+    351,
+    378,
+    433,
+    488,
+    543,
+    598,
+    653,
+    708,
+    763,
+    818,
+    873,
+    928,
+    983,
+    1038,
+    1093,
+    1148,
+    1203,
+    1258,
+    1313,
+    1368,
+    1423,
+    1478,
+    1533,
+    1588,
+    1643,
+    1698,
+    1753,
+    1781,
+    1809,
+    1837,
+    1865,
+    1893,
+    1921,
+    1949,
+    1977,
+    2005,
+    2033,
+    2061,
+    2089,
+    2117,
+    2145,
+    2146,
+    2147,
+    2148,
+    2149,
+    2150,
+    2151,
+    2152,
+    2153,
+    2154,
+    2155,
+    2156,
+    2157,
+    2158
+   ]
+  }
+ },
+ "genes": [
+  {
+   "name": "wichmann_init",
+   "kind": "switch",
+   "author": "seed",
+   "added_gen": 0,
+   "hypothesis": "Starting from Wichmann's complete ruler (ratio about 3) instead of a block plus its multiples (ratio about 4) saves the annealing the climb from 4 to 3, which is most of what a short budget is spent on.",
+   "predicted": "large gain at short budgets and large n (-0.3 to -0.8 in score at n = 64, 5 s); shrinking at long budgets",
+   "default": false,
+   "status": "active",
+   "value": true,
+   "knockout": {
+    "effect": 0.5911778355917068,
+    "ci": [
+     0.5260768001990238,
+     0.6594935765364514
+    ],
+    "runs": 16,
+    "generation": 1
+   },
+   "neutral_rounds": 0,
+   "generality": {
+    "n32": {
+     "effect": 0.4610539676995311,
+     "ci": [
+      0.3045696259576385,
+      0.6175383094414237
+     ]
+    },
+    "n52": {
+     "effect": 0.7738891532205332,
+     "ci": [
+      0.7636569030904541,
+      0.7841214033506123
+     ]
+    },
+    "n80": {
+     "effect": 0.6214622746310354,
+     "ci": [
+      0.5702026124045694,
+      0.6727219368575015
+     ]
+    }
+   },
+   "label": "general"
+  },
+  {
+   "name": "hole_directed",
+   "kind": "switch",
+   "author": "seed",
+   "added_gen": 0,
+   "hypothesis": "Near the target only a few distances are missing; moving a mark to x_j +- d for a missing distance d creates that distance for certain, while a uniform position almost never does, so directed proposals close holes far faster.",
+   "predicted": "-0.05 to -0.2 in score at n >= 40",
+   "default": false,
+   "status": "active",
+   "value": true,
+   "knockout": {
+    "effect": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "runs": 16,
+    "generation": 1
+   },
+   "neutral_rounds": 0,
+   "generality": {
+    "n32": {
+     "effect": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ]
+    },
+    "n52": {
+     "effect": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ]
+    },
+    "n80": {
+     "effect": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "label": "neutral"
+  },
+  {
+   "name": "restart_from_best",
+   "kind": "switch",
+   "author": "seed",
+   "added_gen": 0,
+   "hypothesis": "At a fixed temperature the walk can drift far from the last covering set into a region with many holes; returning to the best set with a small random kick after a long stall keeps the search near good sets.",
+   "predicted": "small gain (about -0.02) at long budgets; nothing at short ones, where a stall of stall_iters moves rarely happens",
+   "default": false,
+   "status": "inactive",
+   "value": false,
+   "knockout": {
+    "effect": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "runs": 16,
+    "generation": 1
+   },
+   "neutral_rounds": 1
+  },
+  {
+   "name": "temp",
+   "kind": "float",
+   "author": "seed",
+   "added_gen": 0,
+   "hypothesis": "Annealing temperature in units of uncovered distances: a move that opens one more hole is accepted with probability exp(-1/temp). Too cold and the walk freezes in a local optimum, too hot and it never closes the last hole.",
+   "of": null,
+   "default": 0.5,
+   "low": 0.05,
+   "high": 5.0,
+   "log": true,
+   "status": "active",
+   "value": 0.11789365363233689
+  },
+  {
+   "name": "width_factor",
+   "kind": "float",
+   "author": "seed",
+   "added_gen": 0,
+   "hypothesis": "Marks may sit anywhere in 0..width_factor * T. The best sets stick out beyond v (the published 360-set reaches 1.12 v), so a window above 1 helps, but a wide window wastes most proposals on useless far positions.",
+   "of": null,
+   "default": 1.25,
+   "low": 1.0,
+   "high": 2.5,
+   "log": false,
+   "status": "active",
+   "value": 1.5183410905645716
+  },
+  {
+   "name": "hole_prob",
+   "kind": "float",
+   "author": "seed",
+   "added_gen": 0,
+   "hypothesis": "Share of proposals aimed at a missing distance; the rest stay uniform so that the walk can still leave a basin.",
+   "of": "hole_directed",
+   "default": 0.5,
+   "low": 0.05,
+   "high": 0.95,
+   "log": false,
+   "status": "active",
+   "value": 0.4070907268076029
+  },
+  {
+   "name": "stall_iters",
+   "kind": "int",
+   "author": "seed",
+   "added_gen": 0,
+   "hypothesis": "Proposals without a new best set before returning to the best one. Too short and the walk never gets far enough to find a new covering set.",
+   "of": "restart_from_best",
+   "default": 200000,
+   "low": 2000,
+   "high": 5000000,
+   "log": true,
+   "status": "inactive",
+   "value": 200000
+  },
+  {
+   "name": "kick_size",
+   "kind": "int",
+   "author": "seed",
+   "added_gen": 0,
+   "hypothesis": "Marks moved at random after a return to the best set, so that the walk does not retrace its previous path.",
+   "of": "restart_from_best",
+   "default": 2,
+   "low": 1,
+   "high": 8,
+   "log": false,
+   "status": "inactive",
+   "value": 2
+  }
+ ],
+ "interactions": [
+  {
+   "a": "wichmann_init",
+   "b": "hole_directed",
+   "synergy": -0.048581188891193006,
+   "ci": [
+    -0.16143630321602698,
+    0.06823000139951116
+   ],
+   "runs": 32,
+   "generation": 1
+  }
+ ],
+ "decomposition": {
+  "seed": 3.529214484653438,
+  "tuning": 0.079322838110091,
+  "ideas": 0.5070567037084039,
+  "compute": 0.0,
+  "unit": "points, mean over train instances"
+ },
+ "records": [],
+ "history": [
+  {
+   "t": "2026-10-03T22:58:31",
+   "generation": 0,
+   "event": "run_started",
+   "detail": "seed solver solvers/diffbasis, 8 genes, budget time=5.0"
+  },
+  {
+   "t": "2026-10-03T22:59:16",
+   "generation": 1,
+   "event": "generation_started",
+   "detail": "trunk gen000"
+  },
+  {
+   "t": "2026-10-03T22:59:16",
+   "generation": 1,
+   "event": "tuning_started",
+   "detail": "16 trials in batches of 8"
+  },
+  {
+   "t": "2026-10-03T23:04:31",
+   "generation": 1,
+   "event": "tuned",
+   "detail": "normalised score 0.7637 -> 0.8968 on the confirmation seeds; wichmann_init: False -> True, hole_directed: False -> True, temp: 0.5 -> 0.11789365363233689, width_factor: 1.25 -> 1.5183410905645716, hole_prob: 0.5 -> 0.4070907268076029"
+  },
+  {
+   "t": "2026-10-03T23:06:21",
+   "generation": 1,
+   "event": "knockouts",
+   "detail": "wichmann_init +0.5912; hole_directed +0; restart_from_best (off) +0"
+  },
+  {
+   "t": "2026-10-03T23:06:45",
+   "generation": 1,
+   "event": "pairwise",
+   "detail": "wichmann_init x hole_directed -0.04858"
+  },
+  {
+   "t": "2026-10-03T23:07:19",
+   "generation": 1,
+   "event": "generality",
+   "detail": "wichmann_init: general; hole_directed: neutral"
+  },
+  {
+   "t": "2026-10-03T23:07:19",
+   "generation": 1,
+   "event": "generation_finished",
+   "detail": "trunk gen000"
+  },
+  {
+   "t": "2026-10-03T23:10:06",
+   "generation": 1,
+   "event": "decomposition",
+   "detail": "seed 3.529, tuning +0.07932, ideas +0.5071"
+  },
+  {
+   "t": "2026-10-03T23:10:06",
+   "generation": 1,
+   "event": "run_finished",
+   "detail": "1 generations"
+  }
+ ],
+ "timeline": [
+  {
+   "t": 44.8,
+   "generation": 0,
+   "score": 0.7499515586501456
+  },
+  {
+   "t": 402.3,
+   "generation": 1,
+   "score": 0.8967796763322406
+  }
+ ],
+ "engine": {
+  "config": {
+   "problem_dir": "/Users/kanna/Sandbox/hackathons/devin-work/diffbasis/problems/diffbasis",
+   "solver_dir": "solvers/diffbasis",
+   "runs_dir": "runs",
+   "run_id": "diffbasis-devin-tune1",
+   "generations": 1,
+   "proposals": 0,
+   "inventor": "claude-cli",
+   "inventor_opts": {},
+   "executor": "local",
+   "workers": 4,
+   "executor_opts": {},
+   "cache": true,
+   "budget": {
+    "kind": "time",
+    "value": 5.0
+   },
+   "seeds": 4,
+   "heldout_seeds": 2,
+   "attribution_seed_base": 1000,
+   "score_heldout": true,
+   "require_significant": false,
+   "tune_every": 1,
+   "tune_trials": 16,
+   "tune_batch": 8,
+   "tune_seeds": 2,
+   "tune_top": 3,
+   "tune_budget": null,
+   "flip_pass": true,
+   "pairwise_top": 3,
+   "generality": true,
+   "decomposition": true,
+   "neutral_tol": null,
+   "prune_after": 3,
+   "gate_iters": 2000,
+   "gate_seeds": 2,
+   "gate_instances": 2,
+   "gate_timeout": 120.0,
+   "gate_retries": 1
+  },
+  "trunk": "/Users/kanna/Sandbox/hackathons/devin-work/diffbasis/runs/diffbasis-devin-tune1/trunk/gen000",
+  "port_queue": [],
+  "ideas_taken": 0
+ }
+}

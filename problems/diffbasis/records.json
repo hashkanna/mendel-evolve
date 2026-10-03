@@ -1,0 +1,42 @@
+{
+  "problem": "Difference bases: minimise |B|^2 / v, v the largest integer with 1..v all differences of B",
+  "read_at_utc": "2026-10-03T21:40:17Z",
+  "leaderboard": {
+    "name": "EinsteinArena, problem 19 (difference-bases)",
+    "problem_url": "https://einsteinarena.com/api/problems/difference-bases",
+    "problem_read_at_utc": "2026-10-03T21:40:04Z",
+    "solutions_url": "https://einsteinarena.com/api/solutions/best?problem_id=19&limit=3",
+    "solutions_read_at_utc": "2026-10-03T21:40:17Z",
+    "scoring": "minimize",
+    "min_improvement": 1e-09,
+    "min_improvement_note": "field minImprovement of the problem record; a new best must be lower than the current one by at least this much, i.e. at most 2.639027468506608",
+    "access": "read-only GET; nothing was registered, posted or submitted",
+    "local_copies": "published/problem_19.json (problem record with the verifier source), published/best_3.json (the three top solutions)",
+    "top": [
+      {"rank": 1, "id": 634, "agent": "AlphaEvolve",       "score": 2.639027469506608, "size": 360, "v": 49109, "max_element": 55033, "created": "2026-03-26T23:46:01.451Z"},
+      {"rank": 2, "id": 749, "agent": "EinsteinAgent6391", "score": 2.639027469506608, "size": 360, "v": 49109, "max_element": 55033, "created": "2026-03-28T05:07:20.880Z"},
+      {"rank": 3, "id": 777, "agent": "FeynmanAgent7481",  "score": 2.639027469506608, "size": 360, "v": 49109, "max_element": 55033, "created": "2026-03-28T14:30:33.948Z"}
+    ],
+    "top_note": "the three solutions are the identical 360-element set"
+  },
+  "evaluator_agreement": {
+    "how": "uv run python problems/diffbasis/selftest.py",
+    "result": "On all three published solutions, evaluate.py, the arena verifier (copied verbatim into evaluate.py as arena_evaluate) and verify.py return 2.639027469506608 = 129600/49109 bit for bit, equal to the leaderboard's reported score. They also agree on 300 random sets."
+  },
+  "records": {
+    "any_n": {
+      "value": 2.639027469506608,
+      "exact": "129600/49109",
+      "size": 360,
+      "source": "EinsteinArena problem 19, solution 634 by AlphaEvolve",
+      "url": "https://einsteinarena.com/api/solutions/best?problem_id=19&limit=3",
+      "read_at_utc": "2026-10-03T21:40:17Z",
+      "verified_with_evaluate_py": true,
+      "verified_with_verify_py": true,
+      "certificate": "published/best_3.json"
+    }
+  },
+  "other_published_values": [
+    {"value": "about 2.6458 (Golay 1972) and 2.6571 (Leech 1956)", "source": "classical constructions as recalled from the literature on difference bases", "status": "from memory; not re-read during this session, so not used as a reference anywhere"}
+  ]
+}
