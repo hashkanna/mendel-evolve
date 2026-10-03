@@ -192,9 +192,17 @@ class ModalExecutor:
                                            "call_ids": call_ids}))
                 tmp.replace(journal)
 
+        def spawn(payload: dict):
+            try:
+                return self._function.spawn(payload)
+            except Exception:
+                # The handle can go stale (a redeploy, a dropped connection); look the function up again.
+                self._function = modal.Function.from_name(APP_NAME, self.function_name)
+                raise
+
         for k, payload in enumerate(payloads):
             if call_ids[k] is None:
-                call = self._retry("spawn", lambda payload=payload: self._function.spawn(payload))
+                call = self._retry("spawn", lambda payload=payload: spawn(payload))
                 call_ids[k] = call.object_id
                 if journal is not None and (k % 25 == 0 or k == len(payloads) - 1):
                     save()
