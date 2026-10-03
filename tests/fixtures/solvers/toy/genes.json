@@ -1,0 +1,61 @@
+{
+  "genes": [
+    {
+      "name": "boost",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Raises the ceiling by 10 on every instance.",
+      "predicted": "+10",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "noop",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Does nothing at all.",
+      "predicted": "0",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "left",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Half of a pair; only pays off together with right.",
+      "predicted": "+8 with right, 0 alone",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "right",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Half of a pair; only pays off together with left.",
+      "predicted": "+8 with left, 0 alone",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "small_trick",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Raises the ceiling by 6, but only on small instances (n <= 6).",
+      "predicted": "+6 for n <= 6, 0 above",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "step",
+      "kind": "float",
+      "default": 0.2,
+      "low": 0.0,
+      "high": 1.0,
+      "log": false,
+      "of": null,
+      "hypothesis": "Step size; the ceiling drops by 40 * (step - 0.7)^2.",
+      "author": "seed",
+      "added_gen": 0
+    }
+  ]
+}

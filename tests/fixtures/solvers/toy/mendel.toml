@@ -1,0 +1,2 @@
+problem = "toy"
+run = "python3 solver.py"

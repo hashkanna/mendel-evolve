@@ -1,0 +1,15 @@
+name = "toy"
+title = "Toy: push n integers towards 100"
+direction = "max"
+statement = """Choose n integers, each between 0 and 100. The score is their mean.
+The toy solver is deliberately handicapped so that its genes have known effects."""
+
+[instances]
+train   = [{ n = 4 }, { n = 6 }]
+heldout = [{ n = 8 }, { n = 10 }]
+
+[best_known]
+n4 = 100
+n6 = 100
+n8 = 100
+n10 = 100
