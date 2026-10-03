@@ -27,7 +27,9 @@ ITERS_TIMEOUT = float(os.environ.get("MENDEL_ITERS_TIMEOUT", "900"))  # hard cap
 def hard_timeout(budget: dict) -> float:
     """Three times the time budget plus ten seconds; a generous fixed cap for iteration budgets."""
     if budget["kind"] == "time":
-        return 3.0 * float(budget["value"]) + 10.0
+        # The budget is CPU time but the kill is wall time; on a heavily loaded machine set
+        # MENDEL_WALL_FACTOR higher so that valid runs are not killed for waiting on the scheduler.
+        return float(os.environ.get("MENDEL_WALL_FACTOR", "3")) * float(budget["value"]) + 10.0
     return ITERS_TIMEOUT
 
 

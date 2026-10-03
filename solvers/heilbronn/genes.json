@@ -1,0 +1,96 @@
+{
+  "genes": [
+    {
+      "name": "energy_start",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Before the LP polish, relax each start by L-BFGS on a smooth soft-min energy, (1/p) log sum over all triples of area^-p (plus log hull area for the convex variant). The energy spreads all triangles at once, so the polish starts in a better basin and needs fewer LP solves than when it must untangle a raw random start through the active set alone.",
+      "predicted": "+5% to +15% mean score at equal CPU time, and several times more starts per second",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "basin_hopping",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Good configurations share most of their structure, so relocating a few points of the current local optimum (each to the best of a handful of random spots) and re-polishing climbs faster than independent random restarts; after hop_patience failures the chain restarts from scratch.",
+      "predicted": "+3% to +10% mean score for n >= 20 at equal CPU time",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "symmetry",
+      "kind": "choice",
+      "choices": ["none", "rot2", "rot3", "rot4", "rot5", "mirror"],
+      "default": "none",
+      "hypothesis": "Searching inside a symmetric subspace divides the number of free coordinates by the group order, and many leaderboard entries are symmetric (square: C2, C4, D2, D4; triangle: C3, D3 through the affine map (x, y) -> (y, 1 - x - y); convex: D2 to D6). The configuration is built from orbits of n // order parameter points plus n mod order free points, polished inside the subspace, then released for a free polish. Choices that do not preserve the region (rot3 or rot5 on the square, anything but rot3 and mirror on the triangle) fall back to none.",
+      "predicted": "+2% to +8% best-of-seeds when n is a multiple of the group order; negative for sizes whose best configurations are asymmetric (square n = 29, 31, 33 to 36)",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "active_per_point",
+      "kind": "int", "default": 8, "low": 3, "high": 40, "log": false,
+      "of": null,
+      "hypothesis": "Each LP keeps the active_per_point * n smallest triangles. A local optimum has about 2n ties, so too few rows make steps that other triangles then veto, and too many make every LP slower.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "trust_radius",
+      "kind": "float", "default": 0.05, "low": 0.003, "high": 0.2, "log": true,
+      "of": null,
+      "hypothesis": "Initial half-width of the box trust region of the LP step, in coordinate units; it adapts afterwards, so this mostly sets how violent the first steps from a start are.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "coarse_tol",
+      "kind": "float", "default": 0.0001, "low": 0.0000001, "high": 0.01, "log": true,
+      "of": null,
+      "hypothesis": "A start is polished only until the LP predicts a relative gain below this; cheaper triage of bad starts against the risk of misjudging a slow-converging good one.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "promise_gap",
+      "kind": "float", "default": 0.03, "low": 0.0, "high": 0.3, "log": false,
+      "of": null,
+      "hypothesis": "A coarsely polished start within this fraction of the incumbent gets the full polish (and, with a symmetry, the release); the rest are dropped.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "energy_power",
+      "kind": "float", "default": 8.0, "low": 1.0, "high": 64.0, "log": true,
+      "of": "energy_start",
+      "hypothesis": "Exponent p of the soft-min energy: small p balances all triangles, large p approximates the true minimum but is stiff for L-BFGS.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "hop_points",
+      "kind": "int", "default": 2, "low": 1, "high": 8, "log": false,
+      "of": "basin_hopping",
+      "hypothesis": "Number of parameter points relocated per hop; one is a small neighbourhood, many is close to a restart.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "hop_candidates",
+      "kind": "int", "default": 16, "low": 1, "high": 128, "log": true,
+      "of": "basin_hopping",
+      "hypothesis": "Random spots tried for each relocated point; the one that leaves the largest smallest triangle is used. One is a blind move, many is a greedy best-spot reinsertion.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "hop_patience",
+      "kind": "int", "default": 40, "low": 5, "high": 1000, "log": true,
+      "of": "basin_hopping",
+      "hypothesis": "Consecutive failed hops before the chain is abandoned for a fresh random start.",
+      "author": "seed",
+      "added_gen": 0
+    }
+  ]
+}

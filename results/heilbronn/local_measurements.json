@@ -1,0 +1,178 @@
+{
+ "what": "Small local measurements of the heilbronn seed solver (solver version 9bf01213a6453cc2), made on a heavily loaded laptop on 2026-10-03. Budgets are CPU seconds measured by the solver; 2 seeds (0 and 1) per instance, paired across configurations. They are indicative only: two seeds, short budgets.",
+ "published_values": {
+  "square30": 0.006038527494905923,
+  "triangle30": 0.005957401091748716,
+  "convex30": 0.0071601845302816025,
+  "square27": 0.007102404979886035,
+  "triangle33": 0.004728213395120405,
+  "convex35": 0.004773805331154381,
+  "square36": 0.004184888666026338
+ },
+ "switch_effects_time10_seeds2": {
+  "instances": [
+   "square30",
+   "triangle30",
+   "convex30"
+  ],
+  "command": "uv run mendel score --solver solvers/heilbronn --seeds 2 --time 10 --config CFG",
+  "rows": [
+   {
+    "config": {},
+    "mean_normalised": 0.2089,
+    "mean": {
+     "square30": 0.0011752012187742676,
+     "triangle30": 0.0013299906737950181,
+     "convex30": 0.0014952936472276412
+    }
+   },
+   {
+    "config": {
+     "energy_start": true
+    },
+    "mean_normalised": 0.4361,
+    "mean": {
+     "square30": 0.0027161216160389006,
+     "triangle30": 0.0025319807963033705,
+     "convex30": 0.0031046155260404072
+    }
+   },
+   {
+    "config": {
+     "basin_hopping": true
+    },
+    "mean_normalised": 0.2465,
+    "mean": {
+     "square30": 0.0012921469628975018,
+     "triangle30": 0.0018120385536889972,
+     "convex30": 0.001585955925156863
+    }
+   },
+   {
+    "config": {
+     "symmetry": "mirror"
+    },
+    "mean_normalised": 0.278,
+    "mean": {
+     "square30": 0.0016665491647543135,
+     "triangle30": 0.0018012902623025235,
+     "convex30": 0.0018301635993515386
+    }
+   },
+   {
+    "config": {
+     "energy_start": true,
+     "basin_hopping": true
+    },
+    "mean_normalised": 0.4296,
+    "mean": {
+     "square30": 0.002940412402034101,
+     "triangle30": 0.00238404993481193,
+     "convex30": 0.00287535162565005
+    }
+   },
+   {
+    "config": {
+     "energy_start": true,
+     "basin_hopping": true,
+     "symmetry": "mirror"
+    },
+    "mean_normalised": 0.5128,
+    "mean": {
+     "square30": 0.0032163693357406377,
+     "triangle30": 0.003288678794321178,
+     "convex30": 0.0032481804661311777
+    }
+   }
+  ]
+ },
+ "table_time15_seeds2": {
+  "command": "uv run mendel score --solver solvers/heilbronn --split all --seeds 2 --time 15 --config CFG",
+  "rot3_config": {
+   "config": {
+    "energy_start": true,
+    "basin_hopping": true,
+    "symmetry": "rot3"
+   },
+   "note": "rot3 falls back to no symmetry on the square",
+   "rows": {
+    "square30": [
+     0.0032603764239905403,
+     0.003278785340407127
+    ],
+    "triangle30": [
+     0.0036441485369621994,
+     0.003963446791329521
+    ],
+    "convex30": [
+     0.003627642200276963,
+     0.003942569161915291
+    ],
+    "square27": [
+     0.004101808645505715,
+     0.004279262801754989
+    ],
+    "triangle33": [
+     0.0026461639143767436,
+     0.00292904976464628
+    ],
+    "convex35": [
+     0.002067930385846072,
+     0.002148015728639112
+    ],
+    "square36": [
+     0.0018493145521812542,
+     0.0018763482786423617
+    ]
+   },
+   "columns": [
+    "mean",
+    "best"
+   ]
+  },
+  "rot2_config": {
+   "config": {
+    "energy_start": true,
+    "basin_hopping": true,
+    "symmetry": "rot2",
+    "hop_points": 1
+   },
+   "note": "rot2 falls back to no symmetry on the triangle; the four square30 and triangle30 runs were killed by the harness's wall-clock hard timeout (laptop load average 40 to 70)",
+   "rows": {
+    "convex30": [
+     0.003527628800819963,
+     0.003624375080265456
+    ],
+    "square27": [
+     0.004616295571211195,
+     0.0047413125375866255
+    ],
+    "triangle33": [
+     0.0019391585129649863,
+     0.0022037813429862958
+    ],
+    "convex35": [
+     0.0020111033743413238,
+     0.0021686579721715586
+    ],
+    "square36": [
+     0.002347189505611036,
+     0.0024076620770551995
+    ]
+   },
+   "columns": [
+    "mean",
+    "best"
+   ]
+  }
+ },
+ "single_runs_time45_seed11": {
+  "triangle30 rot3": 0.004119020674466266,
+  "square28 rot4": 0.004867,
+  "convex30 rot5": 0.005384139182360593,
+  "square30 rot2": 0.00377,
+  "square29 none": 0.0038244039840988975,
+  "note": "energy_start and basin_hopping on, hop_points 2; ratios to the published values 0.69, 0.71, 0.75, 0.62, 0.61"
+ },
+ "proven_optima_reached": "n = 8 in all three variants (square 0.0723764243184436, triangle 0.0677892132541966, convex 0.0800001393269292) within 4 to 15 CPU seconds, with the published tie counts 12, 11, 10"
+}

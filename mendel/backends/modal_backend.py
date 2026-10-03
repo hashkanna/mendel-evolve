@@ -79,7 +79,7 @@ class ModalExecutor:
         base = float(budget["value"]) if budget["kind"] == "time" else self.iters_job_seconds
         return base + self.overhead_per_job
 
-    def run(self, jobs: list[dict], journal: Path | None = None) -> list[dict]:
+    def run(self, jobs: list[dict], journal: Path | None = None, on_batch=None) -> list[dict]:
         if not jobs:
             return []
         import modal
@@ -134,7 +134,11 @@ class ModalExecutor:
                 batch_jobs.append(job)
             payloads.append({"dirs": batch_dirs, "jobs": batch_jobs})
 
-        outputs = self._run_payloads(payloads, journal)
+        def landed(k: int, output) -> None:
+            if on_batch is not None and isinstance(output, list) and len(output) == len(batches[k]):
+                on_batch([jobs[i] for i in batches[k]], output)
+
+        outputs = self._run_payloads(payloads, journal, landed)
         results: list[dict | None] = [None] * len(jobs)
         for batch, output in zip(batches, outputs):
             if isinstance(output, Exception) or not isinstance(output, list) or len(output) != len(batch):
@@ -162,7 +166,7 @@ class ModalExecutor:
                 delay = min(delay * 2, 60.0)
         raise RuntimeError(f"unreachable: {what}")
 
-    def _run_payloads(self, payloads: list[dict], journal: Path | None) -> list:
+    def _run_payloads(self, payloads: list[dict], journal: Path | None, landed=None) -> list:
         """Submit each batch as its own call and collect the results.
 
         One call per batch means a dropped connection costs a retry of one fetch, not the whole run, and
@@ -209,9 +213,14 @@ class ModalExecutor:
         save()
 
         outputs: list = []
-        for call_id in call_ids:
+        for k, call_id in enumerate(call_ids):
             try:
                 outputs.append(self._retry("get", lambda call_id=call_id: modal.FunctionCall.from_id(call_id).get()))
             except Exception as exc:  # noqa: BLE001 - a failed batch becomes failed results, never a crash
                 outputs.append(exc)
+            if landed is not None:
+                try:
+                    landed(k, outputs[-1])
+                except Exception:  # noqa: BLE001 - progress reporting must never cost results
+                    pass
         return outputs

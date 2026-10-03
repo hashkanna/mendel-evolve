@@ -1,0 +1,2 @@
+problem = "heilbronn"
+run = "python solver.py"

@@ -1,0 +1,156 @@
+name = "heilbronn"
+title = "Heilbronn triangle problems: square, triangle, convex region (Tao et al., problems 48 and 49)"
+direction = "max"
+statement = """
+Place n points in a region so that the smallest triangle formed by any three of them is as large as
+possible. Three variants, selected by the instance's "shape":
+
+  square    points in the unit square 0 <= x, y <= 1.            value = smallest triangle area
+  triangle  points in the right triangle x >= 0, y >= 0,         value = 2 * smallest triangle area
+            x + y <= 1 (area 1/2; every triangle is an affine      (the smallest area as a fraction of
+            image of it, and area ratios are affine invariant)      the region's area)
+  convex    points anywhere in the plane; the region is their    value = smallest triangle area divided
+            own convex hull.                                       by the area of the convex hull
+
+An instance is {"shape": "square" | "triangle" | "convex", "n": n}. A solution is a list of n points,
+each a pair [x, y] of decimal strings, for example ["0.25", "0.903400000000000017"]: plain decimal
+literals, at most 6 digits before the point and 200 after, no exponents. Each literal is read as the exact
+rational it denotes. The points must be distinct and lie in the region; boundary points are allowed.
+Containment and all C(n, 3) triangle areas are evaluated in exact arithmetic with no tolerance, exactly as
+the public leaderboard does (https://github.com/tejstead/heilbronn-site), so a point outside the region
+by 1e-30 is invalid, and the score is the exact value rounded once to a double. Higher is better.
+
+Facts worth knowing:
+- It is a max-min problem over all triples. At a local optimum many triangles tie for the minimum
+  (about 2n of them for n points), and the configuration is the solution of that tie system.
+- The sign (orientation) of every triple is fixed along any path that keeps all areas positive, so a
+  local method never leaves the order type of its starting configuration: the global search is a search
+  over order types.
+- A twice-area cross product is bilinear in the coordinates, so the linearisation of every area
+  constraint around a configuration is exact up to a term quadratic in the step.
+- Many leaderboard entries are symmetric: for the square 180-degree (C2) or 90-degree (C4) rotations
+  about the centre and mirror lines; for the triangle the affine 3-fold map (x, y) -> (y, 1 - x - y) and
+  the mirror (x, y) -> (y, x); for convex regions dihedral groups. Many others (n = 29, 31, 33 to 36 in
+  the square) have no symmetry at all.
+- Leaderboard entries for n >= 27 were found by basin hopping with symmetry reduction, by deleting one
+  point from the record for n + 1 and re-optimising, and by annealing; they changed by 1.65% to 9% in
+  September 2026, so they are unlikely to be optimal. Entries for n <= 16 look saturated.
+
+Sources: Georgiev, Gomez-Serrano, Tao, Wagner, "Mathematical exploration and discovery at scale",
+arXiv:2511.02864; https://google-deepmind.github.io/alphaevolve_repository_of_problems/ (problems 48, 49);
+leaderboard and verification rules: https://math.tejstead.com/heilbronn.
+"""
+
+[instances]
+# Ideas are selected where the records are thought to be soft, one size per variant, and tested for
+# generality on sizes they never saw.
+train   = [{ shape = "square", n = 30 }, { shape = "triangle", n = 30 }, { shape = "convex", n = 30 }]
+heldout = [{ shape = "square", n = 27 }, { shape = "triangle", n = 33 }, { shape = "convex", n = 35 }, { shape = "square", n = 36 }]
+# Small instances for the invariance gate: one per variant, because each has its own code path.
+gate    = [{ shape = "square", n = 8 }, { shape = "triangle", n = 8 }, { shape = "convex", n = 8 }]
+
+# Leaderboard values (data/canonical at commit c2378d4, read 2026-10-03T19:22Z), each reproduced exactly
+# from its published point set by evaluate.py and verify.py. These are the exact values rounded to the
+# nearest double; the exact fractions and 30-digit decimals are in records.json. The leaderboard has no
+# entry for the triangle or the convex variant at n = 36.
+[best_known]
+square3 = 0.5
+square4 = 0.5
+square5 = 0.19245008972987526
+square6 = 0.125
+square7 = 0.0838590090075134
+square8 = 0.07237642431844414
+square9 = 0.05487599917089671
+square10 = 0.046537419582541775
+square11 = 0.037037037037037035
+square12 = 0.0325988586918197
+square13 = 0.0270199166691111
+square14 = 0.024303979620992486
+square15 = 0.021210541005490628
+square16 = 0.020527859237536656
+square17 = 0.0172616770725236
+square18 = 0.015526059940702493
+square19 = 0.013947862081484502
+square20 = 0.012938196714727018
+square21 = 0.01147376078570121
+square22 = 0.010672853853126375
+square23 = 0.009757289713314772
+square24 = 0.009089008077248715
+square25 = 0.008230069426525093
+square26 = 0.007577591009829045
+square27 = 0.007102404979886035
+square28 = 0.0069005249837478634
+square29 = 0.006275939213171752
+square30 = 0.006038527494905923
+square31 = 0.005837068845813763
+square32 = 0.005810902207631995
+square33 = 0.005071344158467175
+square34 = 0.004834891576935714
+square35 = 0.0044322874443073245
+square36 = 0.004184888666026338
+triangle3 = 1.0
+triangle4 = 0.3333333333333333
+triangle5 = 0.1715728752538099
+triangle6 = 0.125
+triangle7 = 0.09722222222222222
+triangle8 = 0.0677892132541972
+triangle9 = 0.0548469387755102
+triangle10 = 0.043376740678049454
+triangle11 = 0.03652988988003022
+triangle12 = 0.031004781743525448
+triangle13 = 0.026556528919738264
+triangle14 = 0.023775773107572774
+triangle15 = 0.021090769460266688
+triangle16 = 0.01835554635540345
+triangle17 = 0.016242328407103795
+triangle18 = 0.014894342987959863
+triangle19 = 0.013481891382806744
+triangle20 = 0.012609391528641323
+triangle21 = 0.011395976979638138
+triangle22 = 0.010266127607262964
+triangle23 = 0.00926978187293123
+triangle24 = 0.008985154072779035
+triangle25 = 0.007802638741054243
+triangle26 = 0.007471569726815123
+triangle27 = 0.007029328169141572
+triangle28 = 0.006694341604594873
+triangle29 = 0.00612369118484432
+triangle30 = 0.005957401091748716
+triangle31 = 0.005161284315624374
+triangle32 = 0.00480075546078704
+triangle33 = 0.004728213395120405
+triangle34 = 0.004430910598389856
+triangle35 = 0.0040326843207058646
+convex3 = 1.0
+convex4 = 0.5
+convex5 = 0.276393202250021
+convex6 = 0.16666666666666666
+convex7 = 0.1111111111111111
+convex8 = 0.08000013932946644
+convex9 = 0.0640647523079417
+convex10 = 0.0519930715229432
+convex11 = 0.0425531914893617
+convex12 = 0.0392156862745098
+convex13 = 0.03093720792162064
+convex14 = 0.027835580517553696
+convex15 = 0.02456405561323017
+convex16 = 0.022272877128981267
+convex17 = 0.01905733275217213
+convex18 = 0.018238895463490872
+convex19 = 0.015931092350142936
+convex20 = 0.014464205030669166
+convex21 = 0.013191087454153035
+convex22 = 0.012254962789776398
+convex23 = 0.011082485280563218
+convex24 = 0.010712640652693903
+convex25 = 0.00931610597769021
+convex26 = 0.008714787636293957
+convex27 = 0.008029121778491794
+convex28 = 0.007718840433941551
+convex29 = 0.007289115327459865
+convex30 = 0.0071601845302816025
+convex31 = 0.006309670708089581
+convex32 = 0.005850714333353196
+convex33 = 0.005470136067289895
+convex34 = 0.0052062169865145025
+convex35 = 0.004773805331154381

@@ -53,8 +53,27 @@ def run_campaign(*, solver_dir: Path, problem_dir: Path, config: dict, instances
             for inst in instances for seed in seeds]
     started = time.time()
     out_dir.mkdir(parents=True, exist_ok=True)
+    progress: dict[str, dict] = {}
+    done_jobs = [0]
+
+    def on_batch(batch_jobs: list[dict], batch_results: list[dict]) -> None:
+        # Best-so-far per instance, as reported by the workers (not yet re-verified here).
+        for job, res in zip(batch_jobs, batch_results):
+            done_jobs[0] += 1
+            key = ev.instance_key(job["instance"])
+            row = progress.setdefault(key, {"runs": 0, "best": None, "best_known": best_known.get(key)})
+            row["runs"] += 1
+            if res.get("ok") and res.get("valid") and res.get("score") is not None:
+                if row["best"] is None or better(res["score"], row["best"]):
+                    row["best"] = res["score"]
+        (out_dir / "campaign_progress.json").write_text(json.dumps(
+            {"t": time.strftime("%Y-%m-%dT%H:%M:%S"), "jobs_done": done_jobs[0], "jobs_total": len(jobs),
+             "unverified_best": progress}, indent=1) + "\n")
+        if done_jobs[0] % 25 < len(batch_jobs):
+            print(f"[{time.strftime('%H:%M:%S')}] {done_jobs[0]}/{len(jobs)} runs back", flush=True)
+
     try:  # a journal lets a crashed campaign collect its results again instead of recomputing them
-        results = executor.run(jobs, journal=out_dir / "modal_calls.json")
+        results = executor.run(jobs, journal=out_dir / "modal_calls.json", on_batch=on_batch)
     except TypeError:
         results = executor.run(jobs)
 
@@ -144,7 +163,7 @@ def main(argv: list[str] | None = None) -> int:
                         time_s=args.time, executor=executor, out_dir=Path(args.out))
     print(f"{'instance':9s} {'ours':>5s} {'mean':>7s} {'known':>6s}  verified  record")
     for r in rows:
-        mean = f"{r['mean']:.2f}" if r["mean"] is not None else "-"
+        mean = f"{r['mean']:.6g}" if r["mean"] is not None else "-"
         print(f"{r['instance']:9s} {str(r['value']):>5s} {mean:>7s} {str(r['best_known']):>6s}  "
               f"{'yes' if r['verified'] else 'NO':8s}  {'NEW RECORD' if r['record'] else ''}")
         for e in r["errors"]:
