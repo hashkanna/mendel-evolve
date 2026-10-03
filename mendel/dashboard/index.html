@@ -128,6 +128,7 @@ select {
 .t-delta .g.pos { color: var(--pos); } .t-delta .g.neg { color: var(--neg); } .t-delta .g.neu { color: var(--ink-3); }
 .t-cap { font-size: 10px; color: var(--ink-2); letter-spacing: .02em; white-space: nowrap; }
 .tile.record .t-cap { color: var(--ink); font-weight: 600; }
+.t-cert { font-size: 10px; color: var(--ink-3); white-space: nowrap; }
 
 /* ---------- viewer */
 #viewer { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; touch-action: none; }
@@ -410,7 +411,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
 
   <section class="brief">
     <div class="rec" id="p-rec" hidden>
-      <div class="rec-title"><span class="star">★</span><div>New records<div class="rec-sub">ours vs published</div></div></div>
+      <div class="rec-title"><span class="star">★</span><div>New records<div class="rec-sub" data-tip="Every verified certificate for this problem, from the engine or from a separate record search. Hover a value for its source and checks.">all searches vs published</div></div></div>
       <div class="rec-list" id="rec-list"></div>
     </div>
     <div class="eff" id="p-eff">
@@ -940,6 +941,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       const tip = [r.instance + ': ' + fmtScore(r.value) + (known != null ? ', best published ' + fmtScore(known) + ' (' + fmtScoreSigned(r.value - known) + ')' : '')];
       if (r.verified === true) tip.push(checks.length ? 'Verified by ' + plural(checks.length, 'independent checker') + ': ' + checks.join(', ') : 'Verified by the exact evaluator');
       else tip.push(r.verified === false ? 'Not verified yet' : 'Verification not reported');
+      if (r.source) tip.push('Found by: ' + str(r.source));
       if (r.certificate) tip.push('Certificate: ' + str(r.certificate));
       if (known != null && !(minimise ? r.value < known : r.value > known)) tip.push('Note: this does not beat the published value');
       return h('div', { class: 'rc', tip: tip.join('\n') },
@@ -981,7 +983,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const records = arr(st.records).map(obj), minimise = obj(st.run).direction === 'min';
     note.textContent = '';
     if (!insts.length) { body.appendChild(empty('Scores appear here once the champion has been evaluated.')); return; }
-    let nRec = 0, nEq = 0, nBehind = 0;
+    let nRec = 0, nEq = 0, nBehind = 0, nCert = 0;
     const groups = [];
     let longest = 1, whole = true;
     for (const it of insts) {
@@ -989,9 +991,13 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       if (!grp) { grp = { split: it.split, items: [] }; groups.push(grp); }
       grp.items.push(it);
       it.sc = obj(scores[it.key]);
-      it.rec = records.find((r) => r.instance === it.key);
+      // The tile shows what the champion itself scored. A certificate from a separate search (records.json)
+      // that goes further is named in the tile's caption and tooltip, never shown as the champion's score.
       it.ours = num(it.sc.best) != null ? num(it.sc.best) : num(it.sc.mean);
-      if (it.rec && isNum(it.rec.value) && (it.ours == null || (minimise ? it.rec.value < it.ours : it.rec.value > it.ours))) it.ours = it.rec.value;
+      const mine = records.filter((r) => r.instance === it.key && isNum(r.value));
+      it.rec = mine.find((r) => r.value === it.ours);
+      it.cert = mine.filter((r) => it.ours == null || (minimise ? r.value < it.ours : r.value > it.ours))
+        .sort((a, b) => (minimise ? a.value - b.value : b.value - a.value))[0];
       it.text = it.ours != null ? fmtScore(it.ours) : '–';
       longest = Math.max(longest, it.text.length);
       it.known = num(bk[it.key]) != null ? num(bk[it.key]) : it.rec ? num(it.rec.best_known) : null;
@@ -1028,6 +1034,10 @@ body.snap #idea-form, body.snap #run-select { display: none; }
         if (sc.budget) tipLines.push('budget ' + str(sc.budget));
         if (rec) tipLines.push(rec.verified === true ? 'Record verified by the exact evaluator' : rec.verified === false ? 'Record not verified yet' : 'Record');
         if (rec && rec.certificate) tipLines.push(str(rec.certificate));
+        if (it.cert) {
+          nCert++;
+          tipLines.push('A separate certificate reaches ' + fmtScore(it.cert.value) + (it.cert.source ? ' (' + str(it.cert.source) + ')' : '') + '. This champion did not produce it: see the records strip');
+        }
         const canShow = !!V.sols[it.key];
         if (canShow) tipLines.push('Click to show this solution');
         const tile = h('div', {
@@ -1040,7 +1050,8 @@ body.snap #idea-form, body.snap #run-select { display: none; }
           h('div', { class: 't-val', style: { fontSize }, text: it.text }),
           h('div', { class: 't-bk', text: known != null ? 'vs ' + fmtScore(known) : ' ' }),
           h('div', { class: 't-delta' }, glyph ? h('span', { class: 'g ' + gcls, text: glyph }) : null, dtext),
-          h('div', { class: 't-cap', text: cap }));
+          h('div', { class: 't-cap', text: cap }),
+          it.cert ? h('div', { class: 't-cert', text: '★ ' + (tileW < 70 ? '' : 'search: ') + fmtScore(it.cert.value) }) : null);
         tiles.appendChild(tile);
       }
       wrap.appendChild(h('div', { class: 'tgroup', style: { flex: grp.items.length + ' 1 0' } },
@@ -1052,7 +1063,9 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     if (nRec) parts.push(plural(nRec, 'new record'));
     if (nEq) parts.push(nEq + ' matched');
     if (nBehind) parts.push(nBehind + ' behind');
-    note.textContent = parts.length ? parts.join(' · ') : 'our best vs best published';
+    note.textContent = nCert ? 'own scores · ★ = separate search' : parts.length ? parts.join(' · ') : 'the champion’s best vs best published';
+    note.setAttribute('data-tip', 'Each tile is what the champion itself scored' + (parts.length ? ': ' + parts.join(', ') : '')
+      + (nCert ? '\n★ under a tile: a certificate from a separate record search goes further on ' + plural(nCert, 'instance') + '. The champion did not produce those; they are listed in the records strip' : ''));
   }
 
   // ------------------------------------------------------------ solution viewer
@@ -1462,17 +1475,25 @@ body.snap #idea-form, body.snap #run-select { display: none; }
   function renderWaterfall() {
     const st = S.state || {}, body = clear($('wf-body')), cap = clear($('wf-cap'));
     const dcm = obj(st.decomposition), seed = num(dcm.seed), order = ['tuning', 'ideas', 'compute'];
-    const steps = order.filter((k) => isNum(dcm[k])).map((k) => ({ key: k, v: dcm[k] }));
+    let steps = order.filter((k) => isNum(dcm[k])).map((k) => ({ key: k, v: dcm[k] }));
     for (const k of Object.keys(dcm)) if (!order.includes(k) && k !== 'seed' && k !== 'unit' && k !== 'total' && isNum(dcm[k])) steps.push({ key: k, v: dcm[k] });
+    // Until the end-of-run decomposition the engine books the whole difference from the seed under `ideas`
+    // with tuning at 0. That is a placeholder, not a measurement, so the two are drawn as one unsplit step.
+    const provisional = dcm.provisional === true, UNSPLIT = 'tuning + ideas';
+    if (provisional) {
+      const both = steps.filter((sp) => sp.key === 'tuning' || sp.key === 'ideas');
+      if (both.length) steps = [{ key: UNSPLIT, v: both.reduce((a, sp) => a + sp.v, 0) }].concat(steps.filter((sp) => !both.includes(sp)));
+    }
     if (seed == null && !steps.length) { body.appendChild(empty('The split into seed, tuning, ideas and compute appears once it has been measured.')); return; }
     let cum = 0;
     const levels = [0];
     for (const sp of steps) { sp.from = cum; cum += sp.v; sp.to = cum; levels.push(cum); }
     const gain = cum, ideas = steps.find((x) => x.key === 'ideas');
-    if (ideas && gain > 0 && ideas.v > 0) cap.appendChild(h('div', null, 'Ideas gave ', h('b', { text: Math.round((ideas.v / gain) * 100) + '%' }), ' of the ', h('b', { text: trimSigned(gain) }), ' gain over the seed'));
+    if (provisional && !steps.every((sp) => Math.abs(sp.v) < 1e-12)) cap.appendChild(h('div', null, 'Champion against the seed solver: ', h('b', { text: trimSigned(gain) }), ', not yet split into tuning and ideas'));
+    else if (ideas && gain > 0 && ideas.v > 0) cap.appendChild(h('div', null, 'Ideas gave ', h('b', { text: Math.round((ideas.v / gain) * 100) + '%' }), ' of the ', h('b', { text: trimSigned(gain) }), ' gain over the seed'));
     else if (steps.every((sp) => Math.abs(sp.v) < 1e-12)) cap.appendChild(h('div', { text: 'No gain over the seed solver measured yet' }));
     else cap.appendChild(h('div', null, gain < 0 ? 'Change against the seed solver: ' : 'Gain over the seed solver: ', h('b', { text: trimSigned(gain) })));
-    const unitBits = [str(dcm.unit), dcm.provisional === true ? 'provisional' : ''].filter(Boolean);
+    const unitBits = [str(dcm.unit), provisional ? 'provisional: the split is measured when the run ends' : ''].filter(Boolean);
     if (unitBits.length) cap.appendChild(h('div', { text: unitBits.join(' · ') }));
     const W = body.clientWidth, H = body.clientHeight;
     if (W < 60 || H < 60) return;
@@ -1499,7 +1520,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
         ? `M${x},${y1 + hh}V${y1 + r}Q${x},${y1} ${x + r},${y1}H${x + bw - r}Q${x + bw},${y1} ${x + bw},${y1 + r}V${y1 + hh}Z`
         : `M${x},${y1}V${y1 + hh - r}Q${x},${y1 + hh} ${x + r},${y1 + hh}H${x + bw - r}Q${x + bw},${y1 + hh} ${x + bw},${y1 + hh - r}V${y1}Z`;
       const main = sp.key === 'ideas', label = trimSigned(sp.v);
-      let tipText = name(sp.key) + ': ' + label + (gain > 0 ? '\n' + Math.round((sp.v / gain) * 100) + '% of the gain' : '');
+      let tipText = name(sp.key) + ': ' + label + (sp.key === UNSPLIT ? '\nNot separated yet: the engine measures tuning and ideas apart when the run ends' : gain > 0 ? '\n' + Math.round((sp.v / gain) * 100) + '% of the gain' : '');
       if (sp.key === 'tuning') {
         const consts = S.genes.filter((c) => !c.isIdea && c.value != null);
         if (consts.length) tipText += '\nTuned constants: ' + consts.map((c) => c.name + ' = ' + str(c.value)).join(', ');
