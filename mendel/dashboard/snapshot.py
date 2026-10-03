@@ -2,6 +2,7 @@
 
     uv run python -m mendel.dashboard.snapshot --run ID --out FILE.html
     uv run python -m mendel.dashboard.snapshot --mock --out demo.html
+    uv run python -m mendel.dashboard.snapshot --mock --run viewer-shapes --out shapes.html
 
 The file is the live dashboard page (index.html) with the run's state embedded, so it opens
 straight from disk or from any static host: no server, no network. The knock-out buttons and
@@ -20,7 +21,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from .server import INDEX_HTML, MOCK_RUN, MOCK_STATE, read_ideas
+from .server import INDEX_HTML, MOCK_RUN, MOCK_RUNS, read_ideas
 
 MARKER = "<!--MENDEL_SNAPSHOT-->"
 
@@ -123,12 +124,15 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         if args.mock:
-            state = _read_json(MOCK_STATE)
+            run_id = args.run or MOCK_RUN                 # --mock alone is the demo; --run picks another mock run
+            if run_id not in MOCK_RUNS:
+                raise ValueError(f"no mock run called {run_id}; there are: {', '.join(MOCK_RUNS)}")
+            state = _read_json(MOCK_RUNS[run_id])
             if not isinstance(state, dict):
-                raise FileNotFoundError("mock_state.json is missing or invalid")
+                raise FileNotFoundError(f"{MOCK_RUNS[run_id].name} is missing or invalid")
             out = Path(args.out)
             out.parent.mkdir(parents=True, exist_ok=True)
-            out.write_text(render(state, run_id=MOCK_RUN), encoding="utf-8")
+            out.write_text(render(state, run_id=run_id), encoding="utf-8")
         elif args.run:
             out = snapshot(Path(args.runs) / args.run, args.out)
         else:

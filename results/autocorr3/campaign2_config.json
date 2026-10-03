@@ -1,0 +1,1 @@
+{"multistart_coarse": true, "multistart_count": 32, "multistart_fraction": 0.75, "coarse_n": 128, "coarse_fraction": 0.5, "beta0": 5.0, "init_noise": 1.0}

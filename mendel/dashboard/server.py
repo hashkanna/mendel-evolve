@@ -39,6 +39,9 @@ HERE = Path(__file__).resolve().parent
 INDEX_HTML = HERE / "index.html"
 MOCK_STATE = HERE / "mock_state.json"
 MOCK_RUN = "demo"
+# Runs served from files next to this module in --mock mode: the demo run, and a small fixture
+# with one instance per kind of solution the viewer can draw.
+MOCK_RUNS = {MOCK_RUN: MOCK_STATE, "viewer-shapes": HERE / "viewer_fixture.json"}
 
 SAFE_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.\-]{0,127}$")
 MAX_BODY = 64 * 1024
@@ -113,7 +116,7 @@ class Dashboard:
         self._jobs: dict[str, dict] = {}      # run id -> the knockout process we started
         self._mock_live: dict = {}            # mock mode: the faked live.json
         self._mock_busy = False
-        self._mock_ideas: list[dict] = []
+        self._mock_ideas: dict[str, list[dict]] = {}
 
     # ------------------------------------------------------------------ runs
 
@@ -144,14 +147,14 @@ class Dashboard:
     def run_ids(self) -> list[str]:
         ids = list(self._scan())
         if self.mock:
-            ids = [MOCK_RUN] + [run_id for run_id in ids if run_id != MOCK_RUN]
+            ids = list(MOCK_RUNS) + [run_id for run_id in ids if run_id not in MOCK_RUNS]
         return ids
 
     def _run_dir(self, run_id) -> Path | None:
-        """The directory of an existing run; None for the mock run. Raises ApiError otherwise."""
+        """The directory of an existing run; None for a mock run. Raises ApiError otherwise."""
         if not isinstance(run_id, str) or not SAFE_NAME.match(run_id):
             raise ApiError(400, "missing or malformed run id")
-        if self.mock and run_id == MOCK_RUN:
+        if self.mock and run_id in MOCK_RUNS:
             return None
         path = self._scan().get(run_id)
         if path is None:
@@ -163,27 +166,30 @@ class Dashboard:
     def state_bytes(self, run_id) -> bytes:
         run_dir = self._run_dir(run_id)
         if run_dir is None:
-            return json.dumps(self._mock_state()).encode("utf-8")
+            return json.dumps(self._mock_state(run_id)).encode("utf-8")
         try:
             return (run_dir / "state.json").read_bytes()
         except OSError:
             raise ApiError(404, "state.json is not readable") from None
 
-    def _mock_state(self) -> dict:
+    def _mock_state(self, run_id: str = MOCK_RUN) -> dict:
+        """The state of a mock run. `run_id` is always one of the MOCK_RUNS keys."""
+        path = MOCK_RUNS[run_id]
         try:
-            state = json.loads(MOCK_STATE.read_text(encoding="utf-8"))
+            state = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
-            raise ApiError(500, "mock_state.json is missing or invalid") from None
+            raise ApiError(500, f"{path.name} is missing or invalid") from None
         run = state.get("run") if isinstance(state, dict) else None
         if isinstance(run, dict):
-            run["id"] = MOCK_RUN
-            run["updated"] = _now_iso()   # the demo run looks alive
+            run["id"] = run_id
+            if run.get("status") == "running":
+                run["updated"] = _now_iso()   # the demo run looks alive
         return state
 
-    def _genes(self, run_dir: Path | None) -> dict[str, dict]:
+    def _genes(self, run_id: str, run_dir: Path | None) -> dict[str, dict]:
         """Gene name -> gene record, read from the run's state."""
         try:
-            state = self._mock_state() if run_dir is None else json.loads(
+            state = self._mock_state(run_id) if run_dir is None else json.loads(
                 (run_dir / "state.json").read_text(encoding="utf-8"))
         except (OSError, ValueError):
             raise ApiError(503, "state.json is not readable yet") from None
@@ -200,7 +206,8 @@ class Dashboard:
         run_dir = self._run_dir(run_id)
         if run_dir is None:
             with self._lock:
-                return json.loads(json.dumps(self._mock_live))
+                mine = self._mock_live.get("run") == run_id
+                return json.loads(json.dumps(self._mock_live)) if mine else {}
 
         data: dict = {}
         mtime = None
@@ -253,12 +260,12 @@ class Dashboard:
         run_dir = self._run_dir(run_id)
         if not isinstance(gene, str) or not SAFE_NAME.match(gene):
             raise ApiError(400, "missing or malformed gene name")
-        genes = self._genes(run_dir)
+        genes = self._genes(run_id, run_dir)
         if gene not in genes:
             raise ApiError(404, f"unknown gene: {gene}")
 
         if run_dir is None:
-            return self._start_mock_knockout(gene, genes[gene])
+            return self._start_mock_knockout(run_id, gene, genes[gene])
 
         with self._lock:
             job = self._jobs.get(run_id)
@@ -292,24 +299,24 @@ class Dashboard:
                                   "t": _now_iso(), "log": log_path}
         return {"ok": True, "run": run_id, "gene": gene, "status": "running"}
 
-    def _start_mock_knockout(self, gene: str, record: dict) -> dict:
+    def _start_mock_knockout(self, run_id: str, gene: str, record: dict) -> dict:
         with self._lock:
             if self._mock_busy:
                 raise ApiError(409, f"a knockout of {self._mock_live.get('gene')} is still running")
             self._mock_busy = True
-            self._mock_live = {"run": MOCK_RUN, "gene": gene, "status": "running", "was_on": True,
+            self._mock_live = {"run": run_id, "gene": gene, "status": "running", "was_on": True,
                                "effect": 0.0, "ci": [0.0, 0.0], "runs": 0, "pairs": [],
                                "started": _now_iso(), "t": _now_iso()}
-        threading.Thread(target=self._mock_knockout, args=(gene, record), daemon=True).start()
-        return {"ok": True, "run": MOCK_RUN, "gene": gene, "status": "running"}
+        threading.Thread(target=self._mock_knockout, args=(run_id, gene, record), daemon=True).start()
+        return {"ok": True, "run": run_id, "gene": gene, "status": "running"}
 
-    def _mock_knockout(self, gene: str, record: dict) -> None:
+    def _mock_knockout(self, run_id: str, gene: str, record: dict) -> None:
         """Fake a quick knockout in the shape `mendel knockout` writes to live.json.
 
         One seed at a time, every training instance, scattered around the gene's known effect.
         """
         try:
-            state = self._mock_state()
+            state = self._mock_state(run_id)
             train = (state.get("instances") or {}).get("train") or []
             keys = [k for k in train if isinstance(k, str)] or ["train"]
             scores = (state.get("champion") or {}).get("scores") or {}
@@ -338,7 +345,7 @@ class Dashboard:
                 diffs = [p["diff"] for p in pairs]
                 with self._lock:
                     self._mock_live = {
-                        "run": MOCK_RUN, "gene": gene,
+                        "run": run_id, "gene": gene,
                         "status": "running" if i + 1 < n_seeds else "done", "was_on": True,
                         "effect": round(sum(diffs) / len(diffs), 4),
                         "ci": _bootstrap_ci(diffs, rng),
@@ -348,7 +355,7 @@ class Dashboard:
                     }
         except Exception as exc:  # never leave the page waiting on a dead thread
             with self._lock:
-                self._mock_live = {"gene": gene, "status": "error", "t": _now_iso(),
+                self._mock_live = {"run": run_id, "gene": gene, "status": "error", "t": _now_iso(),
                                    "error": f"mock knockout failed: {exc}"}
         finally:
             with self._lock:
@@ -368,9 +375,10 @@ class Dashboard:
         with self._lock:
             if run_dir is None:
                 # Mock run: keep it in memory, and on disk too so demo ideas are not lost.
-                self._mock_ideas.append(record)
+                # (run_id is one of the fixed MOCK_RUNS names here, never free text.)
+                self._mock_ideas.setdefault(run_id, []).append(record)
                 try:
-                    target = self.runs_dir / MOCK_RUN
+                    target = self.runs_dir / run_id
                     target.mkdir(parents=True, exist_ok=True)
                     with open(target / "ideas.jsonl", "a", encoding="utf-8") as fh:
                         fh.write(line)
@@ -388,7 +396,7 @@ class Dashboard:
         run_dir = self._run_dir(run_id)
         if run_dir is None:
             with self._lock:
-                return list(self._mock_ideas[-MAX_IDEAS_RETURNED:])
+                return list(self._mock_ideas.get(run_id, [])[-MAX_IDEAS_RETURNED:])
         return read_ideas(run_dir / "ideas.jsonl")
 
 

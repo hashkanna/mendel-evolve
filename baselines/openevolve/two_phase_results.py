@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Re-score the two-phase OpenEvolve runs with Mendel's strict evaluator and summarise them.
 
+    uv run python baselines/openevolve/rescue_timeouts.py        # optional, see "Rescued" below
     uv run python baselines/openevolve/two_phase_results.py
     uv run python baselines/openevolve/two_phase_results.py --group baselines/openevolve/runs/two_phase_haiku \
         --out baselines/openevolve/results/two_phase_haiku.csv
@@ -9,7 +10,7 @@ For every seed under the group directory, and for both phases, this takes OpenEv
 at each checkpoint (checkpoint interval 1, so after every iteration), runs it once in OpenEvolve's
 own virtual environment and scores the packing it returns. No API calls are made.
 
-One CSV row per (seed, phase, checkpoint), in the order the money was spent:
+<out>.csv: one row per (seed, phase, checkpoint), in the order the money was spent:
 
     seed, phase, iteration            which run and checkpoint (iteration 0 of phase 1 is the initial program)
     cumulative_requests               billed requests so far, phase 1 and phase 2 together
@@ -19,16 +20,26 @@ One CSV row per (seed, phase, checkpoint), in the order the money was spent:
                                       (radii shrunk, never enlarged) and scored by the strict
                                       evaluator; empty if the program failed when re-run
     best_so_far_repaired_score        running maximum of repaired_strict_score within the seed
-    cumulative_tokens, raw_strict_score, raw_strict_valid, rerun_sum_radii, program_sha256, program_wall_s
+    cumulative_tokens, raw_strict_score, raw_strict_valid, rerun_sum_radii, program_sha256,
+    program_wall_s, program_cpu_s, evaluator_timeout_s
 
 `raw_strict_score` is the strict evaluator's verdict on the packing exactly as the program returned
-it; it is 0 for nearly every program, because circles that touch in floating point overlap by
-rounding error. `rerun_sum_radii` is the plain sum of the radii of the re-run, to compare with
-`openevolve_score`: they differ when a program is not deterministic.
+it. `rerun_sum_radii` is the plain sum of the radii of the re-run, to compare with
+`openevolve_score`: they differ when a program is not deterministic. `evaluator_timeout_s` is
+OpenEvolve's evaluation limit (wall seconds) in force when the checkpoint was written.
 
 "Best so far" ranges over the programs that were OpenEvolve's best at some checkpoint, i.e. the
-programs a user of OpenEvolve would have taken away. It also writes <out stem>_summary.json and
-prints the summary table.
+programs a user of OpenEvolve would have taken away.
+
+Rescued. If rescue_timeouts.py has been run, <out stem>_rescued_timeouts.csv lists every program
+OpenEvolve discarded because its evaluation timed out, with the strict score (after repair) of its
+offline re-run under a CPU-time limit, the CPU seconds it needed, the best score OpenEvolve had at
+that moment, and whether the program would have been a new best. The summary then gives each seed's
+best score twice: as run, and with the timed-out programs counted (all of them, and only those that
+needed no more CPU seconds than OpenEvolve's original wall-time limit, which are the ones the
+machine load actually cost).
+
+<out stem>_summary.json has all of this per seed and over seeds; the table is also printed.
 """
 
 from __future__ import annotations
@@ -38,6 +49,7 @@ import csv
 import hashlib
 import json
 import math
+import re
 import statistics
 import sys
 import time
@@ -51,6 +63,29 @@ from rescore import load_module, run_program
 N = 26
 THRESHOLDS = (2.0, 2.5, 2.6, 2.63)
 BEST_KNOWN = 2.635983084919
+
+
+def epoch(stamp: str) -> float:
+    return time.mktime(time.strptime(stamp, "%Y-%m-%dT%H:%M:%S"))
+
+
+def timeout_schedule(run: Path, manifest: dict, phase: str) -> list[tuple[float, float]]:
+    """[(time from which it applies, OpenEvolve's evaluator.timeout in seconds)] for one phase, in order."""
+    changes = [c for c in manifest.get("changes_during_run", [])
+               if c.get("phase") == phase and c.get("setting") == "evaluator.timeout"]
+    if changes:
+        return [(0.0, float(changes[0]["before"]))] + [(epoch(c["applied"]), float(c["after"])) for c in changes]
+    config = run / phase / "config.yaml"
+    found = re.search(r"^evaluator:.*?^\s+timeout:\s*([\d.]+)", config.read_text(), re.S | re.M) if config.exists() else None
+    return [(0.0, float(found.group(1)) if found else 300.0)]
+
+
+def timeout_at(schedule: list[tuple[float, float]], when: float | None) -> float:
+    value = schedule[0][1]
+    for start, seconds in schedule:
+        if when is not None and when >= start:
+            value = seconds
+    return value
 
 
 def checkpoint_rows(seed: int, phase: str, output_dir: Path, before: dict) -> list[dict]:
@@ -70,7 +105,8 @@ def checkpoint_rows(seed: int, phase: str, output_dir: Path, before: dict) -> li
         if spent is None:
             continue
         rows.append({"seed": seed, "phase": phase, "iteration": iteration, "usage": add_usage(before, spent),
-                     "program": program, "openevolve_score": info.get("metrics", {}).get("sum_radii")})
+                     "program": program, "openevolve_score": info.get("metrics", {}).get("sum_radii"),
+                     "saved_at": info.get("saved_at")})
     rows.sort(key=lambda r: (r["usage"]["requests"], r["iteration"]))
     return rows
 
@@ -87,7 +123,7 @@ def score(entry: dict, evaluator) -> dict:
 
     packing = entry["packing"]
     result = {"raw_strict_score": 0.0, "raw_strict_valid": False, "repaired": None, "rerun_sum": None,
-              "error": entry["error"], "wall": entry["wall"]}
+              "error": entry["error"], "wall": entry.get("wall"), "cpu": entry.get("cpu")}
     if packing is None:
         return result
     verdict = evaluator.evaluate({"n": N}, packing)
@@ -108,6 +144,16 @@ def score(entry: dict, evaluator) -> dict:
     return result
 
 
+def first_passed(events: list[tuple[float, int, str, int, float]]) -> dict:
+    """events: (dollars, requests, phase, iteration, best so far), in spend order -> where each level was first passed."""
+    passed = {}
+    for threshold in THRESHOLDS:
+        hit = next((e for e in events if e[4] >= threshold), None)
+        passed[str(threshold)] = None if hit is None else {"dollars": hit[0], "requests": hit[1], "phase": hit[2],
+                                                           "iteration": hit[3]}
+    return passed
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Strict re-scoring and summary of the two-phase OpenEvolve runs.")
     parser.add_argument("--group", default=str(HERE / "runs" / "two_phase_haiku"))
@@ -124,21 +170,20 @@ def main(argv: list[str] | None = None) -> int:
     for run in sorted(p for p in group.iterdir() if p.is_dir() and p.name.startswith("seed")):
         seed = int(run.name.removeprefix("seed"))
         manifest = json.loads((run / "manifest.json").read_text()) if (run / "manifest.json").exists() else {}
-        seeds[seed] = {"manifest": manifest, "phase_usage": {}, "phase_iterations": {}}
+        seeds[seed] = {"manifest": manifest, "phase_usage": {}, "phase_iterations": {}, "schedule": {}, "lost": 0}
         rows.append({"seed": seed, "phase": "phase1", "iteration": 0, "usage": ZERO,
-                     "program": EXAMPLE / "initial_program.py", "openevolve_score": None})
+                     "program": EXAMPLE / "initial_program.py", "openevolve_score": None, "saved_at": None})
         before = ZERO
         for phase in ("phase1", "phase2"):
             output_dir = run / phase / "openevolve_output"
             if not output_dir.exists():
                 continue
-            phase_rows = checkpoint_rows(seed, phase, output_dir, before)
-            rows += phase_rows
+            seeds[seed]["schedule"][phase] = timeout_schedule(run, manifest, phase)
+            rows += checkpoint_rows(seed, phase, output_dir, before)
             usage = parse_usage(output_dir)
             before = add_usage(before, usage["total"])
             seeds[seed]["phase_usage"][phase] = usage["total"]
             seeds[seed]["phase_iterations"][phase] = usage["iterations_logged"]
-            seeds[seed].setdefault("lost", 0)
             seeds[seed]["lost"] += len(usage["llm_failures"])
         seeds[seed]["total"] = before
     if not rows:
@@ -164,7 +209,7 @@ def main(argv: list[str] | None = None) -> int:
     with ThreadPoolExecutor(max(1, args.workers)) as pool:
         for done, (sha, entry) in enumerate(pool.map(work, todo.items()), 1):
             cache[sha] = entry
-            if done % 10 == 0 or done == len(todo):
+            if done % 5 == 0 or done == len(todo):
                 cache_path.write_text(json.dumps(cache) + "\n")
                 print(f"  re-ran {done}/{len(todo)} programs ({time.time() - started:.0f}s)", flush=True)
     scores = {sha: score(cache[sha], evaluator) for sha in {r["sha"] for r in rows}}
@@ -175,7 +220,8 @@ def main(argv: list[str] | None = None) -> int:
     best: dict[int, float] = {}
     fields = ["seed", "phase", "iteration", "cumulative_requests", "cumulative_dollars", "openevolve_score",
               "repaired_strict_score", "best_so_far_repaired_score", "cumulative_tokens", "raw_strict_score",
-              "raw_strict_valid", "rerun_sum_radii", "program_sha256", "program_wall_s"]
+              "raw_strict_valid", "rerun_sum_radii", "program_sha256", "program_wall_s", "program_cpu_s",
+              "evaluator_timeout_s"]
     table = []
     for row in rows:
         result = scores[row["sha"]]
@@ -183,6 +229,7 @@ def main(argv: list[str] | None = None) -> int:
         if repaired is not None:
             best[row["seed"]] = max(best.get(row["seed"], -math.inf), repaired)
         openevolve_score = row["openevolve_score"] if row["openevolve_score"] is not None else result["rerun_sum"]
+        schedule = seeds[row["seed"]]["schedule"].get(row["phase"], [(0.0, 0.0)])
         table.append({
             "seed": row["seed"], "phase": row["phase"].removeprefix("phase"), "iteration": row["iteration"],
             "cumulative_requests": row["usage"]["requests"], "cumulative_dollars": f"{row['usage']['usd']:.6f}",
@@ -192,12 +239,54 @@ def main(argv: list[str] | None = None) -> int:
             "cumulative_tokens": row["usage"]["tokens"], "raw_strict_score": repr(result["raw_strict_score"]),
             "raw_strict_valid": result["raw_strict_valid"],
             "rerun_sum_radii": "" if result["rerun_sum"] is None else repr(result["rerun_sum"]),
-            "program_sha256": row["sha"][:16], "program_wall_s": result["wall"],
+            "program_sha256": row["sha"][:16], "program_wall_s": result["wall"], "program_cpu_s": result["cpu"],
+            "evaluator_timeout_s": f"{timeout_at(schedule, row['saved_at']):g}",
+            "_saved_at": row["saved_at"],
         })
     with out.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fields)
+        writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(table)
+
+    # Programs that timed out, re-run offline by rescue_timeouts.py.
+    rescue_path = group / "rescue_cache.json"
+    rescue = json.loads(rescue_path.read_text()) if rescue_path.exists() else {}
+    rescued = []
+    for entry in sorted(rescue.values(), key=lambda e: (e["seed"], e["phase"], e["timestamp"] or 0)):
+        seed, phase = entry["seed"], entry["phase"].removeprefix("phase")
+        if seed not in seeds:
+            continue
+        mine = [r for r in table if r["seed"] == seed and r["best_so_far_repaired_score"] != ""]
+        when = entry["timestamp"]
+        earlier = [r for r in mine if r["_saved_at"] is None or (when is not None and r["_saved_at"] < when)]
+        own = next((r for r in mine if r["phase"] == phase and r["_saved_at"] is not None and when is not None
+                    and r["_saved_at"] >= when), earlier[-1] if earlier else mine[0])
+        best_before = max((float(r["best_so_far_repaired_score"]) for r in earlier), default=-math.inf)
+        result = score({"packing": entry["packing"], "error": entry["error"], "wall": entry["wall_s"],
+                        "cpu": entry["cpu_s"]}, evaluator)
+        schedule = seeds[seed]["schedule"][entry["phase"]]
+        original_limit = schedule[0][1]
+        value = result["repaired"]
+        rescued.append({
+            "seed": seed, "phase": phase, "iteration": entry["iteration"],
+            "evaluator_timeout_s": f"{timeout_at(schedule, when):g}",
+            "cumulative_requests": own["cumulative_requests"], "cumulative_dollars": own["cumulative_dollars"],
+            "finished_offline": entry["packing"] is not None, "cpu_s": entry["cpu_s"], "wall_s": entry["wall_s"],
+            "cpu_limit_s": entry["cpu_limit"],
+            "within_original_limit_cpu": entry["packing"] is not None and entry["cpu_s"] <= original_limit,
+            "rerun_sum_radii": "" if result["rerun_sum"] is None else repr(result["rerun_sum"]),
+            "repaired_strict_score": "" if value is None else repr(value),
+            "as_run_best_at_the_time": repr(best_before),
+            "new_best_at_the_time": value is not None and value > best_before,
+            "above_final_as_run_best": value is not None and value > best.get(seed, math.inf),
+            "program_id": entry["id"], "code_file": entry["code_file"], "error": entry["error"],
+        })
+    rescued_path = out.with_name(out.stem + "_rescued_timeouts.csv")
+    if rescued:
+        with rescued_path.open("w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=list(rescued[0].keys()))
+            writer.writeheader()
+            writer.writerows(rescued)
 
     # The summary.
     summary = {"group": str(group), "csv": str(out), "best_known": BEST_KNOWN, "seeds": {}}
@@ -213,38 +302,64 @@ def main(argv: list[str] | None = None) -> int:
             values = [float(r["openevolve_score"]) for r in mine if r["phase"] == phase and r["openevolve_score"] != ""]
             return max(values) if values else None
 
-        passed = {}
-        for threshold in THRESHOLDS:
-            hit = next((r for r in mine if r["best_so_far_repaired_score"] != ""
-                        and float(r["best_so_far_repaired_score"]) >= threshold), None)
-            passed[str(threshold)] = None if hit is None else {"dollars": float(hit["cumulative_dollars"]),
-                                                               "requests": hit["cumulative_requests"],
-                                                               "phase": hit["phase"], "iteration": hit["iteration"]}
+        as_run_events = [(float(r["cumulative_dollars"]), r["cumulative_requests"], r["phase"], r["iteration"],
+                          float(r["best_so_far_repaired_score"])) for r in mine if r["best_so_far_repaired_score"] != ""]
         manifest = info["manifest"]
         phases = manifest.get("phases", {})
-        summary["seeds"][str(seed)] = {
+        entry = {
             "best_repaired_after_phase1": best_after("1"),
             "best_repaired_after_phase2": best_after("2") if "phase2" in info["phase_usage"] else None,
             "openevolve_best_phase1": openevolve_after("1"), "openevolve_best_phase2": openevolve_after("2"),
             "requests": info["total"]["requests"], "dollars": info["total"]["usd"], "tokens": info["total"]["tokens"],
             "requests_by_phase": {k: v["requests"] for k, v in info["phase_usage"].items()},
             "dollars_by_phase": {k: v["usd"] for k, v in info["phase_usage"].items()},
-            "iterations_by_phase": info["phase_iterations"], "iterations_lost_to_api_errors": info.get("lost", 0),
+            "iterations_by_phase": info["phase_iterations"], "iterations_lost_to_api_errors": info["lost"],
             "wall_seconds": manifest.get("wall_seconds"),
             "wall_seconds_by_phase": {k: v.get("wall_seconds") for k, v in phases.items()},
-            "stopped": manifest.get("stopped"), "first_passed": passed,
+            "stopped": manifest.get("stopped"), "changes_during_run": manifest.get("changes_during_run", []),
+            "first_passed": first_passed(as_run_events),
         }
+        if rescue:
+            timed = [r for r in rescued if r["seed"] == seed]
+            done = [r for r in timed if r["repaired_strict_score"] != ""]
+            fair = [r for r in done if r["within_original_limit_cpu"]]
+            final = entry["best_repaired_after_phase2"] or entry["best_repaired_after_phase1"]
+            limits = sorted({r["evaluator_timeout_s"] for r in timed}, key=float)
+            entry["timed_out_programs"] = {
+                "count": len(timed), "by_limit_in_force_s": {k: sum(1 for r in timed if r["evaluator_timeout_s"] == k) for k in limits},
+                "finished_offline": len(done), "finished_within_original_limit_cpu": len(fair),
+                "new_best_at_the_time": sum(1 for r in done if r["new_best_at_the_time"]),
+                "new_best_at_the_time_within_original_limit_cpu": sum(1 for r in fair if r["new_best_at_the_time"]),
+                "above_final_as_run_best": sum(1 for r in done if r["above_final_as_run_best"]),
+                "best_rescued_score": max((float(r["repaired_strict_score"]) for r in done), default=None),
+                "best_rescued_score_within_original_limit_cpu": max((float(r["repaired_strict_score"]) for r in fair), default=None),
+            }
+            for name, pool in (("with_rescued", done), ("with_rescued_within_original_limit_cpu", fair)):
+                top = max((float(r["repaired_strict_score"]) for r in pool), default=None)
+                entry[f"best_repaired_after_phase2_{name}"] = final if top is None else max(final, top)
+                # the best-so-far curve had these programs counted when they were evaluated
+                events = sorted(as_run_events + [(float(r["cumulative_dollars"]), r["cumulative_requests"], r["phase"],
+                                                  r["iteration"], float(r["repaired_strict_score"])) for r in pool])
+                running, merged = -math.inf, []
+                for e in events:
+                    running = max(running, e[4])
+                    merged.append((e[0], e[1], e[2], e[3], running))
+                entry[f"first_passed_{name}"] = first_passed(merged)
+        summary["seeds"][str(seed)] = entry
 
     def spread(key: str):
-        values = [s[key] for s in summary["seeds"].values() if s[key] is not None]
+        values = [s.get(key) for s in summary["seeds"].values() if s.get(key) is not None]
         if not values:
             return None
         return {"n": len(values), "mean": statistics.fmean(values), "min": min(values), "max": max(values),
                 "sd": statistics.stdev(values) if len(values) > 1 else 0.0}
 
-    summary["over_seeds"] = {key: spread(key) for key in ("best_repaired_after_phase1", "best_repaired_after_phase2",
-                                                         "requests", "dollars", "wall_seconds")}
+    keys = ["best_repaired_after_phase1", "best_repaired_after_phase2", "best_repaired_after_phase2_with_rescued",
+            "best_repaired_after_phase2_with_rescued_within_original_limit_cpu", "requests", "dollars", "wall_seconds"]
+    summary["over_seeds"] = {key: spread(key) for key in keys if spread(key) is not None}
     summary["total_dollars"] = round(sum(s["dollars"] for s in summary["seeds"].values()), 6)
+    if rescued:
+        summary["rescued_timeouts_csv"] = str(rescued_path)
     summary_path = out.with_name(out.stem + "_summary.json")
     summary_path.write_text(json.dumps(summary, indent=1) + "\n")
 
@@ -260,9 +375,23 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{seed:>4s} {show(s['best_repaired_after_phase1']):>14s} {show(s['best_repaired_after_phase2']):>14s} "
               f"{s['requests']:>9d} {s['dollars']:>8.2f} {wall:>9s}  {marks}" + (f"   STOPPED: {s['stopped'][:60]}" if s["stopped"] else ""))
     for key in ("best_repaired_after_phase1", "best_repaired_after_phase2"):
-        sp = summary["over_seeds"][key]
+        sp = summary["over_seeds"].get(key)
         if sp:
             print(f"{key}: mean {sp['mean']:.6f}, sd {sp['sd']:.6f}, min {sp['min']:.6f}, max {sp['max']:.6f} (n={sp['n']})")
+    if rescue:
+        print(f"\ntimed-out programs re-run offline ({rescued_path.name}):")
+        print(f"{'seed':>4s} {'timed out':>9s} {'finished':>9s} {'<= limit CPU':>12s} {'new best then':>13s} {'> final best':>12s} "
+              f"{'as run':>10s} {'with rescued':>13s} {'rescued, <= limit CPU':>22s}")
+        for seed, s in summary["seeds"].items():
+            t = s["timed_out_programs"]
+            print(f"{seed:>4s} {t['count']:>9d} {t['finished_offline']:>9d} {t['finished_within_original_limit_cpu']:>12d} "
+                  f"{t['new_best_at_the_time']:>13d} {t['above_final_as_run_best']:>12d} "
+                  f"{show(s['best_repaired_after_phase2']):>10s} {show(s['best_repaired_after_phase2_with_rescued']):>13s} "
+                  f"{show(s['best_repaired_after_phase2_with_rescued_within_original_limit_cpu']):>22s}")
+        for key in ("best_repaired_after_phase2_with_rescued", "best_repaired_after_phase2_with_rescued_within_original_limit_cpu"):
+            sp = summary["over_seeds"].get(key)
+            if sp:
+                print(f"{key}: mean {sp['mean']:.6f}, sd {sp['sd']:.6f}, min {sp['min']:.6f}, max {sp['max']:.6f}")
     print(f"total: ${summary['total_dollars']:.2f}   best known {BEST_KNOWN}")
     print(f"{len(table)} rows -> {out}\nsummary -> {summary_path}")
     return 0

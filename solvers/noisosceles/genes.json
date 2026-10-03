@@ -1,0 +1,87 @@
+{
+  "genes": [
+    {
+      "name": "symmetric",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Searching over mirror orbits (x -> n-1-x, y -> n-1-y: four points at a time) quarters the search space and, because the counters fold onto one quadrant, also quarters the cost of a move. The published sets have this symmetry: all 164 points at n = 100 and 108 of 112 at n = 64. The last part of the budget drops the constraint and continues point by point.",
+      "predicted": "+4 to +10 points at n >= 64 at equal CPU time",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "greedy_victim",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Taking out the unit that sits in the most forbidden triples (exact gain, random ties) repairs the set faster than taking out a random conflicted unit, as in best-move tabu search.",
+      "predicted": "+3 to +8 points at n >= 64 at equal CPU time",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "hollow",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "The published sets keep almost every point within a few rows of the border (depth at most 11 of 32 at n = 64, at most 26 of 50 at n = 100). Excluding the middle of the grid removes candidates that sit on many bisectors and shortens every scan.",
+      "predicted": "+0 to +2 points at equal CPU time",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "tabu_tenure",
+      "kind": "int", "default": 3, "low": 0, "high": 40, "log": false,
+      "of": null,
+      "hypothesis": "A unit taken out stays out for tabu_tenure to 2 * tabu_tenure steps; long enough to stop cycling, short enough to keep good units available.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "patience",
+      "kind": "int", "default": 20000, "low": 500, "high": 5000000, "log": true,
+      "of": null,
+      "hypothesis": "Iterations without a new best before a kick; too small never finishes a level, too large wastes time in a dead basin.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "kick_fraction",
+      "kind": "float", "default": 0.15, "low": 0.02, "high": 1.0, "log": false,
+      "of": null,
+      "hypothesis": "A kick returns to the best set and removes this fraction of its units at random; 1.0 is a full restart.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "sym_fraction",
+      "kind": "float", "default": 0.8, "low": 0.2, "high": 1.0, "log": false,
+      "of": "symmetric",
+      "hypothesis": "Share of the budget spent in the symmetric phase before the point-by-point phase; the best published set at n = 64 is a symmetric set changed in four points.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "axis_shift_x",
+      "kind": "int", "default": 0, "low": -1, "high": 1, "log": false,
+      "of": "symmetric",
+      "hypothesis": "Moves the vertical mirror axis half a cell off the grid centre (x -> n-1+shift-x); the source paper says the two axes need not meet in the midpoint.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "axis_shift_y",
+      "kind": "int", "default": 0, "low": -1, "high": 1, "log": false,
+      "of": "symmetric",
+      "hypothesis": "Moves the horizontal mirror axis half a cell off the grid centre (y -> n-1+shift-y).",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "band_frac",
+      "kind": "float", "default": 0.3, "low": 0.1, "high": 0.5, "log": false,
+      "of": "hollow",
+      "hypothesis": "With hollow on, only points within band_frac * n of the border are used; 0.5 is the whole grid.",
+      "author": "seed",
+      "added_gen": 0
+    }
+  ]
+}

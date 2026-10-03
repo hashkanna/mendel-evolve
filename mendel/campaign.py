@@ -45,7 +45,8 @@ def run_campaign(*, solver_dir: Path, problem_dir: Path, config: dict, instances
         # Published values are rounded decimals, so a tie must not be announced as a record.
         if float(value).is_integer() and float(known).is_integer():
             return better(value, known)
-        margin = 1e-9 * max(1.0, abs(known))
+        # A pack may state the improvement a leaderboard requires (min_improvement in problem.toml).
+        margin = float(meta.get("min_improvement", 1e-9 * max(1.0, abs(known))))
         return value > known + margin if direction == "max" else value < known - margin
 
     jobs = [{"solver_dir": str(solver_dir), "problem_dir": str(problem_dir), "config": config,
@@ -103,12 +104,16 @@ def run_campaign(*, solver_dir: Path, problem_dir: Path, config: dict, instances
             job, res = best
             check = ev.evaluate(inst, res["solution"])  # never trust the remote verdict alone
             row["value"] = check.get("score") if check.get("valid") else None
-            row["verified"] = bool(check.get("valid")) and check.get("score") == res["score"]
+            # The local re-evaluation is the truth. A float evaluator may differ from the container's
+            # number in the last digit, so agreement is checked to a relative 1e-12, not bit for bit.
+            local, remote = check.get("score"), res["score"]
+            agree = local is not None and abs(local - remote) <= 1e-12 * max(1.0, abs(local))
+            row["verified"] = bool(check.get("valid")) and agree
             if row["verified"]:
-                score_text = repr(res["score"]).replace(".", "p")  # full precision, so names never collide
+                score_text = repr(local).replace(".", "p")  # full precision, so names never collide
                 path = certs / f"{key}_{score_text}.json"
                 path.write_text(json.dumps({
-                    "problem": meta.get("name"), "instance": inst, "score": res["score"],
+                    "problem": meta.get("name"), "instance": inst, "score": local,
                     "solution": res["solution"], "seed": job["seed"], "budget_cpu_seconds": time_s,
                     "config": config, "found": time.strftime("%Y-%m-%dT%H:%M:%S"),
                 }, indent=1) + "\n")

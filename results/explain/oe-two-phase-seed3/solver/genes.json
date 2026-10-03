@@ -1,0 +1,202 @@
+{
+  "genes": [
+    {
+      "name": "row_layout",
+      "kind": "switch",
+      "default": false,
+      "evolved": true,
+      "hypothesis": "Start from five horizontal rows (5,5,5,5,6 circles) instead of a centre circle plus two rings; the rows spread the centres evenly, whereas the outer ring is clipped onto the walls.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1,
+      "of": null
+    },
+    {
+      "name": "neighbor_radii",
+      "kind": "switch",
+      "default": false,
+      "evolved": true,
+      "hypothesis": "Set each starting radius to a fixed fraction of the distance to the nearest wall and nearest neighbour instead of scaling pairs down in turn; gives a uniform, strictly feasible start.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1,
+      "of": null
+    },
+    {
+      "name": "slsqp_optimizer",
+      "kind": "switch",
+      "default": false,
+      "evolved": true,
+      "hypothesis": "Optimise all centres and radii jointly with SLSQP under no-overlap and in-square constraints; moves the centres, which the initial program never does.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1,
+      "of": null
+    },
+    {
+      "name": "refine_shrink",
+      "kind": "switch",
+      "default": false,
+      "evolved": true,
+      "hypothesis": "Post-pass that shrinks overlapping pairs proportionally and caps radii at the wall distance (centres clipped to [0.001, 0.999]); removes the small violations a solver leaves.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1,
+      "of": null
+    },
+    {
+      "name": "refine_expand",
+      "kind": "switch",
+      "default": false,
+      "evolved": true,
+      "hypothesis": "Post-pass that grows each radius to nearly the largest value its neighbours and the walls allow; recovers slack left by margins and by the starting radii.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1,
+      "of": null
+    },
+    {
+      "name": "ring_inner_radius",
+      "kind": "float",
+      "of": null,
+      "default": 0.3,
+      "evolved": 0.3,
+      "low": 0.15,
+      "high": 0.4,
+      "hypothesis": "Radius of the inner ring of 8 centres in the initial layout; unused once row_layout is on.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "ring_outer_radius",
+      "kind": "float",
+      "of": null,
+      "default": 0.7,
+      "evolved": 0.7,
+      "low": 0.35,
+      "high": 0.8,
+      "hypothesis": "Radius of the outer ring of 16 centres in the initial layout (0.7 leaves the square and is clipped); unused once row_layout is on.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "clip_margin",
+      "kind": "float",
+      "of": null,
+      "default": 0.01,
+      "evolved": 0.01,
+      "low": 0.001,
+      "high": 0.1,
+      "log": true,
+      "hypothesis": "Starting centres are clipped to [margin, 1 - margin]; same value in both programs.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "init_radius_fraction",
+      "kind": "float",
+      "of": "neighbor_radii",
+      "default": 0.46,
+      "evolved": 0.46,
+      "low": 0.2,
+      "high": 0.5,
+      "hypothesis": "Fraction of the nearest wall / neighbour distance used as the starting radius; below 0.5 keeps the start feasible.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "slsqp_maxiter",
+      "kind": "int",
+      "of": "slsqp_optimizer",
+      "default": 300,
+      "evolved": 300,
+      "low": 20,
+      "high": 1000,
+      "hypothesis": "Iteration limit of SLSQP; more iterations let the optimiser get closer to a local optimum.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "slsqp_ftol",
+      "kind": "float",
+      "of": "slsqp_optimizer",
+      "default": 1e-09,
+      "evolved": 1e-09,
+      "low": 1e-12,
+      "high": 1e-05,
+      "log": true,
+      "hypothesis": "Convergence tolerance of SLSQP on the objective.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "slsqp_overlap_margin",
+      "kind": "float",
+      "of": "slsqp_optimizer",
+      "default": 1e-06,
+      "evolved": 1e-06,
+      "low": 1e-09,
+      "high": 0.001,
+      "log": true,
+      "hypothesis": "Gap required between every pair of circles in the SLSQP constraint; costs score, buys feasibility.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "slsqp_wall_margin",
+      "kind": "float",
+      "of": "slsqp_optimizer",
+      "default": 0.001,
+      "evolved": 0.001,
+      "low": 1e-06,
+      "high": 0.01,
+      "log": true,
+      "hypothesis": "Gap required between every circle and the walls in the SLSQP constraint; costs score, buys feasibility.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "refine_pair_shrink",
+      "kind": "float",
+      "of": "refine_shrink",
+      "default": 0.9994,
+      "evolved": 0.9994,
+      "low": 0.99,
+      "high": 1.0,
+      "hypothesis": "An overlapping pair is shrunk so its radii sum to this factor times the centre distance.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "refine_wall_shrink",
+      "kind": "float",
+      "of": "refine_shrink",
+      "default": 0.9995,
+      "evolved": 0.9995,
+      "low": 0.99,
+      "high": 1.0,
+      "hypothesis": "Radii are capped at this factor times the distance to the nearest wall.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "refine_iterations",
+      "kind": "int",
+      "of": "refine_expand",
+      "default": 6,
+      "evolved": 6,
+      "low": 1,
+      "high": 12,
+      "hypothesis": "Number of refinement sweeps (shared by refine_shrink and refine_expand); the expansion safety factor rises from 0.9996 to 0.9997 after sweep 3.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "refine_expand_factor",
+      "kind": "float",
+      "of": "refine_expand",
+      "default": 0.999,
+      "evolved": 0.999,
+      "low": 0.99,
+      "high": 1.0,
+      "hypothesis": "Extra factor on the largest allowed radius in the expansion pass (multiplied with the 0.9996/0.9997 safety factor).",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    }
+  ]
+}

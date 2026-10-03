@@ -1,0 +1,58 @@
+name = "autocorr3"
+title = "Third autocorrelation inequality, upper bound (Tao et al. problem 6.4; EinsteinArena problem 4)"
+direction = "min"
+statement = """Find a real function f supported on [-1/4, 1/4], which MAY TAKE NEGATIVE VALUES, that makes
+
+    C(f) = max_t (f*f)(t) / (integral of f)^2
+
+as small as possible, where (f*f)(t) = integral of f(t - x) f(x) dx is the autoconvolution.
+
+A solution is a list of n numbers: the heights of a step function with n equal steps on
+[-1/4, 1/4]. Only the sum of the heights must be non-zero; the scale does not matter.
+
+The score is computed exactly as the public EinsteinArena verifier computes it (float64):
+
+    dx    = 0.5 / n
+    score = abs(max(numpy.convolve(f, f) * dx)) / (sum(f) * dx)^2
+
+and the solution is invalid if (sum(f) * dx)^2 < 1e-9. Lower is better.
+
+WHICH VARIANT THIS IS. Two versions of this problem are in circulation:
+  (a) "max |f*f|":  max_t |(f*f)(t)| / (integral f)^2  - the absolute value INSIDE the maximum, so a
+      large negative excursion of f*f counts against f (the form in which the constant C3 is
+      usually stated; AlphaEvolve's published bound for it is 1.4557, from a 400-step function);
+  (b) "|max f*f|":  |max_t (f*f)(t)| / (integral f)^2  - the absolute value OUTSIDE the maximum.
+This pack is variant (b), because that is what the arena verifier computes: abs(np.max(conv)).
+Since conv[0] = f[0]^2 >= 0 the maximum is never negative, so the abs() is a no-op and the
+objective is simply max_t (f*f)(t) / (integral f)^2: negative values of f*f are NOT penalised.
+(The top arena solution has min(f*f) = -4.29 max(f*f); under variant (a) it would score about 6.2.)
+A value for (b) is not a bound for (a).
+
+For a step function f*f is piecewise linear with its knots at the discrete convolution values, so the
+score is the exact C(f) of the step function, not an approximation, and repeating every height m
+times (n -> m n) leaves it unchanged. The verifier accepts any length, so the leaderboard is one
+number for all n. An instance { n = N } here means "exactly N steps": N is the resolution the
+solver works at, and every instance is compared with the same leaderboard value."""
+
+[instances]
+train   = [{ n = 256 }, { n = 1024 }]
+heldout = [{ n = 512 }, { n = 2048 }, { n = 4096 }]
+gate    = [{ n = 128 }, { n = 256 }]
+
+# Best value on the EinsteinArena leaderboard for problem 4, read 2026-10-03T19:14:06Z (see
+# records.json): 1.4508066395052834, by "Poolish", a 16384-step function. The leaderboard does not
+# separate lengths, so it is the reference for every n. The arena only accepts a new best that
+# improves by at least minImprovement = 1e-5, i.e. a value <= 1.4507966395052834.
+[best_known]
+n128 = 1.4508066395052834
+n256 = 1.4508066395052834
+n512 = 1.4508066395052834
+n1024 = 1.4508066395052834
+n2048 = 1.4508066395052834
+n4096 = 1.4508066395052834
+n8192 = 1.4508066395052834
+n12800 = 1.4508066395052834
+n16384 = 1.4508066395052834
+n25600 = 1.4508066395052834
+n32768 = 1.4508066395052834
+n65536 = 1.4508066395052834

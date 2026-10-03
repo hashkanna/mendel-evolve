@@ -1,0 +1,50 @@
+name = "noisosceles"
+title = "No isosceles triangles in the grid (Tao et al., problem 59)"
+direction = "max"
+statement = """
+For a natural number n, let C(n) be the size of the largest subset of the grid {0, ..., n-1}^2 that contains
+no isosceles triangle, flat ones included: for all distinct a, b, c in the set, |a - b| != |b - c|.
+Equivalently, no point of the set is equidistant from two other points of the set. Find subsets that are as
+large as possible.
+
+An instance is {"n": n}. A solution is a list of [x, y] integer pairs with 0 <= x, y < n (0-based
+coordinates), all distinct. Its score is the number of points; higher is better.
+
+Squared distances are integers, so the evaluator is exact: for every point of the set, the squared distances
+to the other points must be pairwise different. A set that is "almost" valid scores nothing.
+
+Facts worth knowing:
+- A triangle with vertices in the grid is never equilateral, so a forbidden triple has exactly one apex.
+- For two chosen points q and a, the grid points they forbid are the lattice points on their perpendicular
+  bisector, on the circle around a through q, and on the circle around q through a (including the reflection
+  of each in the other).
+- The published sets have about 1.64 n to 1.75 n points; the source paper reports a belief that the optimum
+  is near 16 n / 9, and that C(2n) = 2 C(n) for many small n (28 at n = 16, 56 at n = 32, 112 at n = 64).
+- The published 164-point set for n = 100 is exactly symmetric under x -> n-1-x and under y -> n-1-y
+  (41 orbits of four points). The published 112-point set for n = 64 is symmetric under y -> n-1-y, and 108
+  of its points form full four-point orbits. Neither is symmetric under the diagonal.
+- Both sets keep most points close to the border: depth (distance to the nearest side) at most 11 at n = 64,
+  and at most 8 for 156 of the 164 points at n = 100. The middle of the grid is empty.
+- The paper says the two mirror axes need not meet exactly in the midpoint of the grid.
+- 164 at n = 100 is believed by its authors not to be optimal.
+
+Source: Georgiev, Gomez-Serrano, Tao, Wagner, "Mathematical exploration and discovery at scale",
+arXiv:2511.02864, section 6.39; https://google-deepmind.github.io/alphaevolve_repository_of_problems/problems/59.html
+The original statement uses {1, ..., n}^2; coordinates here are shifted to start at 0.
+"""
+
+[instances]
+# Ideas are selected where the published records are, and tested for generality on sizes with no published value.
+train   = [{ n = 64 }, { n = 100 }]
+heldout = [{ n = 48 }, { n = 80 }, { n = 128 }]
+# Small instances for the invariance gate, where thousands of iterations take about a second.
+gate    = [{ n = 12 }, { n = 16 }]
+
+# Best published lower bounds (see records.json for sources). n64 and n100 were re-verified with evaluate.py
+# and verify.py against the published point sets in published/. n16 and n32 are values quoted in the paper;
+# no point set for them was checked.
+[best_known]
+n16 = 28
+n32 = 56
+n64 = 112
+n100 = 164

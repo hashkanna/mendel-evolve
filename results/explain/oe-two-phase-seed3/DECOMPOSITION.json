@@ -1,0 +1,22 @@
+{
+ "summary": "The evolved program replaces the fixed centre-plus-two-rings layout and pairwise-scaled radii with a five-row starting layout whose radii are 0.46 of the nearest wall/neighbour distance, then optimises all centres and radii jointly with SLSQP under no-overlap and in-square constraints. It finishes with a refinement loop that shrinks residual overlaps and wall violations and then tries to grow each radius into the free space left.",
+ "inseparable": [
+  {"switches": ["refine_shrink", "refine_expand"], "why": "Both are phases of the same refinement loop and share its frame: the clip of the centres to [0.001, 0.999], the sweep count (refine_iterations, registered under refine_expand) and the final radius floor of 1e-5 run when either switch is on. The phases themselves are separate, but they interleave inside each sweep, so shrink+expand together is not the same as one after the other."}
+ ],
+ "not_genes": [
+  "Clock logic replaced by its value in a normal run: the 85 s timeout check after SLSQP (never fires; it would return the starting packing), the time-based sweep count min(6, max(1, int(remaining/5))) = 6 (now the allele refine_iterations), and the per-sweep timeout break in the refinement (never fires).",
+  "phi = (1 + sqrt(5)) / 2 is computed in the evolved layout but never used (the 'golden ratio' layout is a plain row layout); the `count` field of the row configs is also unused.",
+  "The initial program's layout hard-codes n = 26; the decomposed ring layout takes n from the instance and guards the indices, which is identical for n = 26.",
+  "Docstrings, comments, function names, the visualize() function and the __main__ block.",
+  "sum_radii is no longer returned; the wrapper computes the score from the repaired packing."
+ ],
+ "caveats": [
+  "From the all-on side, switching off refine_shrink alone or refine_expand alone gives exactly the evolved output: after SLSQP has converged with its margins there are no overlaps to shrink, and the expansion's safety factors (about 0.9986 of the free space) never exceed the radii SLSQP already found. The refinement only matters when the packing entering it has slack or violations (e.g. with slsqp_optimizer off).",
+  "refine_iterations is registered under refine_expand but also sets the number of sweeps of refine_shrink.",
+  "Constants of the evolved code left fixed (not alleles): the row layout coordinates, SLSQP variable bounds (centres in [0.005, 0.995], radii in [1e-4, 0.5]), the refinement centre clip 0.001, the overlap threshold 1e-8, the expansion gap 1e-9, the safety factors 0.9996/0.9997, and the radius floors 1e-4 (neighbor_radii) and 1e-5 (refinement).",
+  "ring_inner_radius and ring_outer_radius have no effect when row_layout is on; clip_margin applies to whichever starting layout is active (it does not bind for the row layout at its default).",
+  "Both layouts are written for 26 circles. For n > 26 the extra centres all sit at the clipped origin and coincide (zero radii with the initial radius rule, which the exact evaluator rejects); for n < 26 the layouts are truncated. Measurements on held-out n are therefore not meaningful for the layouts alone.",
+  "Neither program draws random numbers, so the output does not depend on the seed.",
+  "slsqp_optimizer on alone (ring start, no refinement) passed the repair check at default alleles, but with non-default alleles (few iterations, tiny margins) SLSQP may stop at an infeasible point that only the refinement would clean up."
+ ]
+}

@@ -1,4 +1,4 @@
-"""Command line: mendel score | gate | tune | knockout | run | idea | serve."""
+"""Command line: mendel score | gate | tune | knockout | run | idea | explain | serve."""
 from __future__ import annotations
 
 import argparse
@@ -253,6 +253,21 @@ def cmd_idea(args) -> int:
     return 0
 
 
+def cmd_explain(args) -> int:
+    """A causal breakdown of a program that another system evolved (mendel/explain.py)."""
+    from mendel.explain import run_explain
+
+    run_dir = run_explain(problem_dir=args.problem, initial=args.initial, evolved=args.evolved, run_id=args.run_id,
+                          runs_dir=args.runs, model=args.model, effort=args.effort, executor=args.executor,
+                          workers=args.workers, seeds=args.seeds, tune_trials=args.tune_trials,
+                          pairwise_top=args.pairwise_top, attempts=args.attempts, minutes=args.minutes,
+                          solver=args.solver, stage=args.stage, overwrite=args.overwrite,
+                          log=lambda text: print(text, file=sys.stderr, flush=True))
+    print(run_dir)
+    status = json.loads((run_dir / "state.json").read_text())["run"]["status"]
+    return 0 if status in ("finished", "running") else 3
+
+
 def cmd_serve(args) -> int:
     from mendel.dashboard.server import serve  # provided by the dashboard package
 
@@ -342,6 +357,28 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--author")
     p.add_argument("--runs", default="runs")
     p.set_defaults(func=cmd_idea)
+
+    p = sub.add_parser("explain", help="break an evolved program down into switches and measure each one")
+    p.add_argument("--problem", required=True, help="problem pack directory")
+    p.add_argument("--initial", required=True, help="the program the other system started from")
+    p.add_argument("--evolved", required=True, help="the program it produced")
+    p.add_argument("--run-id", required=True)
+    p.add_argument("--runs", default="runs", help="runs directory (default: runs)")
+    p.add_argument("--model", default="fable", help="model of the decomposition session (default: fable)")
+    p.add_argument("--effort", default="high")
+    p.add_argument("--minutes", type=int, default=20, help="time the session is told it has")
+    p.add_argument("--attempts", type=int, default=3,
+                   help="decomposition sessions before giving up; each failed bookend check is fed back")
+    p.add_argument("--executor", choices=["local", "modal"], default="local")
+    p.add_argument("--workers", type=int, default=3)
+    p.add_argument("--seeds", type=int, default=4, help="paired seeds per comparison (default 4)")
+    p.add_argument("--tune-trials", type=int, default=40, help="trials of the tuning-only arm")
+    p.add_argument("--pairwise-top", type=int, default=3, help="switches knocked out in pairs")
+    p.add_argument("--solver", help="skip the LLM step: check and measure this decomposed solver directory")
+    p.add_argument("--stage", choices=["all", "decompose", "measure"], default="all",
+                   help="decompose: stop after the bookend check; measure: reuse the run's decomposition")
+    p.add_argument("--overwrite", action="store_true", help="start an existing run id over from scratch")
+    p.set_defaults(func=cmd_explain)
 
     p = sub.add_parser("serve", help="serve the dashboard")
     p.add_argument("--runs", default="runs")

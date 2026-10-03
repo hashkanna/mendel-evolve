@@ -43,7 +43,7 @@ from common import EXAMPLE, ROOT, VENV_PYTHON, parse_usage
 
 N = 26
 DRIVER = r'''
-import importlib.util, json, sys
+import importlib.util, json, resource, sys, time
 import numpy as np
 spec = importlib.util.spec_from_file_location("program", sys.argv[1])
 program = importlib.util.module_from_spec(spec)
@@ -51,9 +51,14 @@ spec.loader.exec_module(program)
 centers, radii, _ = program.run_packing()
 centers = np.asarray(centers, dtype=float).reshape(-1, 2)
 radii = np.asarray(radii, dtype=float).reshape(-1)
+children = resource.getrusage(resource.RUSAGE_CHILDREN)
+cpu = time.process_time() + children.ru_utime + children.ru_stime  # this process and any it started
 with open(sys.argv[2], "w") as f:
-    json.dump([[float(c[0]), float(c[1]), float(r)] for c, r in zip(centers, radii)], f)
+    json.dump({"packing": [[float(c[0]), float(c[1]), float(r)] for c, r in zip(centers, radii)], "cpu_s": cpu}, f)
 '''
+# Sets a CPU-time limit on itself, then becomes the interpreter that runs the driver.
+LIMITED = ("import os, resource, sys; limit = int(sys.argv[1]); "
+           "resource.setrlimit(resource.RLIMIT_CPU, (limit, limit + 5)); os.execv(sys.argv[2], sys.argv[2:])")
 
 
 def load_module(path: Path, name: str):
@@ -63,30 +68,47 @@ def load_module(path: Path, name: str):
     return module
 
 
-def run_program(program: Path, timeout: float) -> tuple[list | None, str, float, float]:
-    """Run `run_packing()` of a program in a subprocess. Returns (packing, error, wall seconds, CPU seconds)."""
+def run_program(program: Path, timeout: float, cpu_limit: int | None = None) -> tuple[list | None, str, float, float]:
+    """Run `run_packing()` of a program in a subprocess. Returns (packing, error, wall seconds, CPU seconds).
+
+    `timeout` is wall time. `cpu_limit`, if given, is CPU seconds enforced by the kernel (RLIMIT_CPU),
+    which unlike wall time does not depend on how busy the machine is. The CPU seconds returned are
+    the program's own count when it finished, or the limit when it was stopped by it.
+    """
     env = dict(os.environ, MPLBACKEND="Agg")
     env.pop("VIRTUAL_ENV", None)
+    for name in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "VECLIB_MAXIMUM_THREADS"):
+        env.setdefault(name, "1")  # as in the runs
     with tempfile.TemporaryDirectory() as tmp:
         driver, result = Path(tmp) / "driver.py", Path(tmp) / "packing.json"
         driver.write_text(DRIVER)
+        command = [str(VENV_PYTHON), str(driver), str(program), str(result)]
+        if cpu_limit is not None:
+            command = [str(VENV_PYTHON), "-c", LIMITED, str(int(cpu_limit))] + command
         before = resource.getrusage(resource.RUSAGE_CHILDREN)
         started = time.time()
         try:
-            done = subprocess.run([str(VENV_PYTHON), str(driver), str(program), str(result)], cwd=tmp, env=env,
-                                  capture_output=True, text=True, timeout=timeout)
-            error = "" if done.returncode == 0 else f"exit {done.returncode}: {done.stderr.strip()[-300:]}"
+            done = subprocess.run(command, cwd=tmp, env=env, capture_output=True, text=True, timeout=timeout)
+            if done.returncode == 0:
+                error = ""
+            elif cpu_limit is not None and done.returncode in (-24, -9):  # SIGXCPU, or SIGKILL at the hard limit
+                error = f"stopped at the CPU limit of {int(cpu_limit)}s"
+            else:
+                error = f"exit {done.returncode}: {done.stderr.strip()[-300:]}"
         except subprocess.TimeoutExpired:
-            error = f"timed out after {timeout:g}s"
+            error = f"timed out after {timeout:g}s of wall time"
         wall = time.time() - started
         after = resource.getrusage(resource.RUSAGE_CHILDREN)
-        cpu = (after.ru_utime + after.ru_stime) - (before.ru_utime + before.ru_stime)
+        cpu = (after.ru_utime + after.ru_stime) - (before.ru_utime + before.ru_stime)  # approximate if run in parallel
         packing = None
         if not error:
             try:
-                packing = json.loads(result.read_text())
-            except (OSError, ValueError) as exc:
+                data = json.loads(result.read_text())
+                packing, cpu = data["packing"], float(data["cpu_s"])
+            except (OSError, ValueError, KeyError, TypeError) as exc:
                 error = f"no packing written: {exc}"
+        elif error.startswith("stopped at the CPU limit"):
+            cpu = float(cpu_limit)
     return packing, error, wall, cpu
 
 

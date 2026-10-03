@@ -1,0 +1,84 @@
+{
+ "problem": "noisosceles",
+ "note": "Best published lower bounds for C(n) known to us on 2026-10-03. n64 and n100 were re-verified against their published point sets with evaluate.py and verify.py. n16 and n32 are quoted in the paper as C(16) = 28 and C(32) = 56 (from its reference [56]); no point set for them was checked here. No value is claimed optimal by us. Sizes without an entry (for example 48, 80, 128) have no published value that we found.",
+ "checked": "2026-10-03",
+ "records": {
+  "n16": {
+   "n": 16,
+   "value": 28,
+   "source": "arXiv:2511.02864, section 6.39: 'the fact that C(16) = 28 and C(32) = 56', attributed to PatternBoost (Charton, Ellenberg, Wagner, Williamson; reference [56] of the paper)",
+   "url": "https://arxiv.org/abs/2511.02864",
+   "claimed_by": "quoted by Georgiev, Gomez-Serrano, Tao, Wagner from PatternBoost",
+   "date": "2025-11",
+   "certificate": null,
+   "verified_with_evaluate_py": false,
+   "original_source": "PatternBoost, arXiv:2411.00566v1, section 4.1, Figure 12: 'f(16) = 28', 'f(27) = 48', 'f(32) = 56', with the sentence 'For n up to about 32, SAT solvers can find the best constructions and prove their optimality'",
+   "original_url": "https://arxiv.org/abs/2411.00566"
+  },
+  "n32": {
+   "n": 32,
+   "value": 56,
+   "source": "arXiv:2511.02864, section 6.39: 'the fact that C(16) = 28 and C(32) = 56', attributed to PatternBoost (Charton, Ellenberg, Wagner, Williamson; reference [56] of the paper)",
+   "url": "https://arxiv.org/abs/2511.02864",
+   "claimed_by": "quoted by Georgiev, Gomez-Serrano, Tao, Wagner from PatternBoost",
+   "date": "2025-11",
+   "certificate": null,
+   "verified_with_evaluate_py": false,
+   "original_source": "PatternBoost, arXiv:2411.00566v1, section 4.1, Figure 12: 'f(16) = 28', 'f(27) = 48', 'f(32) = 56', with the sentence 'For n up to about 32, SAT solvers can find the best constructions and prove their optimality'",
+   "original_url": "https://arxiv.org/abs/2411.00566",
+   "exceeded_by": {
+    "value": 58,
+    "certificates": [
+     "results/noisosceles/certificates/n32_58.json",
+     "results/noisosceles/certificates/n32_58_seed13_iters600000.json"
+    ],
+    "found": "2026-10-03, by the seed solver solvers/noisosceles (symmetric + greedy_victim)",
+    "checks": "evaluate.py, verify.py, and a direct test of every ordered triple as in the notebook's verify_construction; unpublished, not yet reviewed by a person",
+    "note": "The published text presents 56 as optimal. The same solver never exceeds the published values at n = 7, 8, 9, 10, 16, 27, and an exhaustive search with this pack's definition gives 6, 7, 9 at n = 4, 5, 6, as published."
+   }
+  },
+  "n64": {
+   "n": 64,
+   "value": 112,
+   "source": "AlphaEvolve repository of problems, notebook subsets_of_the_grid_with_no_isosceles_triangles.ipynb, variable sol_64 (arXiv:2511.02864, section 6.39, Figure 30). The previous best was 110, from PatternBoost (Charton, Ellenberg, Wagner, Williamson; reference [56] of the paper).",
+   "url": "https://github.com/google-deepmind/alphaevolve_repository_of_problems/blob/main/experiments/subsets_of_the_grid_with_no_isosceles_triangles/subsets_of_the_grid_with_no_isosceles_triangles.ipynb",
+   "claimed_by": "Georgiev, Gomez-Serrano, Tao, Wagner (AlphaEvolve)",
+   "date": "2025-11",
+   "certificate": "published/alphaevolve_n64_112.json",
+   "certificate_url": "https://github.com/google-deepmind/alphaevolve_repository_of_problems/blob/main/experiments/subsets_of_the_grid_with_no_isosceles_triangles/subsets_of_the_grid_with_no_isosceles_triangles.ipynb",
+   "verified_with_evaluate_py": true,
+   "verified_with_verify_py": true,
+   "previous_best": 110
+  },
+  "n100": {
+   "n": 100,
+   "value": 164,
+   "source": "AlphaEvolve repository of problems, notebook subsets_of_the_grid_with_no_isosceles_triangles.ipynb, variable sol_100 (arXiv:2511.02864, section 6.39, Figure 30). The previous best was 160, from PatternBoost (Charton, Ellenberg, Wagner, Williamson; reference [56] of the paper). The authors write that they believe 164 is still not optimal.",
+   "url": "https://github.com/google-deepmind/alphaevolve_repository_of_problems/blob/main/experiments/subsets_of_the_grid_with_no_isosceles_triangles/subsets_of_the_grid_with_no_isosceles_triangles.ipynb",
+   "claimed_by": "Georgiev, Gomez-Serrano, Tao, Wagner (AlphaEvolve)",
+   "date": "2025-11",
+   "certificate": "published/alphaevolve_n100_164.json",
+   "certificate_url": "https://github.com/google-deepmind/alphaevolve_repository_of_problems/blob/main/experiments/subsets_of_the_grid_with_no_isosceles_triangles/subsets_of_the_grid_with_no_isosceles_triangles.ipynb",
+   "verified_with_evaluate_py": true,
+   "verified_with_verify_py": true,
+   "previous_best": 160
+  }
+ },
+ "sources_read": {
+  "problem_page": "https://google-deepmind.github.io/alphaevolve_repository_of_problems/problems/59.html (problemData object in the raw HTML: statement only, no numeric values; links the notebook and section 6.39)",
+  "notebook": "experiments/subsets_of_the_grid_with_no_isosceles_triangles/subsets_of_the_grid_with_no_isosceles_triangles.ipynb at repository commit 8f447457957deac61e28bf1676746f0753b3b2f8 (2026-07-02): sol_64 (112 points), sol_100 (164 points); its prompt cell names 110 and 160 as the earlier best values",
+  "paper": "arXiv:2511.02864, section 6.39 (Problem 6.59) and Figure 30",
+  "patternboost": "arXiv:2411.00566v1, section 4.1 (HTML version): f(4..10) = 6, 7, 9, 10, 13, 16, 18; f(16) = 28; f(27) = 48; f(32) = 56; 108 then 110 at n = 64; 154 then 160 at n = 100"
+ },
+ "later_improvements_searched": {
+  "date": "2026-10-03",
+  "result": "none found for n = 64 or n = 100",
+  "checked": [
+   "issues and pull requests of google-deepmind/alphaevolve_repository_of_problems (issues 1-8, PRs 3 and 9): none concerns problem 59",
+   "arXiv:2609.29636 uses isosceles-free subsets of the 64x64 grid as a benchmark and reports a plateau below the record, no improvement",
+   "arXiv:2601.14465 (Janosik, Nador, Nagy) surveys the problem; no new values for n = 64 or 100",
+   "web searches for an improvement over 164 at n = 100 (165, 166, 168) and for record threads on problem 59: nothing"
+  ],
+  "not_readable": "https://huggingface.co/datasets/dougdotcon/douvras-no-isosceles-grid-certificates returned HTTP 401; a search snippet describes it as 8 rows of certificates for small n. Its contents were not checked."
+ }
+}

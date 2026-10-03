@@ -253,6 +253,27 @@ def evaluator_timeout(config: Path) -> float:
     return 300.0
 
 
+def set_evaluator_timeout(config: Path, seconds: float) -> tuple[float, float] | None:
+    """Set `timeout` in the `evaluator:` block of a config. Returns (old, new), or None if unchanged."""
+    lines = config.read_text().splitlines()
+    inside = False
+    for i, line in enumerate(lines):
+        if re.match(r"^evaluator:\s*(#.*)?$", line):
+            inside = True
+        elif inside and line[:1] not in ("", " ", "\t", "#"):
+            break
+        elif inside:
+            found = re.match(r"^(\s+)timeout:\s*([\d.]+)", line)
+            if found:
+                before = float(found.group(2))
+                if before == seconds:
+                    return None
+                lines[i] = f"{found.group(1)}timeout: {seconds:g}"
+                config.write_text("\n".join(lines) + "\n")
+                return before, float(seconds)
+    raise SystemExit(f"{config} has no evaluator timeout to set")
+
+
 def phase_progress(phase_dir: Path) -> tuple[int, Path | None]:
     """(iterations already logged, the most recently saved checkpoint) of a phase."""
     output_dir = phase_dir / "openevolve_output"
@@ -349,6 +370,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--resume", action="store_true",
                         help="continue a run that was stopped: each unfinished phase goes on from its last saved "
                              "checkpoint for the iterations it still lacks (remove <group>/STOP first)")
+    parser.add_argument("--eval-timeout", type=float,
+                        help="set OpenEvolve's evaluator.timeout (wall seconds per evaluation stage) for every phase "
+                             "that still has iterations to run; the change and the iteration it starts at are "
+                             "recorded in manifest.json, and the config it replaces is kept next to it")
     parser.add_argument("--dry-run", action="store_true", help="prepare the run and print the commands; call nothing")
     args = parser.parse_args(argv)
 
@@ -469,6 +494,23 @@ def main(argv: list[str] | None = None) -> int:
                 continue
             print(f"[{label}] resuming: {done} iterations logged, {todo} to go, from "
                   f"{checkpoint.name if checkpoint else 'the start'}", flush=True)
+        if args.eval_timeout is not None:
+            config_path = phase_dir / "config.yaml"
+            before = evaluator_timeout(config_path)
+            if before != args.eval_timeout:
+                # OpenEvolve numbers the first iteration after a checkpoint as that checkpoint's iteration + 1
+                first = int(checkpoint.name.split("_")[-1]) + 1 if checkpoint is not None else 1
+                print(f"[{label}] evaluator.timeout {before:g}s -> {args.eval_timeout:g}s from iteration {first}", flush=True)
+                if not args.dry_run:
+                    kept = phase_dir / f"config.timeout{before:g}.yaml"
+                    kept.write_text(config_path.read_text())
+                    set_evaluator_timeout(config_path, args.eval_timeout)
+                    manifest.setdefault("changes_during_run", []).append({
+                        "phase": name, "setting": "evaluator.timeout", "before": before, "after": args.eval_timeout,
+                        "from_iteration": first, "iterations_logged_before": iterations - todo,
+                        "applied": time.strftime("%Y-%m-%dT%H:%M:%S"), "previous_config": kept.name,
+                        "reason": "machine load: the limit is wall time"})
+                    (run / "manifest.json").write_text(json.dumps(manifest, indent=1) + "\n")
         record = run_phase(label=label, phase_dir=phase_dir, initial_program=initial_program,
                            config=phase_dir / "config.yaml", iterations=todo, env=env, secrets=secrets,
                            watchdog=watchdog, dry_run=args.dry_run, checkpoint=checkpoint)

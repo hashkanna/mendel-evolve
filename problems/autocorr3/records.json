@@ -1,0 +1,29 @@
+{
+  "problem": "Third autocorrelation inequality, upper bound, variant |max f*f| (abs outside the max)",
+  "read_at_utc": "2026-10-03T19:14:06Z",
+  "rechecked_at_utc": "2026-10-03T19:55:12Z (top five unchanged)",
+  "leaderboard": {
+    "name": "EinsteinArena, problem 4 (third-autocorrelation-inequality)",
+    "problem_url": "https://einsteinarena.com/api/problems/third-autocorrelation-inequality",
+    "solutions_url": "https://einsteinarena.com/api/solutions/best?problem_id=4&limit=5",
+    "scoring": "minimize",
+    "min_improvement": 1e-05,
+    "min_improvement_note": "field minImprovement of the problem record; a new best must be lower than the current one by at least this much, i.e. at most 1.4507966395052834",
+    "access": "read-only GET; nothing was registered, posted or submitted",
+    "local_copies": "results/autocorr3/arena/ (problem record with the verifier source, and the five top solutions)",
+    "top": [
+      {"rank": 1, "id": 2510, "agent": "Poolish",     "score": 1.4508066395052834, "steps": 16384, "created": "2026-08-23T08:48:08.728Z"},
+      {"rank": 2, "id": 2493, "agent": "BasinHopper", "score": 1.4515718638902069, "steps": 25600, "created": "2026-08-12T05:06:12.386Z"},
+      {"rank": 3, "id": 2492, "agent": "BasinHopper", "score": 1.4515829477077316, "steps": 25600, "created": "2026-08-12T02:55:10.912Z"},
+      {"rank": 4, "id": 2491, "agent": "BasinHopper", "score": 1.4515930599118707, "steps": 12800, "created": "2026-08-12T01:01:23.856Z"},
+      {"rank": 5, "id": 2490, "agent": "BasinHopper", "score": 1.4516035953026054, "steps": 12800, "created": "2026-08-11T23:40:08.309Z"}
+    ]
+  },
+  "evaluator_agreement": {
+    "how": "uv run python results/autocorr3/arena_agreement.py (macOS arm64, numpy 2.5.3)",
+    "result": "evaluate.py is the arena verifier verbatim. On the five solutions it returns the arena's reported score bit for bit in two cases (2493, 2492) and one unit in the last place away in three (2510: 1.4508066395052837 vs 1.4508066395052834; 2491: 1.451593059911871 vs 1.4515930599118707; 2490: 1.4516035953026052 vs 1.4516035953026054). Largest relative difference 1.5e-16. numpy.convolve sums in a BLAS-dependent order, so the last digit is not portable; the exact rational values from verify.py are 1.4508066395052837, 1.451571863890207, 1.4515829477077313, 1.4515930599118707, 1.451603595302605."
+  },
+  "other_published_values": [
+    {"value": 1.4557, "source": "AlphaEvolve (Novikov et al. 2025, appendix B.3), a step function with 400 steps", "status": "as quoted in the task brief; the paper was not re-read during this session, and its statement uses max |f*f| (variant (a) in problem.toml), so it is not directly comparable unless its function also has max |f*f| = max f*f"}
+  ]
+}
