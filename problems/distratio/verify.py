@@ -4,7 +4,8 @@
     python verify.py certificate.json       exit 0 if the solution is valid and the score is right
 
 A certificate is {"instance": {"n": N, "d": D}, "score": S, "solution": [[x, y, ...], ...], ...}
-(D defaults to 2).
+(D defaults to 2). mendel.campaign writes the value as "score", the engine (runs/<id>/certificates)
+as "value"; both are accepted.
 
 evaluate.py is the arena's float64 verifier (numpy broadcasting, sqrt, then the ratio squared). This
 file computes the same quantity two other ways and compares:
@@ -64,7 +65,8 @@ def check(certificate: dict) -> tuple[str | None, dict]:
     info: dict = {}
     inst = certificate.get("instance") or {}
     n, d = inst.get("n"), inst.get("d", 2)
-    solution, claimed = certificate.get("solution"), certificate.get("score")
+    solution = certificate.get("solution")
+    claimed = certificate.get("score", certificate.get("value"))  # campaign: "score"; engine: "value"
     if isinstance(solution, dict):
         solution = solution.get("vectors")
     if type(n) is not int or n < 2 or type(d) is not int or d < 1:
@@ -113,7 +115,7 @@ def main(argv: list[str]) -> int:
         print(f"FAIL: {reason}")
         return 1
     inst = certificate["instance"]
-    print(f"OK: {inst['n']} points in {inst.get('d', 2)}D, score {certificate['score']!r}; exact rational value "
+    print(f"OK: {inst['n']} points in {inst.get('d', 2)}D, score {certificate.get('score', certificate.get('value'))!r}; exact rational value "
           f"{info['exact']!r} (exact - claimed = {info['exact_minus_claimed']:.2e}), pdist value {info['pdist']!r}, "
           f"closest pair {list(info['min_pair'])}, farthest pair {list(info['max_pair'])}")
     return 0
