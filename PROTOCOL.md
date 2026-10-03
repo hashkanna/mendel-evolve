@@ -65,11 +65,13 @@ The harness runs:
 - `CFG.json` is a flat object `gene name -> value`. Every gene in `genes.json` is present.
 - `INSTANCE.json` is one instance table from `problem.toml`.
 - `--time` is a budget in **CPU seconds measured by the solver itself**. `--iters` is a budget in solver
-  iterations and must be **deterministic**: the same config, instance, seed and iteration count give a
-  byte-identical `OUT.json` apart from timing fields under `stats`.
+  iterations and must be **deterministic**: the same config, instance, seed and iteration count give the
+  same `solution` and the same `stats.iters`. Timing fields under `stats` may differ.
 - `OUT.json` is `{"solution": <problem-specific>, "stats": {"iters": int, "trace": [[cpu_seconds, score], ...]}}`.
   `stats` is optional. `trace` records each improvement of the best score.
 - Exit code 0 on success. The harness kills the process at three times the time budget plus ten seconds.
+- A `run` command that starts with `python` or `python3` is run with the harness's own interpreter, so a
+  Python solver sees the same packages locally and in containers.
 
 `genes.json`:
 
@@ -113,8 +115,10 @@ An allele may carry `"of": "<idea gene>"`; it only matters when that idea is on.
 
 Adding a gene must not change behaviour while the gene is at its default. Mendel checks this with
 `--iters` runs: the solver before the change and the solver after it, with the new gene at its default,
-must produce identical solutions for the same seeds. A gene that fails this check is rejected, because
-its knockout would not be a clean intervention.
+must produce identical solutions for the same seeds, both at the default configuration and at the
+current champion's. A gene that fails this check is rejected, because its knockout would not be a clean
+intervention. The check must run long enough to reach every branch of the search (restarts included),
+which is what `--gate-iters` controls.
 
 ## 3. Run state: `runs/<run>/state.json`
 
@@ -163,10 +167,16 @@ Field notes:
   instances, so a positive effect means the idea helps (for `direction = "min"` the sign is flipped so
   positive still means better). `ci` is a 95% paired-bootstrap interval.
 - Gene `status`: `active` (on in the champion), `inactive` (in the solver, off in the champion),
-  `rejected` (failed screening, not merged), `failed-gate` (broke the invariance rule or crashed),
-  `pruned` (removed from the solver after repeated null knockouts).
-- Gene `label` after the generality test: `general` (helps on held-out instances too), `specific` (helps on
-  training instances only), `neutral`, `harmful`, `inconclusive` (interval spans zero).
+  `queued` (screened positive, waiting to be ported onto the new trunk), `rejected` (failed screening,
+  not merged), `failed-gate` (broke the invariance rule or crashed), `pruned` (null knockouts in three
+  consecutive rounds).
+- Gene `label` compares the knockout interval on training instances with the one pooled over held-out
+  instances: `general` (both above zero), `specific` (training above zero, held-out not), `harmful`
+  (either below zero without the other helping), `neutral` (both within a small tolerance of zero),
+  `inconclusive` (anything else).
+- `runs` counts solver runs behind an estimate: two per paired comparison, four per pair for a synergy.
+- The engine may add keys beyond these (for example `engine`, `run.problem_dir`, `genes[].value`). Readers
+  must ignore keys they do not know.
 - `synergy` is the effect of the pair minus the sum of the two single effects; positive means the ideas
   only pay off together.
 - `champion.solutions` holds the best solution found per instance, in the problem's own format, for the
