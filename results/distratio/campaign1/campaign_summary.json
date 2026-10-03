@@ -1,0 +1,44 @@
+{
+ "t": "2026-10-03T23:08:20",
+ "wall_seconds": 907.7,
+ "time_per_run": 60.0,
+ "seeds": 8,
+ "config": {
+  "lattice_init": false,
+  "smooth_presolve": false,
+  "basin_hop": false,
+  "slsqp_maxiter": 150,
+  "lattice_jitter": 0.15,
+  "smooth_beta": 20.0,
+  "hop_sigma": 0.15,
+  "hop_patience": 8
+ },
+ "rows": [
+  {
+   "instance": "n16",
+   "runs": 8,
+   "valid_runs": 8,
+   "best_known": 12.889229907717521,
+   "value": 12.88922990769402,
+   "mean": 12.889229907694027,
+   "verified": true,
+   "certificate": "runs/distratio-campaign/certificates/n16_12p88922990769402.json",
+   "errors": [],
+   "independent_check": "pass",
+   "record": false
+  },
+  {
+   "instance": "d3n14",
+   "runs": 8,
+   "valid_runs": 8,
+   "best_known": 4.165,
+   "value": 4.165783474580074,
+   "mean": 4.168367143334554,
+   "verified": true,
+   "certificate": "runs/distratio-campaign/certificates/d3n14_4p165783474580074.json",
+   "errors": [],
+   "independent_check": "pass",
+   "record": false
+  }
+ ]
+}

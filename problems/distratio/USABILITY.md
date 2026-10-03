@@ -208,3 +208,33 @@ What the run did **not** produce, and why (from `engine.py`):
 To get real knockouts and generality labels for these seed switches, the next run should use
 `--tune-every 1` (so the switches can be turned on in the champion) and more seeds; given the
 interval widths, 12 or more seeds at 5-10 CPU s.
+
+## The Modal campaign (optional step)
+
+`uv run python -m mendel.campaign --solver solvers/distratio --problem problems/distratio
+--instances n16 '{"n": 14, "d": 3}' --seeds 8 --time 60 --executor modal --no-deploy
+--max-cpu-hours 20 --out runs/distratio-campaign`, default config. Results are copied to
+`results/distratio/campaign1/`.
+
+```
+instance   ours    mean  known  verified  record
+n16       12.88922990769402 12.8892 12.889229907717521  yes
+d3n14     4.165783474580074 4.16837  4.165  yes
+estimated Modal spend for this call: $0.02
+```
+
+- All 16 runs were valid. Both best results passed the local re-evaluation and `verify.py`
+  (`independent_check: pass`). The campaign correctly did **not** call n16 a record: it applies
+  `min_improvement`, unlike the engine (point 3).
+- n16: all 8 seeds reach the same optimum, 12.88922990769402. d3n14: 2 of 8 seeds reach
+  4.165783474580074; the others stop between 4.1682 and 4.1728.
+- About d3n14: 4.165783474580074 passed both checkers and is 6.6e-5 below AlphaEvolve's published
+  4.165849767, which I read myself from the AlphaEvolve results notebook. But Friedman's page lists a
+  newer value, by Sun and Samanta, with only three digits ("4.165+"), so I cannot say whether ours
+  beats the best published value, and I do not claim it.
+- Usability: the run took 15 minutes of wall time for 16 minutes of CPU, because its single
+  `run_batch_bg_x16` call waited about 13 minutes in the queue of the shared app (45 tasks from other
+  jobs). The campaign printed nothing during that time: progress lines appear only once results come
+  back. I checked the call's status by hand with `modal.FunctionCall.from_id(...)`. A "submitted N
+  calls, waiting" line, and a periodic "still queued", would help. The results table is also
+  misaligned: the `ours` column prints the full `repr` but its header is 5 characters wide.
