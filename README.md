@@ -120,6 +120,18 @@ recombination and attribution are plain compute. Every evaluation is cached by s
 instance, seed and budget. On Modal, the two arms of a paired comparison run in the same container so that
 hardware differences cancel. The run state records LLM calls, dollars, CPU-seconds and evaluations.
 
+**Compute on Modal.** Every solver evaluation runs on [Modal](https://modal.com), one core per container.
+- Solver sources and the trusted evaluator travel with each batch, named by a hash of their contents, so a
+  new solver version needs no redeploy; containers compile it on first sight.
+- Batches keep both arms of a paired comparison in the same container, so hardware differences cancel.
+- There are two lanes over the same code: `run_batch` for the engine's short paired experiments and
+  `run_batch_bg` for long record campaigns, so a campaign cannot starve the engine.
+- The inventor agents' own trial runs go to Modal as well, which keeps a laptop usable while a dozen agents
+  work and keeps their timings meaningful.
+- Every executor has a hard cap on core-hours, so an overnight loop cannot spend the whole credit.
+
+The first two record searches on problem 60 (480 runs of 120 CPU-seconds) cost about $0.90 in total.
+
 **Trust.** Evaluators are exact and live outside the inventor's reach. The inventor agent can edit only its
 sandbox copy and run three harness commands; it cannot run arbitrary shell commands. The engine re-runs the
 gate itself rather than believing the agent. The campaign runner re-checks every remote result locally and
