@@ -15,13 +15,13 @@ Output: <run>/strict_scores.csv, one row per checkpoint, with the columns
     prompt_tokens, completion_tokens                            the split behind `tokens` and `dollars`
     strict_valid, strict_reason                                 why a packing was rejected
     openevolve_sum_radii                                        what OpenEvolve's tolerant evaluator reported
-    repaired_score                                              strict score after Mendel's `finalise` (see below)
+    repaired_score                                              strict score after `repair.py` (see below)
     program_sha256, program_wall_s, program_cpu_s               which program, and what running it cost
 
 `strict_score` is 0 for a packing that fails the exact test. `repaired_score` answers "what is this
-packing worth once it is made feasible": the same centres are passed through the Mendel solver's
-`finalise` (coincident centres separated, radii shrunk until the exact test passes), so every row
-gets a number that is comparable with a Mendel score. No API calls are made.
+packing worth once it is made feasible": the same centres with radii shrunk, never enlarged, until
+the exact test passes (see repair.py), so every row gets a number that is comparable with a Mendel
+score. No API calls are made.
 """
 
 from __future__ import annotations
@@ -103,8 +103,7 @@ def main(argv: list[str] | None = None) -> int:
     if not output_dir.exists():
         raise SystemExit(f"{output_dir} not found")
     evaluator = load_module(ROOT / "problems" / "circle_packing" / "evaluate.py", "strict_evaluate")
-    solver = load_module(ROOT / "solvers" / "circle_packing" / "solver.py", "mendel_circle_solver")
-    import numpy as np
+    from repair import repair
 
     usage = parse_usage(output_dir)
     zero = {"requests": 0, "prompt_tokens": 0, "completion_tokens": 0, "tokens": 0, "usd": 0.0}
@@ -145,16 +144,9 @@ def main(argv: list[str] | None = None) -> int:
                 verdict = evaluator.evaluate({"n": N}, packing)
                 result = {"strict_score": verdict["score"], "strict_valid": verdict["valid"],
                           "strict_reason": "" if verdict["valid"] else verdict["detail"].get("reason", "")}
-                try:
-                    array = np.array(packing, dtype=float).reshape(-1, 3)
-                    if len(array) != N:
-                        raise ValueError(f"{len(array)} circles")
-                    centers, radii = solver.finalise(array[:, :2], {}, radii=array[:, 2])
-                    repaired = evaluator.evaluate({"n": N}, [[float(x), float(y), float(r)] for (x, y), r in zip(centers, radii)])
-                    result["repaired_score"] = repaired["score"] if repaired["valid"] else ""
-                except Exception as exc:  # noqa: BLE001 - a packing that cannot be repaired simply has no repaired score
-                    result["repaired_score"] = ""
-                    result["strict_reason"] = (result["strict_reason"] + f" | not repairable: {exc}").strip(" |")
+                repaired = repair(packing) if len(packing) == N else None
+                check = evaluator.evaluate({"n": N}, repaired) if repaired is not None else {"valid": False}
+                result["repaired_score"] = check["score"] if check["valid"] else ""
             result.update({"program_wall_s": round(wall, 2), "program_cpu_s": round(cpu, 2)})
             cache[digest] = result
         result = cache[digest]

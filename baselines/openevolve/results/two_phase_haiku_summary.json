@@ -1,0 +1,192 @@
+{
+ "group": "/Users/kanna/Sandbox/hackathons/autoresearch-for-discovery/baselines/openevolve/runs/two_phase_haiku",
+ "csv": "/Users/kanna/Sandbox/hackathons/autoresearch-for-discovery/baselines/openevolve/results/two_phase_haiku.csv",
+ "best_known": 2.635983084919,
+ "seeds": {
+  "1": {
+   "best_repaired_after_phase1": 2.1717930944569264,
+   "best_repaired_after_phase2": 2.606685919220951,
+   "openevolve_best_phase1": 2.1717930944569264,
+   "openevolve_best_phase2": 2.6066859192209515,
+   "requests": 137,
+   "dollars": 4.049483,
+   "tokens": 2377211,
+   "requests_by_phase": {
+    "phase1": 100,
+    "phase2": 37
+   },
+   "dollars_by_phase": {
+    "phase1": 2.821423,
+    "phase2": 1.22806
+   },
+   "iterations_by_phase": {
+    "phase1": 100,
+    "phase2": 37
+   },
+   "iterations_lost_to_api_errors": 0,
+   "wall_seconds": 2861.6,
+   "wall_seconds_by_phase": {
+    "phase1": 1072.0,
+    "phase2": 1787.5
+   },
+   "stopped": "stop requested: spend cap: $14.43 logged, limit $15.00 minus $0.60 for requests in flight",
+   "first_passed": {
+    "2.0": {
+     "dollars": 0.151176,
+     "requests": 10,
+     "phase": "1",
+     "iteration": 9
+    },
+    "2.5": {
+     "dollars": 2.878243,
+     "requests": 103,
+     "phase": "2",
+     "iteration": 4
+    },
+    "2.6": {
+     "dollars": 2.939674,
+     "requests": 106,
+     "phase": "2",
+     "iteration": 6
+    },
+    "2.63": null
+   }
+  },
+  "2": {
+   "best_repaired_after_phase1": 2.2705600167956397,
+   "best_repaired_after_phase2": 2.6193682107482674,
+   "openevolve_best_phase1": 2.2705600167956392,
+   "openevolve_best_phase2": 2.6258558872838473,
+   "requests": 159,
+   "dollars": 5.263918,
+   "tokens": 3140098,
+   "requests_by_phase": {
+    "phase1": 100,
+    "phase2": 59
+   },
+   "dollars_by_phase": {
+    "phase1": 2.849911,
+    "phase2": 2.414007
+   },
+   "iterations_by_phase": {
+    "phase1": 100,
+    "phase2": 59
+   },
+   "iterations_lost_to_api_errors": 0,
+   "wall_seconds": 2861.8,
+   "wall_seconds_by_phase": {
+    "phase1": 1057.1,
+    "phase2": 1802.2
+   },
+   "stopped": "spend cap: $14.43 logged, limit $15.00 minus $0.60 for requests in flight",
+   "first_passed": {
+    "2.0": {
+     "dollars": 1.053235,
+     "requests": 44,
+     "phase": "1",
+     "iteration": 44
+    },
+    "2.5": {
+     "dollars": 2.91242,
+     "requests": 103,
+     "phase": "2",
+     "iteration": 1
+    },
+    "2.6": {
+     "dollars": 2.91242,
+     "requests": 103,
+     "phase": "2",
+     "iteration": 1
+    },
+    "2.63": null
+   }
+  },
+  "3": {
+   "best_repaired_after_phase1": 2.2905423958966047,
+   "best_repaired_after_phase2": 2.6244801577898937,
+   "openevolve_best_phase1": 2.2905423958966047,
+   "openevolve_best_phase2": 2.6244801577898933,
+   "requests": 161,
+   "dollars": 5.115014,
+   "tokens": 3062250,
+   "requests_by_phase": {
+    "phase1": 100,
+    "phase2": 61
+   },
+   "dollars_by_phase": {
+    "phase1": 2.928886,
+    "phase2": 2.186128
+   },
+   "iterations_by_phase": {
+    "phase1": 100,
+    "phase2": 61
+   },
+   "iterations_lost_to_api_errors": 0,
+   "wall_seconds": 2861.9,
+   "wall_seconds_by_phase": {
+    "phase1": 1110.4,
+    "phase2": 1749.0
+   },
+   "stopped": "stop requested: spend cap: $14.43 logged, limit $15.00 minus $0.60 for requests in flight",
+   "first_passed": {
+    "2.0": {
+     "dollars": 0.211743,
+     "requests": 13,
+     "phase": "1",
+     "iteration": 14
+    },
+    "2.5": {
+     "dollars": 2.972811,
+     "requests": 102,
+     "phase": "2",
+     "iteration": 3
+    },
+    "2.6": {
+     "dollars": 2.972811,
+     "requests": 102,
+     "phase": "2",
+     "iteration": 3
+    },
+    "2.63": null
+   }
+  }
+ },
+ "over_seeds": {
+  "best_repaired_after_phase1": {
+   "n": 3,
+   "mean": 2.244298502383057,
+   "min": 2.1717930944569264,
+   "max": 2.2905423958966047,
+   "sd": 0.06358143992184052
+  },
+  "best_repaired_after_phase2": {
+   "n": 3,
+   "mean": 2.616844762586371,
+   "min": 2.606685919220951,
+   "max": 2.6244801577898937,
+   "sd": 0.009161581442712098
+  },
+  "requests": {
+   "n": 3,
+   "mean": 152.33333333333334,
+   "min": 137,
+   "max": 161,
+   "sd": 13.316656236958785
+  },
+  "dollars": {
+   "n": 3,
+   "mean": 4.809471666666667,
+   "min": 4.049483,
+   "max": 5.263918,
+   "sd": 0.6623671039539428
+  },
+  "wall_seconds": {
+   "n": 3,
+   "mean": 2861.7666666666664,
+   "min": 2861.6,
+   "max": 2861.9,
+   "sd": 0.15275252316530383
+  }
+ },
+ "total_dollars": 14.428415
+}
