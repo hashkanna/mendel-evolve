@@ -52,7 +52,11 @@ def run_campaign(*, solver_dir: Path, problem_dir: Path, config: dict, instances
              "instance": inst, "seed": seed, "budget": {"kind": "time", "value": time_s}}
             for inst in instances for seed in seeds]
     started = time.time()
-    results = executor.run(jobs)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    try:  # a journal lets a crashed campaign collect its results again instead of recomputing them
+        results = executor.run(jobs, journal=out_dir / "modal_calls.json")
+    except TypeError:
+        results = executor.run(jobs)
 
     out_dir.mkdir(parents=True, exist_ok=True)
     certs = out_dir / "certificates"

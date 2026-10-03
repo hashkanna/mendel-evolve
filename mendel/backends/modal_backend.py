@@ -7,6 +7,7 @@ import json
 import subprocess
 import sys
 import threading
+import time
 from pathlib import Path
 
 from .modal_app import APP_NAME
@@ -49,8 +50,9 @@ class ModalExecutor:
 
     def __init__(self, batch_cpu_seconds: float = 120.0, max_cpu_hours: float = 200.0,
                  iters_job_seconds: float = 5.0, overhead_per_job: float = 2.0, deploy: bool = True,
-                 function: str = "run_batch"):
+                 function: str = "run_batch", network_retries: int = 6):
         self.function_name = function  # "run_batch" for the engine, "run_batch_bg" for long campaigns
+        self.network_retries = network_retries
         self.batch_cpu_seconds = batch_cpu_seconds
         self.max_cpu_seconds = max_cpu_hours * 3600.0
         self.iters_job_seconds = iters_job_seconds
@@ -77,7 +79,7 @@ class ModalExecutor:
         base = float(budget["value"]) if budget["kind"] == "time" else self.iters_job_seconds
         return base + self.overhead_per_job
 
-    def run(self, jobs: list[dict]) -> list[dict]:
+    def run(self, jobs: list[dict], journal: Path | None = None) -> list[dict]:
         if not jobs:
             return []
         import modal
@@ -132,15 +134,76 @@ class ModalExecutor:
                 batch_jobs.append(job)
             payloads.append({"dirs": batch_dirs, "jobs": batch_jobs})
 
+        outputs = self._run_payloads(payloads, journal)
         results: list[dict | None] = [None] * len(jobs)
-        # Materialise the generator: leaving it half-consumed makes Modal's event loop complain at exit.
-        outputs = list(self._function.map(payloads, order_outputs=True, return_exceptions=True))
         for batch, output in zip(batches, outputs):
-            if isinstance(output, Exception):
+            if isinstance(output, Exception) or not isinstance(output, list) or len(output) != len(batch):
                 for i in batch:
                     results[i] = {"ok": False, "valid": False, "score": None, "stats": {}, "wall": 0.0,
-                                  "error": f"modal batch failed: {output!r}", "solution": None}
+                                  "error": f"modal batch failed: {output!r}"[:500], "solution": None}
             else:
                 for i, res in zip(batch, output):
                     results[i] = res
         return results  # type: ignore[return-value]
+
+    def _retry(self, what: str, fn):
+        """Call fn, retrying on anything that looks like a dropped connection rather than a remote failure."""
+        delay = 2.0
+        for attempt in range(self.network_retries + 1):
+            try:
+                return fn()
+            except Exception as exc:  # noqa: BLE001 - the Modal client surfaces dropped connections in many shapes
+                name = type(exc).__name__
+                remote = name in ("RemoteError", "FunctionTimeoutError", "ExecutionError", "InputCancellation",
+                                  "InvalidError", "NotFoundError", "ExternalFunctionError") or name.endswith("UserCodeException")
+                if remote or attempt == self.network_retries:
+                    raise
+                time.sleep(delay)
+                delay = min(delay * 2, 60.0)
+        raise RuntimeError(f"unreachable: {what}")
+
+    def _run_payloads(self, payloads: list[dict], journal: Path | None) -> list:
+        """Submit each batch as its own call and collect the results.
+
+        One call per batch means a dropped connection costs a retry of one fetch, not the whole run, and
+        with a journal of call ids a crashed driver process can pick its results up again later.
+        """
+        import modal
+
+        digest = hashlib.sha256()
+        for payload in payloads:
+            digest.update(json.dumps(payload["jobs"], sort_keys=True, default=str).encode())
+        fingerprint = digest.hexdigest()[:16]
+
+        call_ids: list[str | None] = [None] * len(payloads)
+        if journal is not None and journal.exists():
+            try:
+                saved = json.loads(journal.read_text())
+                if saved.get("fingerprint") == fingerprint and len(saved.get("call_ids", [])) == len(payloads):
+                    call_ids = saved["call_ids"]
+            except (OSError, json.JSONDecodeError):
+                pass
+
+        def save() -> None:
+            if journal is not None:
+                journal.parent.mkdir(parents=True, exist_ok=True)
+                tmp = journal.with_suffix(".tmp")
+                tmp.write_text(json.dumps({"fingerprint": fingerprint, "function": self.function_name,
+                                           "call_ids": call_ids}))
+                tmp.replace(journal)
+
+        for k, payload in enumerate(payloads):
+            if call_ids[k] is None:
+                call = self._retry("spawn", lambda payload=payload: self._function.spawn(payload))
+                call_ids[k] = call.object_id
+                if journal is not None and (k % 25 == 0 or k == len(payloads) - 1):
+                    save()
+        save()
+
+        outputs: list = []
+        for call_id in call_ids:
+            try:
+                outputs.append(self._retry("get", lambda call_id=call_id: modal.FunctionCall.from_id(call_id).get()))
+            except Exception as exc:  # noqa: BLE001 - a failed batch becomes failed results, never a crash
+                outputs.append(exc)
+        return outputs
