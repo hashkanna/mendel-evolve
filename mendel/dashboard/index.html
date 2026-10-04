@@ -1657,8 +1657,8 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     const both = pairs.filter((p) => isNum(p.on) && isNum(p.off));
     const mean = (k) => both.reduce((t, p) => t + p[k], 0) / both.length;
     const onoff = both.length ? h('div', { class: 'st-onoff', tip: 'Mean score over ' + plural(both.length, 'paired seed') + ', same seeds both ways' },
-      act === 'off' ? ['with the idea ', h('b', { text: trimNum(mean('on')) }), h('span', { class: 'arr', text: '→' }), 'switched off ', h('b', { text: trimNum(mean('off')) })]
-                    : ['without the idea ', h('b', { text: trimNum(mean('off')) }), h('span', { class: 'arr', text: '→' }), 'switched on ', h('b', { text: trimNum(mean('on')) })]) : null;
+      act === 'off' ? ['score with the idea ', h('b', { text: trimNum(mean('on')) }), h('span', { class: 'arr', text: '→' }), 'without it ', h('b', { text: trimNum(mean('off')) })]
+                    : ['score without the idea ', h('b', { text: trimNum(mean('off')) }), h('span', { class: 'arr', text: '→' }), 'with it ', h('b', { text: trimNum(mean('on')) })]) : null;
     const cap = running ? 'Knocking out ' + g.name
       : 'Live knockout' + (pairs.length ? ' · ' + plural(pairs.length, 'paired run') : '') + (clock(info.t) ? ' · ' + clock(info.t) : '');
     return h('div', { class: 'strip v-' + (running ? 'neu' : v), 'data-gene': g.name, onclick: stop },
