@@ -38,6 +38,14 @@ https://hashkanna.github.io/mendel-evolve/.
 
 **Watch it:** [the 2-minute film](https://youtu.be/129o5fS8ALY) · [the full film, 3 minutes](https://youtu.be/r8c3jwGGm6c) · [4-minute walkthrough with screen recordings](https://youtu.be/QK4ZIf9EN-4) · [2-minute walkthrough](https://youtu.be/zSHn5K7N-uw). Every frame of the films is drawn from the real data; the walkthroughs' screen recordings are real runs; the narration is synthetic speech.
 
+**Check the results yourself:** [each idea measured twice](https://hashkanna.github.io/mendel-evolve/record-scale.html) ·
+[the 58-point sets, checked in your browser](https://hashkanna.github.io/mendel-evolve/problem59-n32.html) ·
+[the problem 60 run, every idea and its effect](https://hashkanna.github.io/mendel-evolve/p60.html) ·
+[the circle-packing run](https://hashkanna.github.io/mendel-evolve/cp-fable-1.html) ·
+on DeepMind's repository: [problem 60 record thread](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6) ·
+[problem 59, the 58-point sets](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/10) ·
+[five benchmarks added by Devin sessions](https://github.com/hashkanna/mendel-evolve/pulls?q=is%3Apr+is%3Amerged)
+
 - **Problem 60 of Tao et al. (no 5 points on a sphere): apparently new lower bounds at 17 grid sizes** from
   n = 15 to 32, and first point sets for n = 33 to 40. Every set passes three independent exact checkers.
 - **Where those records came from, measured.** Eight from the hand-written seed solver, four from the solver
