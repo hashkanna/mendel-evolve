@@ -9,8 +9,10 @@ per word; a clip much longer than that probably contains extra speech.
 """
 
 import argparse
+import array
 import base64
 import json
+import math
 import os
 import re
 import sys
@@ -45,8 +47,9 @@ def api_key() -> str:
 def synthesise(text: str, voice: str, style: str) -> bytes:
     body = {"contents": [{"parts": [{"text": f"{style}\n\n{text}" if style else text}]}],
             "generationConfig": {"responseModalities": ["AUDIO"],
-                                 "speechConfig": {"languageCode": LANGUAGE,
-                                                  "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice}}}}}
+                                 "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice}}}}}
+    if LANGUAGE not in ("", "none"):          # "none" leaves the accent to the voice
+        body["generationConfig"]["speechConfig"]["languageCode"] = LANGUAGE
     request = urllib.request.Request(
         f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent",
         data=json.dumps(body).encode(), headers={"x-goog-api-key": api_key(), "Content-Type": "application/json"})
@@ -68,6 +71,25 @@ def synthesise(text: str, voice: str, style: str) -> bytes:
     raise SystemExit("Gemini TTS failed after retries")
 
 
+def trim_tail_burst(pcm: bytes, rate: int = 24000) -> bytes:
+    """Gemini 3.8 Flash TTS ends clips with ~0.13 s of near-full-scale noise after the speech has stopped (heard as a
+    scratch between scenes on 4 October). Drop it: walk back from the end through anything loud to the silence."""
+    a = array.array("h"); a.frombytes(pcm[: len(pcm) // 2 * 2])
+    hop = rate // 100
+
+    def level(i: int) -> float:
+        seg = a[i:i + hop]
+        return 10 * math.log10(sum(v * v for v in seg) / max(1, len(seg)) / 32768 ** 2 + 1e-12)
+
+    n = len(a)
+    if n < 3 * hop or level(n - 3 * hop) < -30:
+        return pcm
+    i, lo = n - hop, max(0, n - int(0.4 * rate))
+    while i > lo and level(i) > -50:
+        i -= hop
+    return a[:i].tobytes() if i > lo else pcm
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("out")
@@ -81,7 +103,7 @@ def main() -> None:
     MODEL = args.model or MODEL
     LANGUAGE = args.language or LANGUAGE
     # the model blends "MendelEvolve" into "Mendeleev"; two words are read correctly
-    pcm = synthesise(args.text.replace("MendelEvolve", "Mendel Evolve"), args.voice, args.style)
+    pcm = trim_tail_burst(synthesise(args.text.replace("MendelEvolve", "Mendel Evolve"), args.voice, args.style))
     with wave.open(args.out, "wb") as out:
         out.setnchannels(1)
         out.setsampwidth(2)
