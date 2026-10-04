@@ -106,6 +106,14 @@ def _fmt_ci(d: dict | None) -> str:
     return f"{d['effect']:+.3g} [{lo:+.3g}, {hi:+.3g}]"
 
 
+# What an inventor reads instead of the ledger when the run is the feedback ablation (ledger="none").
+LEDGER_WITHHELD = """# Ledger
+
+Withheld in this run. No record of earlier ideas or of their measured effects is available.
+Work from PROBLEM.md and the solver source.
+"""
+
+
 def render_ledger(state: dict) -> str:
     """LEDGER.md: what has been tried and what each idea measured."""
     lines = ["# Ledger", ""]
@@ -193,7 +201,11 @@ class ClaudeCLIInventor:
     """Runs a headless Claude Code session, restricted to editing the sandbox and running harness tools."""
 
     def __init__(self, model: str = "sonnet", effort: str = "high", minutes: int = 12,
-                 timeout_s: int = 1500, max_budget_usd: float | None = None, billing: str = "subscription"):
+                 timeout_s: int = 1500, max_budget_usd: float | None = None, billing: str = "subscription",
+                 ledger: str = "full"):
+        if ledger not in ("full", "none"):
+            raise ValueError("ledger must be 'full' or 'none'")
+        self.ledger = ledger  # "none" withholds LEDGER.md: the ablation of the measured feedback
         self.model = model
         self.effort = effort
         self.minutes = minutes
@@ -228,7 +240,7 @@ class ClaudeCLIInventor:
                         ignore=shutil.ignore_patterns("solver", "*.o", "__pycache__", ".DS_Store"))
         problem_md, train = render_problem(problem_dir, trunk)
         (sandbox / "PROBLEM.md").write_text(problem_md)
-        (sandbox / "LEDGER.md").write_text(render_ledger(state))
+        (sandbox / "LEDGER.md").write_text(render_ledger(state) if self.ledger == "full" else LEDGER_WITHHELD)
         (sandbox / "reference").mkdir()
         shutil.copy(problem_dir / "evaluate.py", sandbox / "reference" / "evaluate.py")
 
