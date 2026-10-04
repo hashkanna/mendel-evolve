@@ -79,7 +79,8 @@ def _execute(payload: dict, parallel: int = 1) -> list[dict]:
 
 # Lanes. LANES maps a function name to the number of jobs it runs side by side (its reserved cores).
 # The one-core lanes are kept for driver processes that started before the wide lanes existed.
-LANES = {"run_batch": 1, "run_batch_bg": 1, "run_batch_x8": 8, "run_batch_bg_x16": 16}
+LANES = {"run_batch": 1, "run_batch_bg": 1, "run_batch_x8": 8, "run_batch_bg_x16": 16, "run_batch_bg_x64": 64,
+         "run_batch_e8": 8}
 
 
 @app.function(image=image, cpu=1.0, memory=1024, timeout=3600, max_containers=4)
@@ -92,13 +93,25 @@ def run_batch_bg(payload: dict) -> list[dict]:
     return _execute(payload)
 
 
-@app.function(image=image, cpu=8.0, memory=8192, timeout=3600, max_containers=45)
+@app.function(image=image, cpu=8.0, memory=8192, timeout=3600, max_containers=35)
 def run_batch_x8(payload: dict) -> list[dict]:
     """The engine's lane: short paired experiments, eight at a time per container."""
     return _execute(payload, parallel=8)
 
 
-@app.function(image=image, cpu=16.0, memory=16384, timeout=3 * 3600, max_containers=50)
+@app.function(image=image, cpu=8.0, memory=8192, timeout=3600, max_containers=10)
+def run_batch_e8(payload: dict) -> list[dict]:
+    """A second engine lane with its own queue, so engines are not stuck behind a long search on run_batch_x8."""
+    return _execute(payload, parallel=8)
+
+
+@app.function(image=image, cpu=16.0, memory=16384, timeout=3 * 3600, max_containers=30)
 def run_batch_bg_x16(payload: dict) -> list[dict]:
     """The campaign lane: long record searches, sixteen at a time per container."""
     return _execute(payload, parallel=16)
+
+
+@app.function(image=image, cpu=64.0, memory=65536, timeout=3 * 3600, max_containers=20)
+def run_batch_bg_x64(payload: dict) -> list[dict]:
+    """The widest lane: the plan caps containers, not cores, so 64 jobs per container go furthest."""
+    return _execute(payload, parallel=64)
