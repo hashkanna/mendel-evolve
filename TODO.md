@@ -31,7 +31,7 @@ What either needs before it is worth writing:
   methods paper.
 
 What to avoid: rushing it out on the weekend's evidence; describing the records as discoveries made by
-evolution (11 of the 14 came from the hand-written seed solver); claiming the efficiency idea as new (X-evolve
+evolution (most of the record sets came from the hand-written seed solver); claiming the efficiency idea as new (X-evolve
 has it, see the README). Nearly all code and analysis here was written by an AI agent under direction; say so
 plainly in anything submitted.
 
