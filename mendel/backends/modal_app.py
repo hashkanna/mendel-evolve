@@ -80,7 +80,7 @@ def _execute(payload: dict, parallel: int = 1) -> list[dict]:
 # Lanes. LANES maps a function name to the number of jobs it runs side by side (its reserved cores).
 # The one-core lanes are kept for driver processes that started before the wide lanes existed.
 LANES = {"run_batch": 1, "run_batch_bg": 1, "run_batch_x8": 8, "run_batch_bg_x16": 16, "run_batch_bg_x64": 64,
-         "run_batch_e8": 8}
+         "run_batch_e8": 8, "run_batch_p64": 64}
 
 
 @app.function(image=image, cpu=1.0, memory=1024, timeout=3600, max_containers=4)
@@ -93,7 +93,7 @@ def run_batch_bg(payload: dict) -> list[dict]:
     return _execute(payload)
 
 
-@app.function(image=image, cpu=8.0, memory=8192, timeout=3600, max_containers=35)
+@app.function(image=image, cpu=8.0, memory=8192, timeout=3600, max_containers=8)
 def run_batch_x8(payload: dict) -> list[dict]:
     """The engine's lane: short paired experiments, eight at a time per container."""
     return _execute(payload, parallel=8)
@@ -111,7 +111,13 @@ def run_batch_bg_x16(payload: dict) -> list[dict]:
     return _execute(payload, parallel=16)
 
 
-@app.function(image=image, cpu=64.0, memory=65536, timeout=3 * 3600, max_containers=20)
+@app.function(image=image, cpu=64.0, memory=65536, timeout=3 * 3600, max_containers=31)
 def run_batch_bg_x64(payload: dict) -> list[dict]:
     """The widest lane: the plan caps containers, not cores, so 64 jobs per container go furthest."""
+    return _execute(payload, parallel=64)
+
+
+@app.function(image=image, cpu=64.0, memory=65536, timeout=3 * 3600, max_containers=16)
+def run_batch_p64(payload: dict) -> list[dict]:
+    """A second 64-wide lane with its own queue, for paired comparisons that should not wait behind long searches."""
     return _execute(payload, parallel=64)

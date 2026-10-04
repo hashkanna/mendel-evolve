@@ -1,0 +1,70 @@
+[
+ {
+  "name": "control",
+  "solver": "solvers/no5sphere",
+  "config": {
+   "centrosymmetric": true
+  }
+ },
+ {
+  "name": "seed",
+  "solver": "solvers/no5sphere",
+  "config": {}
+ },
+ {
+  "name": "mr",
+  "solver": "runs/p60/proposals/gen001/1/sandbox/solver",
+  "config": {
+   "centrosymmetric": true,
+   "multi_recreate": true
+  }
+ },
+ {
+  "name": "mr_m6",
+  "solver": "runs/p60/proposals/gen001/1/sandbox/solver",
+  "config": {
+   "centrosymmetric": true,
+   "multi_recreate": true,
+   "multi_recreate_m": 6
+  }
+ },
+ {
+  "name": "mr+guided",
+  "solver": "runs/p60/proposals/gen001/1/sandbox/solver",
+  "config": {
+   "centrosymmetric": true,
+   "multi_recreate": true,
+   "guided_ruin": true
+  }
+ },
+ {
+  "name": "mr+tuned",
+  "solver": "runs/p60/proposals/gen001/1/sandbox/solver",
+  "config": {
+   "patience": 30531,
+   "kick_fraction": 0.74036570774508,
+   "accept_worse_prob": 0.013850333408982469,
+   "centrosymmetric": true,
+   "multi_recreate": true
+  }
+ },
+ {
+  "name": "mr+tuned+guided",
+  "solver": "runs/p60/proposals/gen001/1/sandbox/solver",
+  "config": {
+   "patience": 30531,
+   "kick_fraction": 0.74036570774508,
+   "accept_worse_prob": 0.013850333408982469,
+   "centrosymmetric": true,
+   "multi_recreate": true,
+   "guided_ruin": true
+  }
+ },
+ {
+  "name": "mr_nocentro",
+  "solver": "runs/p60/proposals/gen001/1/sandbox/solver",
+  "config": {
+   "multi_recreate": true
+  }
+ }
+]
