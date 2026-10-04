@@ -1,0 +1,16 @@
+{"instance": {"n": 16}, "seed": 1000, "time": 60.0, "ok": true, "valid": true, "score": 12.889229907694029, "error": null, "stats": {"iters": 61, "cpu": 60.24}}
+{"instance": {"n": 16}, "seed": 1001, "time": 60.0, "ok": true, "valid": true, "score": 12.889229907694029, "error": null, "stats": {"iters": 65, "cpu": 60.25}}
+{"instance": {"n": 16}, "seed": 1002, "time": 60.0, "ok": true, "valid": true, "score": 12.889229907694025, "error": null, "stats": {"iters": 67, "cpu": 60.07}}
+{"instance": {"n": 16}, "seed": 1003, "time": 60.0, "ok": true, "valid": true, "score": 12.88922990769402, "error": null, "stats": {"iters": 62, "cpu": 60.11}}
+{"instance": {"n": 16}, "seed": 1004, "time": 60.0, "ok": true, "valid": true, "score": 12.889229907694036, "error": null, "stats": {"iters": 66, "cpu": 60.82}}
+{"instance": {"n": 16}, "seed": 1005, "time": 60.0, "ok": true, "valid": true, "score": 12.889229907694025, "error": null, "stats": {"iters": 64, "cpu": 60.11}}
+{"instance": {"n": 16}, "seed": 1006, "time": 60.0, "ok": true, "valid": true, "score": 12.889229907694032, "error": null, "stats": {"iters": 55, "cpu": 60.44}}
+{"instance": {"n": 16}, "seed": 1007, "time": 60.0, "ok": true, "valid": true, "score": 12.889229907694025, "error": null, "stats": {"iters": 61, "cpu": 60.63}}
+{"instance": {"n": 14, "d": 3}, "seed": 1000, "time": 60.0, "ok": true, "valid": true, "score": 4.168222651595989, "error": null, "stats": {"iters": 56, "cpu": 60.17}}
+{"instance": {"n": 14, "d": 3}, "seed": 1001, "time": 60.0, "ok": true, "valid": true, "score": 4.165783474580096, "error": null, "stats": {"iters": 58, "cpu": 60.22}}
+{"instance": {"n": 14, "d": 3}, "seed": 1002, "time": 60.0, "ok": true, "valid": true, "score": 4.165783474580074, "error": null, "stats": {"iters": 59, "cpu": 60.42}}
+{"instance": {"n": 14, "d": 3}, "seed": 1003, "time": 60.0, "ok": true, "valid": true, "score": 4.168222651595969, "error": null, "stats": {"iters": 52, "cpu": 60.23}}
+{"instance": {"n": 14, "d": 3}, "seed": 1004, "time": 60.0, "ok": true, "valid": true, "score": 4.168178881807909, "error": null, "stats": {"iters": 60, "cpu": 60.32}}
+{"instance": {"n": 14, "d": 3}, "seed": 1005, "time": 60.0, "ok": true, "valid": true, "score": 4.168222651595965, "error": null, "stats": {"iters": 55, "cpu": 60.25}}
+{"instance": {"n": 14, "d": 3}, "seed": 1006, "time": 60.0, "ok": true, "valid": true, "score": 4.1727815332802365, "error": null, "stats": {"iters": 58, "cpu": 60.27}}
+{"instance": {"n": 14, "d": 3}, "seed": 1007, "time": 60.0, "ok": true, "valid": true, "score": 4.169741827640192, "error": null, "stats": {"iters": 55, "cpu": 60.35}}

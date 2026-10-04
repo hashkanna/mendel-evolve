@@ -1,0 +1,8 @@
+instance   ours    mean  known  verified  record
+n16       12.88922990769402 12.8892 12.889229907717521  yes       
+d3n14     4.165783474580074 4.16837  4.165  yes       
+estimated Modal spend for this call: $0.02
+
+real	15m8.432s
+user	0m1.363s
+sys	0m0.382s

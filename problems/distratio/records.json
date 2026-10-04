@@ -1,0 +1,42 @@
+{
+  "problem": "Max/min distance ratio, squared: R = (max_{i<j} |p_i - p_j| / min_{i<j} |p_i - p_j|)^2, minimise",
+  "read_at_utc": "2026-10-03T21:40:10Z",
+  "access": "read-only GET requests; nothing was registered, posted or submitted anywhere",
+  "leaderboard": {
+    "name": "EinsteinArena, problem 5 (min-distance-ratio-2d), n = 16, d = 2",
+    "problem_url": "https://einsteinarena.com/api/problems/min-distance-ratio-2d",
+    "problem_read_at_utc": "2026-10-03T21:41:02Z",
+    "solutions_url": "https://einsteinarena.com/api/solutions/best?problem_id=5&limit=3",
+    "solutions_read_at_utc": "2026-10-03T21:40:10Z",
+    "scoring": "minimize",
+    "min_improvement": 1e-07,
+    "min_improvement_note": "field minImprovement of the problem record; a new best must be lower than the current one by at least this much, i.e. at most 12.889229807717521",
+    "local_copies": "results/distratio/arena/ (problem record with the verifier source, and the three top solutions)",
+    "top": [
+      {"rank": 1, "id": 14,   "agent": "Together-AI",        "score": 12.889229907717521, "created": "2026-03-19T02:25:05.350Z"},
+      {"rank": 2, "id": 1347, "agent": "CHRONOS",            "score": 12.889229907717521, "created": "2026-04-10T00:22:44.390Z", "note": "same coordinates as id 14"},
+      {"rank": 3, "id": 1135, "agent": "alpha_omega_agents", "score": 12.88922990772178,  "created": "2026-04-07T18:42:40.975Z"}
+    ]
+  },
+  "evaluator_agreement": {
+    "how": "uv run python results/distratio/arena_agreement.py (macOS arm64, numpy 2.5.3): evaluate.evaluate({'n': 16, 'd': 2}, vectors) and python problems/distratio/verify.py on a certificate per solution",
+    "result": "evaluate.py returns the arena's published score bit for bit for all three solutions (12.889229907717521, 12.889229907717521, 12.88922990772178). verify.py passes all three; the exact rational values are 12.889229907717516, 12.889229907717516 and 12.889229907721777 (exact minus float about -4.6e-15 and -4.1e-15: the float verifier's sqrt-then-square rounding)."
+  },
+  "other_published_values": [
+    {"instance": {"n": 16, "d": 2}, "value": 12.889266112, "source": "AlphaEvolve results notebook, section B.8 (https://raw.githubusercontent.com/google-deepmind/alphaevolve_results/master/mathematical_results.ipynb), read 2026-10-03T21:42:05Z", "status": "reproduced from the published coordinates (local copy results/distratio/alphaevolve_constructions.json): exact value 12.88926611203463. Worse than the arena's best."},
+    {"instance": {"n": 14, "d": 3}, "value": 4.165849767, "source": "AlphaEvolve results notebook, section B.8, read 2026-10-03T21:42:05Z", "status": "reproduced from the published coordinates: exact value 4.1658497672256525"},
+    {"instance": {"n": 14, "d": 3}, "value": "4.165+", "source": "Erich Friedman, https://erich-friedman.github.io/packing/maxmin3/, read 2026-10-03T21:45Z: 'Found by M. Sun and E. Samanta in June 2026'", "status": "only three decimals displayed; no coordinates read. Listed instead of AlphaEvolve's value, so presumably at most 4.165849767. Our seed solver reaches 4.16578347; whether that is below the Sun-Samanta value is unknown, so NO record is claimed."},
+    {"instance": {"n": 16, "d": 2}, "value": "12.889+", "source": "Erich Friedman, https://erich-friedman.github.io/packing/maxmin/, read 2026-10-03T21:41Z: 'Found by Ryan Chi and d/dx in September 2026'", "status": "three decimals only; consistent with the arena value"},
+    {"instance": {"n": 15, "d": 2}, "value": "12.038+", "source": "Friedman maxmin/, David Cantrell 2009", "status": "truncated display"},
+    {"instance": {"n": 28, "d": 2}, "value": "24.981+", "source": "Friedman maxmin/, Charles Audet et al.", "status": "truncated display"},
+    {"instance": {"n": 30, "d": 2}, "value": "26.879+", "source": "Friedman maxmin/, Charles Audet et al.", "status": "truncated display"},
+    {"instance": {"n": 8, "d": 2}, "value": "1/(2 - 2cos(pi/7)) = 5.048917339522307", "source": "Friedman maxmin/, proved by Bezdek and Fodor 1999", "status": "closed form"},
+    {"instance": {"n": 13, "d": 3}, "value": "3.947+", "source": "Friedman maxmin3/, David Cantrell 2009", "status": "truncated display"},
+    {"instance": {"n": 8, "d": 3}, "value": "1 + sqrt(2) = 2.414213562373095", "source": "Friedman maxmin3/ (square antiprism)", "status": "closed form"}
+  ],
+  "our_values": {
+    "note": "Seed solver, local runs, checked with evaluate.py; none is claimed as a record.",
+    "n16": {"value": 12.889229907694041, "how": "solvers/distratio defaults, seed 1, --iters 20 (about 1 CPU second)", "vs_arena": "2.3e-11 below the arena's best, far less than minImprovement 1e-7: the same optimum, polished further; not a record"},
+    "d3n14": {"value": 4.165783474580089, "how": "defaults, seed 1, --iters 20", "vs_published": "below AlphaEvolve's 4.165849767, but the newer Sun-Samanta value is known only as 4.165+; not claimed"}
+  }
+}
