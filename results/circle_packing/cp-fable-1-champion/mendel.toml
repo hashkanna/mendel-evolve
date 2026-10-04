@@ -1,0 +1,2 @@
+problem = "circle_packing"
+run = "python solver.py"

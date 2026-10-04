@@ -1,0 +1,154 @@
+{
+  "genes": [
+    {
+      "name": "inner_count",
+      "kind": "int",
+      "default": 8,
+      "low": 1,
+      "high": 16,
+      "log": false,
+      "of": null,
+      "hypothesis": "Number of circles in the ring around the central circle (8 in OpenEvolve's initial program).",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "inner_radius",
+      "kind": "float",
+      "default": 0.3,
+      "low": 0.1,
+      "high": 0.45,
+      "log": false,
+      "of": null,
+      "hypothesis": "Distance of the inner ring from the centre of the square (0.3 in OpenEvolve's initial program).",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "outer_count",
+      "kind": "int",
+      "default": 16,
+      "low": 1,
+      "high": 32,
+      "log": false,
+      "of": null,
+      "hypothesis": "Number of circles in the outer ring (16 in OpenEvolve's initial program). Circles beyond the last ring slot are left at the origin, as the 26th is there.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "outer_radius",
+      "kind": "float",
+      "default": 0.7,
+      "low": 0.3,
+      "high": 0.75,
+      "log": false,
+      "of": null,
+      "hypothesis": "Distance of the outer ring from the centre of the square (0.7 in OpenEvolve's initial program, which is outside the square, so the clip flattens the ring onto the sides).",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "clip_margin",
+      "kind": "float",
+      "default": 0.01,
+      "low": 0.001,
+      "high": 0.2,
+      "log": true,
+      "of": null,
+      "hypothesis": "Centres are clipped into [margin, 1 - margin] (0.01 in OpenEvolve's initial program); it is the radius available to a circle pushed against a side.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "local_perturbation",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Greedy local perturbation of circle centers: randomly move one circle by a small amount each iteration, keeping improvements. This introduces search dynamics that gradually refine the packing.",
+      "author": "llm:claude-haiku-4-5",
+      "added_gen": 1,
+      "predicted": "+0.5 to +1.0 points on n >= 12"
+    },
+    {
+      "name": "perturbation_radius",
+      "kind": "float",
+      "default": 0.02,
+      "low": 0.005,
+      "high": 0.1,
+      "log": false,
+      "of": "local_perturbation",
+      "hypothesis": "Standard deviation of the Gaussian perturbation applied to each circle centre.",
+      "author": "llm:claude-haiku-4-5",
+      "added_gen": 1
+    },
+    {
+      "name": "azimuth_phase",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Offset every other ring by half the angular spacing to reduce inter-ring blocking and improve packing density in the ring-based structure.",
+      "author": "llm:claude-haiku-4-5",
+      "added_gen": 2,
+      "predicted": "+0.01 to +0.03 points on n>=24"
+    },
+    {
+      "name": "efficient_pair_distances",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Vectorize pairwise distance computations using numpy broadcasting in compute_max_radii to reduce Python loop overhead and improve throughput, enabling more iterations within the same time budget.",
+      "author": "llm:claude-haiku-4-5",
+      "added_gen": 3,
+      "predicted": "+0.01 to +0.02 points on instances with more iterations; +0 if overhead cancels benefit for n=26"
+    },
+    {
+      "name": "vectorized_separation",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Vectorize the separation loop using numpy boolean operations to check for conflicting centers, replacing the Python generator comprehension with array operations to reduce interpreter overhead and improve throughput when resolving duplicate or near-duplicate center positions.",
+      "author": "llm:claude-haiku-4-5",
+      "added_gen": 4,
+      "predicted": "+0.005 to +0.02 points through reduced separation overhead"
+    },
+    {
+      "name": "lazy_separation",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Skip expensive separation verification when centers are already distinct and clipped, avoiding redundant distance checks and improving throughput by reducing work per iteration.",
+      "author": "llm:claude-haiku-4-5",
+      "added_gen": 5,
+      "predicted": "+0.01 to +0.03 points through reduced separation overhead in the improve loop"
+    },
+    {
+      "name": "occasional_jumps",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "With low probability each iteration, make large random perturbations to several circles simultaneously, allowing escape from plateaus and exploring distant regions of the search space without expensive convergence.",
+      "author": "llm:claude-haiku-4-5",
+      "added_gen": 7,
+      "predicted": "+0.05 to +0.15 points by enabling occasional large moves that escape plateaus"
+    },
+    {
+      "name": "jump_probability",
+      "kind": "float",
+      "default": 0.02,
+      "low": 0.005,
+      "high": 0.2,
+      "log": false,
+      "of": "occasional_jumps",
+      "hypothesis": "Probability per iteration of making a large random jump to escape local optima.",
+      "author": "llm:claude-haiku-4-5",
+      "added_gen": 7
+    },
+    {
+      "name": "jump_count",
+      "kind": "int",
+      "default": 2,
+      "low": 1,
+      "high": 5,
+      "log": false,
+      "of": "occasional_jumps",
+      "hypothesis": "Number of circles to perturb in each jump move.",
+      "author": "llm:claude-haiku-4-5",
+      "added_gen": 7
+    }
+  ]
+}

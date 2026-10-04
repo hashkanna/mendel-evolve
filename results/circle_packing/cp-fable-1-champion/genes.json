@@ -1,0 +1,118 @@
+{
+  "genes": [
+    {
+      "name": "inner_count",
+      "kind": "int",
+      "default": 8,
+      "low": 1,
+      "high": 16,
+      "log": false,
+      "of": null,
+      "hypothesis": "Number of circles in the ring around the central circle (8 in OpenEvolve's initial program).",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "inner_radius",
+      "kind": "float",
+      "default": 0.3,
+      "low": 0.1,
+      "high": 0.45,
+      "log": false,
+      "of": null,
+      "hypothesis": "Distance of the inner ring from the centre of the square (0.3 in OpenEvolve's initial program).",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "outer_count",
+      "kind": "int",
+      "default": 16,
+      "low": 1,
+      "high": 32,
+      "log": false,
+      "of": null,
+      "hypothesis": "Number of circles in the outer ring (16 in OpenEvolve's initial program). Circles beyond the last ring slot are left at the origin, as the 26th is there.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "outer_radius",
+      "kind": "float",
+      "default": 0.7,
+      "low": 0.3,
+      "high": 0.75,
+      "log": false,
+      "of": null,
+      "hypothesis": "Distance of the outer ring from the centre of the square (0.7 in OpenEvolve's initial program, which is outside the square, so the clip flattens the ring onto the sides).",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "clip_margin",
+      "kind": "float",
+      "default": 0.01,
+      "low": 0.001,
+      "high": 0.2,
+      "log": true,
+      "of": null,
+      "hypothesis": "Centres are clipped into [margin, 1 - margin] (0.01 in OpenEvolve's initial program); it is the radius available to a circle pushed against a side.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "lattice_start",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Start from the best of an enumerated family of lattice packings (an m x m grid of touching circles with small circles in its holes, or staggered rows of equal circles) with their known radii, instead of the two rings, because near-equal circles filling the whole square have a far larger sum of radii than rings clipped onto the sides.",
+      "predicted": "+1.5 points at n26 (about 2.54 against 0.96), and a similar gain on n24 to n32",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "slsqp_polish",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Jointly optimise all centres and radii as one smooth constrained program (maximise the sum of radii subject to the pair and wall inequalities, SLSQP with analytic Jacobians), restarted by basin hopping from a shaken copy of the best packing, because circles of unequal size that grow while their neighbours make room beat any lattice with fixed radii.",
+      "predicted": "+0.06 to +0.09 points at n26 over lattice_start alone (about 2.60 to 2.63 against 2.541), similar on n24 to n32",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 2
+    },
+    {
+      "name": "slsqp_sigma",
+      "kind": "float",
+      "default": 0.05,
+      "low": 0.005,
+      "high": 0.2,
+      "log": true,
+      "of": "slsqp_polish",
+      "hypothesis": "Standard deviation of the Gaussian shake applied to the best centres before each SLSQP run.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 2
+    },
+    {
+      "name": "slsqp_shrink",
+      "kind": "float",
+      "default": 0.5,
+      "low": 0.1,
+      "high": 1.0,
+      "log": false,
+      "of": "slsqp_polish",
+      "hypothesis": "Factor applied to the best radii at the start of each SLSQP run; smaller leaves more room to rearrange.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 2
+    },
+    {
+      "name": "slsqp_maxiter",
+      "kind": "int",
+      "default": 100,
+      "low": 30,
+      "high": 400,
+      "log": true,
+      "of": "slsqp_polish",
+      "hypothesis": "Iteration cap of one SLSQP run (one basin hop).",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 2
+    }
+  ]
+}
