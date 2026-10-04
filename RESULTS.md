@@ -39,7 +39,7 @@ The first 13 (with 43 at n = 16 and 80 at n = 31), and the sets for n = 33 to 40
 ([comment](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530)); the first three had been posted there the day before.
 
 We equal the published value at n = 13, 14 and 18. For n = 33 to 40, where no sets are
-published (the n = 32 set implies 82 because C is non-decreasing), the searches give 86, 90, 91, 94, 96, 98, 102, 104.
+published (the n = 32 set implies 82 because C is non-decreasing), the searches give 86, 90, 91, 94, 96, 99, 102, 104.
 
 Every certificate in `results/no5sphere/certificates` (the 15 above, earlier sets at some sizes, and those for
 n = 33 to 40) was checked over every 5-subset by three independent exact integer methods:
