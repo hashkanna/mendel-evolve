@@ -53,8 +53,11 @@ of the hackathon, before any idea had been evolved, with its `centrosymmetric` s
 and 26. The full search ran 100 to 150 seeds per size at 90 to 480 CPU-seconds, with and without the switch,
 for every size from 13 to 32, and 40 seeds at 720 CPU-seconds for 33 to 40: about 520 core-hours.
 
-This is the phenomenon that "Evolution or Illusion?" and "What Do Evolutionary Coding Agents Evolve?"
-describe: a strong model's first program plus compute already reaches the frontier.
+A strong model's first program plus compute already reaches the frontier here. That is the situation the two
+studies in the README's related work warn about: a high score need not come from evolved structure
+([What Do Evolutionary Coding Agents Evolve?](https://arxiv.org/abs/2605.20086)), and what looks best depends
+on how many seeds and how long a budget one measures with
+([Evolution or Illusion?](https://arxiv.org/abs/2609.19799)).
 
 ### What the `centrosymmetric` switch is worth, on the statistic that finds records
 

@@ -14,9 +14,9 @@ but no genes. MendelEvolve evolves ideas instead of programs, and measures what 
 
 1. **The problem.** AlphaEvolve, OpenEvolve and CodeEvolve have an LLM mutate whole programs and keep the high
    scorers. They find good algorithms, but afterwards nobody can say which idea produced the result. A study of their
-   search traces this year found that about 30% of the lines they add are lines they had previously deleted, and
-   that a high score can come from re-tuned constants or evaluator overfitting rather than new structure. The
-   question in the literature is now "evolution or illusion?"
+   search traces this year (EvoTrace, arXiv:2605.20086) found that about 30% of the lines they add are lines they
+   had previously deleted, and that a high score can come from re-tuned constants or evaluator overfitting
+   rather than new structure. A second (arXiv:2609.19799) asks in its title: "evolution or illusion?"
 2. **The idea.** In MendelEvolve every idea an LLM proposes becomes a *gene*: a named switch in the solver with a
    stated hypothesis. The LLM only invents genes. Classical search recombines and tunes them, with no LLM calls.
    Then we do what geneticists do: knock each gene out, singly and in pairs, on seeds the tuner never saw, and

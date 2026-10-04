@@ -4,9 +4,13 @@
 autoresearch framework that evolves *ideas* instead of whole programs, and measures what each idea is worth.
 
 Evolutionary coding agents such as AlphaEvolve and OpenEvolve mutate programs and keep the high scorers.
-They find good algorithms, but afterwards nobody can say which idea produced the result, and recent studies
-of their search traces ask whether the gains are new structure, re-tuned constants or evaluator overfitting.
-They are Darwin without Mendel: selection, but no genes.
+They find good algorithms, but afterwards nobody can say which idea produced the result. A study of their
+search traces ([What Do Evolutionary Coding Agents Evolve?](https://arxiv.org/abs/2605.20086), May 2026) finds
+that a high score can come from new structure, a re-tuned strategy, recombined known ideas or overfitting to
+the evaluator, and that about 30% of the lines added during search are lines deleted earlier. Another
+([Evolution or Illusion?](https://arxiv.org/abs/2609.19799), September 2026) shows that which method looks
+best depends on how the budget is split between seeds and iterations. They are Darwin without Mendel:
+selection, but no genes.
 
 In Mendel every idea is a **gene**: a named switch in the solver with a stated hypothesis.
 
@@ -209,9 +213,14 @@ Mendel combines ingredients that exist separately, and we want to be exact about
 - Keeping a memory of which changes moved the score is in
   [Component-Aware Feedback](https://arxiv.org/abs/2609.38639) and [DeltaEvolve](https://arxiv.org/abs/2602.02919),
   from differences between a program and its parent.
-- The questions Mendel is built to answer come from
-  [What Do Evolutionary Coding Agents Evolve?](https://arxiv.org/abs/2605.20086) and
-  [Evolution or Illusion?](https://arxiv.org/abs/2609.19799).
+- The questions Mendel is built to answer come from two studies.
+  [What Do Evolutionary Coding Agents Evolve?](https://arxiv.org/abs/2605.20086) (the EvoTrace dataset) asks
+  which mechanism a score gain reflects and tests it by replaying search states with interventions after the
+  fact; Mendel builds the interventions into the search.
+  [Evolution or Illusion? Rethinking Evaluation in LLM Evolutionary Search](https://arxiv.org/abs/2609.19799)
+  shows that rankings of methods change with the split of the budget between seeds and iterations. Our
+  problem 60 result is an instance of that: the evolved solver looks neutral at 48 short runs and better at
+  1,600 long ones.
 
 What we have not found elsewhere, to our knowledge: interventional attribution inside the search loop
 (knocking out every idea of every champion, singly and in pairs), a representation that forces each idea
