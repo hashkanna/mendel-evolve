@@ -55,22 +55,23 @@
   <table>
 <!-- records:start -->
     <tr><th>n</th><th>ours</th><th>best published</th></tr>
-    <tr><td>15</td><td><b>41</b></td><td>40</td></tr>
+    <tr><td>15</td><td><b>42</b></td><td>40</td></tr>
     <tr><td>16</td><td><b>44</b></td><td>42</td></tr>
     <tr><td>17</td><td><b>46</b></td><td>45</td></tr>
     <tr><td>19</td><td><b>51</b></td><td>50</td></tr>
     <tr><td>20</td><td><b>54</b></td><td>53</td></tr>
     <tr><td>21</td><td><b>56</b></td><td>55</td></tr>
+    <tr><td>22</td><td><b>59</b></td><td>58</td></tr>
     <tr><td>23</td><td><b>62</b></td><td>59</td></tr>
     <tr><td>24</td><td><b>64</b></td><td>62</td></tr>
     <tr><td>25</td><td><b>66</b></td><td>65</td></tr>
-    <tr><td>26</td><td><b>69</b></td><td>67</td></tr>
+    <tr><td>26</td><td><b>70</b></td><td>67</td></tr>
     <tr><td>27</td><td><b>72</b></td><td>70</td></tr>
     <tr><td>28</td><td><b>74</b></td><td>71</td></tr>
     <tr><td>29</td><td><b>76</b></td><td>75</td></tr>
-    <tr><td>30</td><td><b>79</b></td><td>76</td></tr>
+    <tr><td>30</td><td><b>80</b></td><td>76</td></tr>
     <tr><td>31</td><td><b>82</b></td><td>79</td></tr>
-    <tr><td>32</td><td><b>84</b></td><td>82</td></tr>
+    <tr><td>32</td><td><b>85</b></td><td>82</td></tr>
 <!-- records:end -->
   </table>
   <p class="note">Each set is verified by three independent exact checkers over every 5-point subset.
@@ -79,9 +80,9 @@
   86, 90, 91, 94, 96, 98, 102 and 104 points, checked the same way.</p>
 
   <h2>Where those records came from</h2>
-  <p>Eleven from the hand-written seed solver, two (n = 16, 19) from the solver the engine evolved, and three
-  (n = 23, 26, 31) from searches that ran the seed solver with one LLM idea switched on. Which search found a
-  set says little, so we ran knockouts at record scale, with every arm of a seed in one container. One of the
+  <p>Eight from the hand-written seed solver, four (n = 15, 16, 19, 22) from the solver the engine evolved, three
+  (n = 26, 30, 32) from searches with the LLM idea <code>multi_recreate</code> switched on, and two from other idea
+  arms. Which search found a set says little, so we ran knockouts at record scale, with every arm of a seed in one container. One of the
   seed solver's own switches takes the share of record-beating runs from 10% to 34%. The engine's evolved
   champion is worth a quarter of a point over the seed solver. And one LLM idea that the engine had rejected,
   <code>multi_recreate</code>, is worth +0.19 to +0.31 points. The engine's short screens saw none of the three:

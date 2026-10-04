@@ -3,7 +3,7 @@
 Everything here comes from runs made during the hackathon (3-4 October 2026). Numbers are filled in as runs
 finish; a section that says "pending" has no result yet.
 
-## Problem 60: new lower bounds at 16 grid sizes
+## Problem 60: new lower bounds at 17 grid sizes
 
 C(n) is the size of the largest subset of an n x n x n grid with no 5 points on a common sphere or plane.
 "Published" is the best value we could find in public sources on 3 October 2026: the
@@ -16,28 +16,29 @@ new relative to the public sources we found, with no claim of optimality or guar
 <!-- records:start -->
 | n | ours | published | certificate | found by |
 |---|---|---|---|---|
-| 15 | **41** | 40 | [n15_41.json](results/no5sphere/certificates/n15_41.json) | seed solver with centrosymmetric |
+| 15 | **42** | 40 | [n15_42.json](results/no5sphere/certificates/n15_42.json) | evolved champion of run p60 with centrosymmetric |
 | 16 | **44** | 42 | [n16_44.json](results/no5sphere/certificates/n16_44.json) | evolved champion of run p60 with centrosymmetric |
 | 17 | **46** | 45 | [n17_46.json](results/no5sphere/certificates/n17_46.json) | seed solver with centrosymmetric |
 | 19 | **51** | 50 | [n19_51.json](results/no5sphere/certificates/n19_51.json) | champion variant (kick_escalate) with centrosymmetric |
 | 20 | **54** | 53 | [n20_54.json](results/no5sphere/certificates/n20_54.json) | seed solver with centrosymmetric |
 | 21 | **56** | 55 | [n21_56.json](results/no5sphere/certificates/n21_56.json) | seed solver with centrosymmetric |
+| 22 | **59** | 58 | [n22_59.json](results/no5sphere/certificates/n22_59.json) | evolved champion of run p60 with centrosymmetric |
 | 23 | **62** | 59 | [n23_62.json](results/no5sphere/certificates/n23_62.json) | seed solver with the LLM idea layer_ruin with centrosymmetric |
 | 24 | **64** | 62 | [n24_64.json](results/no5sphere/certificates/n24_64.json) | seed solver with centrosymmetric |
 | 25 | **66** | 65 | [n25_66.json](results/no5sphere/certificates/n25_66.json) | seed solver with centrosymmetric |
-| 26 | **69** | 67 | [n26_69.json](results/no5sphere/certificates/n26_69.json) | seed solver with the LLM idea load_ruin with centrosymmetric |
+| 26 | **70** | 67 | [n26_70.json](results/no5sphere/certificates/n26_70.json) | seed solver with the LLM idea multi_recreate with centrosymmetric |
 | 27 | **72** | 70 | [n27_72.json](results/no5sphere/certificates/n27_72.json) | seed solver with centrosymmetric |
 | 28 | **74** | 71 | [n28_74.json](results/no5sphere/certificates/n28_74.json) | seed solver with centrosymmetric |
 | 29 | **76** | 75 | [n29_76.json](results/no5sphere/certificates/n29_76.json) | seed solver with centrosymmetric |
-| 30 | **79** | 76 | [n30_79.json](results/no5sphere/certificates/n30_79.json) | seed solver with centrosymmetric |
+| 30 | **80** | 76 | [n30_80.json](results/no5sphere/certificates/n30_80.json) | seed solver with the LLM idea multi_recreate with centrosymmetric |
 | 31 | **82** | 79 | [n31_82.json](results/no5sphere/certificates/n31_82.json) | seed solver with the LLM idea region_kick with centrosymmetric |
-| 32 | **84** | 82 | [n32_84.json](results/no5sphere/certificates/n32_84.json) | seed solver with centrosymmetric |
+| 32 | **85** | 82 | [n32_85.json](results/no5sphere/certificates/n32_85.json) | seed solver with the LLM idea multi_recreate with centrosymmetric |
 <!-- records:end -->
 
 The first 13 (with 43 at n = 16 and 80 at n = 31), and the sets for n = 33 to 40, were posted on the record thread on 4 October 2026
 ([comment](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530)); the first three had been posted there the day before.
 
-We equal the published value at n = 13, 14, 18 and 22. For n = 33 to 40, where no sets are
+We equal the published value at n = 13, 14 and 18. For n = 33 to 40, where no sets are
 published (the n = 32 set implies 82 because C is non-decreasing), the searches give 86, 90, 91, 94, 96, 98, 102, 104.
 
 Every certificate in `results/no5sphere/certificates` (the 15 above, earlier sets at some sizes, and those for
@@ -51,15 +52,17 @@ Reproduce: `python results/no5sphere/third_check.py results/no5sphere/certificat
 
 ### How they were found, stated plainly
 
-Eleven of the 16 came from the **seed solver**, a from-scratch C ruin-and-recreate search written at the start
-of the hackathon, before any idea had been evolved, with its `centrosymmetric` switch on. Two (n = 16 and 19)
-came from the engine's evolved champion or a variant of it, with the same switch on; a deeper search with the
-seed solver later reached the same 44 at n = 16. Three (n = 23, 26 and 31) came from the deep screen described
-below, in arms that ran the seed solver with one LLM idea switched on; the seed solver alone later reached the
-same 82 at n = 31. The sources of those arms
-are in [results/no5sphere/idea_solvers](results/no5sphere/idea_solvers). The "found by" column
+Eight of the 17 came from the **seed solver**, a from-scratch C ruin-and-recreate search written at the start
+of the hackathon, before any idea had been evolved, with its `centrosymmetric` switch on. Four (n = 15, 16, 19
+and 22) came from the engine's evolved champion or a variant of it, with the same switch on. Three (n = 26, 30
+and 32) came from searches that ran the seed solver with the LLM idea `multi_recreate` switched on, on the same
+seeds and budgets as the seed solver's deepest searches. Two (n = 23 and 31) came from other arms of the first
+deep screen. The sources of the idea solvers are in
+[results/no5sphere/idea_solvers](results/no5sphere/idea_solvers). The "found by" column
 says which search found a set, not what caused it: the deep screen made about 4,500 runs per size across 30
-arms, so the arm that happened to find the best one is not evidence for its idea. The first search (24 seeds per size, 120 CPU-seconds, about $0.90 of Modal compute) gave n = 21, 23
+arms, so the arm that happened to find the best one is not evidence for its idea. What each change is worth
+is measured in the sections below; `multi_recreate` and the evolved champion both have measured effects, and
+the other ideas do not. The first search (24 seeds per size, 120 CPU-seconds, about $0.90 of Modal compute) gave n = 21, 23
 and 26. The full search ran 100 to 150 seeds per size at 90 to 480 CPU-seconds, with and without the switch,
 for every size from 13 to 32, and 40 seeds at 720 CPU-seconds for 33 to 40: about 520 core-hours.
 
