@@ -1,0 +1,34 @@
+{
+ "t": "2026-10-03T23:10:40",
+ "wall_seconds": 126.6,
+ "time_per_run": 60.0,
+ "seeds": 32,
+ "config": {
+  "tiebreak_critical": true,
+  "ascent_moves": true,
+  "refine_grid": true,
+  "grid_den": 24,
+  "step_max": 2,
+  "t0": 0.02,
+  "cycle": 5000,
+  "kick": 3,
+  "tie_accept": 0.2,
+  "ascent_prob": 0.05,
+  "refine_max": 4
+ },
+ "rows": [
+  {
+   "instance": "m15",
+   "runs": 32,
+   "valid_runs": 32,
+   "best_known": 1.125,
+   "value": 1.0911458333333333,
+   "mean": 1.01806640625,
+   "verified": true,
+   "certificate": "runs/ringloading-campaign/certificates/m15_1p0911458333333333.json",
+   "errors": [],
+   "independent_check": "pass",
+   "record": false
+  }
+ ]
+}

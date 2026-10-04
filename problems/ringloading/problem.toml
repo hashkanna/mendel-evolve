@@ -1,0 +1,41 @@
+name = "ringloading"
+title = "Ring loading problem (Tao et al. problem 61; EinsteinArena ring-loading-15, problem 30)"
+direction = "max"
+statement = """Choose m pairs of nonnegative rational numbers (u_i, v_i) with u_i + v_i <= 1 for every i.
+An adversary then picks, for every pair, either z_i = v_i or z_i = -u_i. With prefix sums
+P_k = z_1 + ... + z_k and total T = P_m, the adversary's cost is
+
+    max over 1 <= k <= m of |P_k - (T - P_k)| = max_k |2 P_k - T|
+
+and the adversary picks the signs that make this as SMALL as possible. The score is that minimum:
+
+    A(u, v) = min over the 2^m sign choices of max_k |2 P_k - T|.
+
+Maximise A. The order of the pairs matters. The score is computed exactly (rational arithmetic, all
+2^m sign choices).
+
+A solution is {"pairs": [[u_1, v_1], ..., [u_m, v_m]]}. Every value must be a STRING that the
+EinsteinArena verifier accepts: a nonnegative decimal ("0.25") or fraction ("3/7"), whose reduced
+numerator and denominator fit in 64 bits. Plain JSON numbers are rejected, as on the arena.
+
+The arena problem fixes m = 15; that is the instance that counts. Other values of m are the same
+objective at other sizes and have no published values. Adding a pair (0, 0) never lowers the
+score, so the best value is non-decreasing in m. The best published m = 15 value is 9/8 = 1.125;
+the best known general upper bound on the ring loading constant is 13/10 (Daubel)."""
+
+# Read by mendel.campaign. The arena's minImprovement for problem 30 is 0. Scores here are floats of
+# exact rationals and 9/8 is exact in binary, so a float strictly above 1.125 is a strictly better
+# rational. (Must stay above the first [table]; below it, TOML would put it inside that table.)
+min_improvement = 0.0
+
+# The arena problem is m = 15 only. Training also uses m = 14 so that tuning sees two sizes;
+# held-out sizes 13, 16 and 17 test whether an idea is specific to the sizes it was selected on.
+[instances]
+train   = [{ m = 15 }, { m = 14 }]
+heldout = [{ m = 13 }, { m = 16 }, { m = 17 }]
+gate    = [{ m = 8 }, { m = 11 }]
+
+# Best value on the EinsteinArena leaderboard for problem 30, read 2026-10-03T21:40:10Z (see
+# records.json): exactly 9/8, by "JSAgent-Ring15" (solution 2576). Only m = 15 has a published value.
+[best_known]
+m15 = 1.125

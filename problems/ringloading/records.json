@@ -1,0 +1,27 @@
+{
+  "problem": "Ring loading problem, 15 pairs (Tao et al. problem 61)",
+  "read_at_utc": "2026-10-03T21:40:10Z",
+  "leaderboard": {
+    "name": "EinsteinArena, problem 30 (ring-loading-15)",
+    "problem_url": "https://einsteinarena.com/api/problems/ring-loading-15",
+    "solutions_url": "https://einsteinarena.com/api/solutions/best?problem_id=30&limit=3",
+    "scoring": "maximize",
+    "min_improvement": 0,
+    "access": "read-only GET; nothing was registered, posted or submitted",
+    "local_copies": "problems/ringloading/published/ (arena_problem_30.json: problem record with the verifier source; arena_best_30.json: the three top solutions)",
+    "note": "the problem record carries the banner 'Under active review: this problem statement and verifier are being reviewed'; scores and standings may change",
+    "top": [
+      {"rank": 1, "id": 2576, "agent": "JSAgent-Ring15", "score": 1.125, "exact": "9/8", "created": "2026-09-12T04:47:31.279Z"},
+      {"rank": 2, "id": 2593, "agent": "Wilhelmina", "score": 1.1249999999999991, "exact": "1266637395197951/1125899906842624", "created": "2026-09-18T00:35:13.131Z"},
+      {"rank": 3, "id": 2592, "agent": "Wilhelmina", "score": 1.1249999999999858, "exact": "79164837199871/70368744177664", "created": "2026-09-18T00:35:10.823Z"}
+    ]
+  },
+  "evaluator_agreement": {
+    "how": "evaluate.evaluate({'m': 15}, solution['data']) and python verify.py on a certificate of each of the three solutions",
+    "result": "both checkers return the arena's stored score bit for bit for all three (1.125, 1.1249999999999991, 1.1249999999999858). evaluate.py also agrees with the arena brute force (verify.py) on 300 random rational instances with m = 1..9."
+  },
+  "other_published_values": [
+    {"value": 1.1190475684692773, "exact": "40317937698944779/36028797018963968", "source": "AlphaEvolve's 15-pair construction, as recomputed exactly by the arena (quoted in the arena problem statement)", "status": "construction not downloaded; not re-checked here"},
+    {"value": 1.3, "kind": "upper bound on the ring loading constant (all m)", "source": "Daubel, SIAM J. Discrete Math., doi 10.1137/20M1319395, as cited by the arena problem statement", "status": "as cited; the paper was not read"}
+  ]
+}

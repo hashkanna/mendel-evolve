@@ -1,0 +1,95 @@
+{
+  "genes": [
+    {
+      "name": "tiebreak_critical",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "The score is a minimum over 2^m sign choices, so most single moves leave it unchanged and the walk is blind on plateaus; preferring states with fewer sign choices attaining the minimum gives the plateau a slope towards the next improvement.",
+      "predicted": "+0.005 to +0.02 at m = 15 at equal CPU time, despite the slower counting evaluation",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "ascent_moves",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "At a plateau the score is the minimum of many tight sign choices, each the maximum of linear terms; a single coordinate move cannot raise them all, but a move of all coordinates along a direction that raises every tight choice's active term (found by a perceptron on their gradients) can.",
+      "predicted": "+0.01 to +0.04 at m = 15, mostly by leaving the A = 1 plateau",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "refine_grid",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "A coarse grid makes the search combinatorial and fast to explore; doubling the denominator after a cycle without a new best then lets the balanced min-max settle between grid points.",
+      "predicted": "+0.0 to +0.02, larger at small grid_den",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "grid_den",
+      "kind": "int", "default": 24, "low": 4, "high": 256, "log": true,
+      "of": null,
+      "hypothesis": "Every u_i and v_i is a multiple of 1/grid_den; 24 holds halves, thirds, quarters, sixths and eighths while keeping the space small.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "step_max",
+      "kind": "int", "default": 2, "low": 1, "high": 16, "log": true,
+      "of": null,
+      "hypothesis": "A move changes one coordinate by 1 to step_max grid units; small steps for refinement, larger to cross between basins.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "t0",
+      "kind": "float", "default": 0.02, "low": 0.0005, "high": 0.2, "log": true,
+      "of": null,
+      "hypothesis": "Starting annealing temperature in score units; about one grid step of score loss should be accepted often early in a cycle.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "cycle",
+      "kind": "int", "default": 5000, "low": 200, "high": 200000, "log": true,
+      "of": null,
+      "hypothesis": "Iterations per annealing cycle before restarting from the best state; short cycles exploit, long ones explore.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "kick",
+      "kind": "int", "default": 3, "low": 0, "high": 15, "log": false,
+      "of": null,
+      "hypothesis": "Random coordinate moves applied to the best state at each restart so that cycles do not repeat the same walk.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "tie_accept",
+      "kind": "float", "default": 0.2, "low": 0.0, "high": 1.0, "log": false,
+      "of": "tiebreak_critical",
+      "hypothesis": "Probability of still accepting an equal-score move that increases the number of tight sign choices; zero risks getting stuck, one disables the tiebreak.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "ascent_prob",
+      "kind": "float", "default": 0.05, "low": 0.005, "high": 0.5, "log": true,
+      "of": "ascent_moves",
+      "hypothesis": "Share of proposals that are ascent moves; each costs a full counting evaluation, so a small share keeps throughput.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "refine_max",
+      "kind": "int", "default": 3, "low": 1, "high": 8, "log": false,
+      "of": "refine_grid",
+      "hypothesis": "How many times the grid may be doubled; three doublings of 1/24 reach 1/192.",
+      "author": "seed",
+      "added_gen": 0
+    }
+  ]
+}
