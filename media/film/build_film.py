@@ -30,11 +30,13 @@ FRAMES = WORK / "frames"
 FPS = 30
 SR = 48000
 W, H = 1920, 1080
-VOICE = "Algieba"
+VOICE, TTS_MODEL, ACCENT = "Algieba", "gemini-3.8-flash-tts", "en-GB"   # see media/work/film/voices for samples
 SEC_PER_WORD = 0.43
 LOUDNESS = -17.0
 XFADE = 0.8          # scenes overlap by this much; the voice never does
 OUT = ROOT / "media" / "mendelevolve_film.mp4"
+SCORE = HERE / "score_lyria.mp3"      # made by lyria.py; delete it to use the synthesised score
+LYRIA_GAIN = 1.6
 MUSIC_GAIN, FX_GAIN = 0.34, 0.4   # under a voice at about -20 dB RMS
 
 
@@ -57,7 +59,8 @@ def beats():
 
 
 def key(text):
-    return hashlib.sha1(f"{VOICE}|{text}".encode()).hexdigest()[:12]
+    tag = VOICE if (TTS_MODEL, ACCENT) == ("gemini-3.8-flash-tts", "en-GB") else f"{VOICE}|{TTS_MODEL}|{ACCENT}"
+    return hashlib.sha1(f"{tag}|{text}".encode()).hexdigest()[:12]
 
 
 # ------------------------------------------------------------------------------------------------ voice
@@ -68,7 +71,7 @@ def synth(bid, text):
     words = len(text.split())
     for attempt in range(3):
         tmp = TTS / f"{key(text)}.try{attempt}.wav"
-        run(["python3", ROOT / "media" / "tts_gemini.py", tmp, text, "--voice", VOICE])
+        run(["python3", ROOT / "media" / "tts_gemini.py", tmp, text, "--voice", VOICE, "--model", TTS_MODEL, "--language", ACCENT])
         dur = wav_seconds(tmp)
         if dur <= words * SEC_PER_WORD * 1.35 + 1.5:
             tmp.rename(raw)
@@ -348,26 +351,28 @@ def audio():
         noise = lp(rng.standard_normal(len(t)), 900) * np.exp(-t / 0.05) * 0.5
         return x + noise
 
+    BANDS = 200 * 2 ** (np.arange(18) / 3)             # 200 Hz to 10 kHz, a third of an octave apart
+
+    def swept_noise(centre):
+        """Noise whose pitch follows centre (Hz per sample): fixed bands crossfaded, so it never crackles."""
+        x = rng.standard_normal(len(centre)); out = np.zeros(len(centre))
+        lc = np.log2(centre)
+        for f in BANDS:
+            g = np.exp(-((lc - np.log2(f)) / 0.45) ** 2)
+            if g.max() > 1e-3:
+                out += bp(x, f / 1.12, min(f * 1.12, SR / 2 - 100)) * g
+        return out / 2.5
+
     def whoosh(d=1.2, peak=0.5):
-        n = int(d * SR); t = np.arange(n) / SR
-        x = rng.standard_normal(n)
-        out = np.zeros(n); hop = 1024
-        for i in range(0, n, hop):
-            p = i / n
-            c = 300 + 3200 * np.sin(np.pi * p) ** 1.5
-            out[i:i + hop] = bp(x[i:i + hop + 0], c * 0.6, min(c * 1.6, SR / 2 - 100))[:hop]
-        a = np.sin(np.pi * np.clip(t / d, 0, 1)) ** 2
-        return out * a * peak
+        n = int(d * SR); p = np.arange(n) / n
+        return swept_noise(300 + 2400 * np.sin(np.pi * p) ** 1.5) * np.sin(np.pi * p) ** 2 * peak
 
     def riser(d=2.0):
         n = int(d * SR); t = np.arange(n) / SR
-        x = rng.standard_normal(n); out = np.zeros(n); hop = 1024
-        for i in range(0, n, hop):
-            c = 400 * (12 ** (i / n))
-            out[i:i + hop] = bp(x[i:i + hop], c * 0.7, min(c * 1.4, SR / 2 - 100))[:hop]
+        noise = swept_noise(400 * 12 ** (t / d))
         f = 180 * (4 ** (t / d))
         tone = np.sin(2 * np.pi * np.cumsum(f) / SR) * 0.25
-        return (out * 0.6 + tone) * (t / d) ** 2
+        return (noise * 0.6 + tone) * (t / d) ** 2
 
     def glitch(d=0.45):
         n = int(d * SR); t = np.arange(n) / SR
@@ -383,8 +388,6 @@ def audio():
 
     fx = np.zeros((N, 2))
     xf = tl["xfade"]
-    for s in tl["scenes"][1:]:
-        place(fx, whoosh(1.4, 0.35), s["start"] - 0.3, 1.0, rng.uniform(-0.4, 0.4))
 
     # open and problem
     place(fx, boom(2.6, 90, 36), bt["b1"] - 0.05, 0.5)
@@ -440,7 +443,7 @@ def audio():
     # iso
     for i in range(58):
         place(fx, pluck(60 + [0, 2, 4, 7, 9][i % 5] + 12 * ((i // 5) % 4), 0.3), bt["b16"] + 0.4 + i * 0.045, 0.13, -0.7 + (i % 15) * 0.1)
-    place(fx, whoosh(0.6, 0.6), bw("b17", 0.9) - 0.2, 0.6)
+    place(fx, whoosh(0.6, 0.6), bw("b17", 0.9) - 0.2, 0.3)
     place(fx, boom(1.0, 200, 70), bw("b17", 0.9) + 0.25, 0.35)
     ca, cb = bw("b18", 0.0) + 0.1, bw("b18", 0.62)
     t = ca
@@ -451,7 +454,7 @@ def audio():
     for i in range(13):
         place(fx, tick(2000 + 90 * i), bt["b20"] + 0.2 + i * 0.09, 0.15)
     place(fx, riser(1.7), bw("b21", 0.25) - 0.1, 0.4)
-    place(fx, whoosh(1.0, 0.5), bw("b21", 0.25) + 1.3, 0.5)
+    place(fx, whoosh(1.0, 0.5), bw("b21", 0.25) + 1.3, 0.25)
     place(fx, bell(83, 2.5), bt["b22"], 0.35)
     place(fx, boom(0.9, 260, 80), bt["b23"] + 1.4, 0.55)
     place(fx, glitch(0.15), bt["b23"] + 1.4, 0.2)
@@ -507,11 +510,22 @@ def audio():
             place(music, pluck(notes[k % len(notes)], 0.5), t, 0.06, -0.5 if k % 2 else 0.5)
             t += 0.25; k += 1
 
+    # ---- the score itself comes from Lyria when its file is there; the synthesised pad then only carries the end card
+    if SCORE.exists():
+        raw = subprocess.run([FFMPEG, "-v", "error", "-i", str(SCORE), "-f", "f32le", "-ac", "2", "-ar", str(SR), "-"],
+                             capture_output=True, check=True).stdout
+        ly = np.frombuffer(raw, dtype=np.float32).reshape(-1, 2).astype(float)
+        ly *= 10 ** (-20 / 20) / np.sqrt(np.mean(ly ** 2))
+        lyria = np.zeros((N, 2)); lyria[:min(N, len(ly))] = ly[:N]
+        keep = np.clip((np.arange(N) / SR - (sc["close"]["start"] + 3.0)) / 4.0, 0, 1)
+        music = lyria * LYRIA_GAIN + music * keep[:, None]
+        print(f"score: Lyria, {len(ly) / SR:.1f} s")
+
     # ---- reverb on effects and score
     ir_n = int(2.4 * SR); ir_t = np.arange(ir_n) / SR
     ir = np.stack([rng.standard_normal(ir_n), rng.standard_normal(ir_n)], 1) * np.exp(-ir_t / 0.55)[:, None]
     ir = lp(ir, 5000); ir /= np.abs(ir).sum(0) ** 0.5 * 4
-    wet = np.stack([fftconvolve(fx[:, c] + 0.6 * music[:, c], ir[:, c])[:N] for c in range(2)], 1)
+    wet = np.stack([fftconvolve(fx[:, c] + (0.0 if SCORE.exists() else 0.6) * music[:, c], ir[:, c])[:N] for c in range(2)], 1)
     fxmix = fx + 0.35 * wet
 
     # ---- voice
@@ -554,6 +568,14 @@ def audio():
 
 
 def mux():
+    if sys.argv[2:] == ["sound"]:                    # frames unchanged: keep the encoded picture, replace the sound
+        tmp = OUT.with_suffix(".tmp.mp4")
+        run([FFMPEG, "-y", "-i", OUT, "-i", WORK / "film_mix.wav", "-map", "0:v", "-map", "1:a", "-c:v", "copy",
+             "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-ar", SR, "-c:a", "aac", "-b:a", "256k", "-movflags", "+faststart",
+             "-shortest", tmp])
+        tmp.replace(OUT)
+        print(OUT, f"{OUT.stat().st_size / 1e6:.1f} MB")
+        return
     tl = json.loads((HERE / "data" / "timeline.json").read_text())
     frames = int(round(tl["total"] * FPS))
     missing = [f for f in range(frames) if not (FRAMES / f"f{f:05d}.jpg").exists()]

@@ -74,7 +74,12 @@ def main() -> None:
     parser.add_argument("text")
     parser.add_argument("--voice", default="Algieba")   # British with LANGUAGE = en-GB; Sadaltager is a slower alternative
     parser.add_argument("--style", default=STYLE)
+    parser.add_argument("--model", default=None)
+    parser.add_argument("--language", default=None)
     args = parser.parse_args()
+    global MODEL, LANGUAGE
+    MODEL = args.model or MODEL
+    LANGUAGE = args.language or LANGUAGE
     # the model blends "MendelEvolve" into "Mendeleev"; two words are read correctly
     pcm = synthesise(args.text.replace("MendelEvolve", "Mendel Evolve"), args.voice, args.style)
     with wave.open(args.out, "wb") as out:
