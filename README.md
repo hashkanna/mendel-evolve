@@ -38,14 +38,6 @@ https://hashkanna.github.io/mendel-evolve/.
 
 **Watch it:** [the 2-minute film](https://youtu.be/129o5fS8ALY) · [the full film, 3 minutes](https://youtu.be/r8c3jwGGm6c) · [4-minute walkthrough with screen recordings](https://youtu.be/QK4ZIf9EN-4) · [2-minute walkthrough](https://youtu.be/zSHn5K7N-uw). Every frame of the films is drawn from the real data; the walkthroughs' screen recordings are real runs; the narration is synthetic speech.
 
-**Check the results yourself:** [each idea measured twice](https://hashkanna.github.io/mendel-evolve/record-scale.html) ·
-[the 58-point sets, checked in your browser](https://hashkanna.github.io/mendel-evolve/problem59-n32.html) ·
-[the problem 60 run, every idea and its effect](https://hashkanna.github.io/mendel-evolve/p60.html) ·
-[the circle-packing run](https://hashkanna.github.io/mendel-evolve/cp-fable-1.html) ·
-on DeepMind's repository: [problem 60 record thread](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6) ·
-[problem 59, the 58-point sets](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/10) ·
-[five benchmarks added by Devin sessions](https://github.com/hashkanna/mendel-evolve/pulls?q=is%3Apr+is%3Amerged)
-
 - **Problem 60 of Tao et al. (no 5 points on a sphere): apparently new lower bounds at 17 grid sizes** from
   n = 15 to 32, and first point sets for n = 33 to 40. Every set passes three independent exact checkers.
 - **Where those records came from, measured.** Eight from the hand-written seed solver, four from the solver
@@ -68,6 +60,33 @@ on DeepMind's repository: [problem 60 record thread](https://github.com/google-d
 - **Ease of use.** Five outside coding agents (Devin sessions), given only this README and PROTOCOL.md, each added a new
   benchmark with a solver, an attribution run and a verified record search in about 20 to 45 minutes. Their
   five packs are merged, so the repository holds ten problem packs and a toy with known ground truth.
+
+## Links
+
+| | What | Link |
+|---|---|---|
+| Videos | **The 2-minute film** (the submission video) | https://youtu.be/129o5fS8ALY |
+| | The full film, 3 minutes | https://youtu.be/r8c3jwGGm6c |
+| | Walkthrough with screen recordings, 4 minutes | https://youtu.be/QK4ZIf9EN-4 |
+| | Walkthrough, 2 minutes | https://youtu.be/zSHn5K7N-uw |
+| Results | Live site: snapshots of every run | https://hashkanna.github.io/mendel-evolve/ |
+| | Each idea measured twice: quick screen against record scale | https://hashkanna.github.io/mendel-evolve/record-scale.html |
+| | The 58-point sets for problem 59, checked in your browser | https://hashkanna.github.io/mendel-evolve/problem59-n32.html |
+| | The problem 60 run: every idea and its measured effect | https://hashkanna.github.io/mendel-evolve/p60.html |
+| | The circle-packing run that reached the best known value | https://hashkanna.github.io/mendel-evolve/cp-fable-1.html |
+| | Every result with its verification and limits | [RESULTS.md](RESULTS.md) |
+| | Certificates (the point sets themselves) | [results/](results/) |
+| DeepMind's repository | Problem 60: our 17 new lower bounds on the record thread | [issue 6](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6) |
+| | Problem 59: the 58-point sets | [issue 10](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/10) |
+| | The repository of problems | https://github.com/google-deepmind/alphaevolve_repository_of_problems |
+| Using it | How to add a problem or a solver | [PROTOCOL.md](PROTOCOL.md) |
+| | Five benchmarks added by Devin sessions from the docs alone | [pull requests #1 to #5](https://github.com/hashkanna/mendel-evolve/pulls?q=is%3Apr+is%3Amerged) |
+| | What we would do next | [TODO.md](TODO.md) |
+| | The pitch and the demo flow | [PITCH.md](PITCH.md) |
+| Papers and related work | Georgiev, Gómez-Serrano, Tao, Wagner: Mathematical exploration and discovery at scale (problems 59 and 60) | [arXiv:2511.02864](https://arxiv.org/abs/2511.02864) |
+| | What Do Evolutionary Coding Agents Evolve? | [arXiv:2605.20086](https://arxiv.org/abs/2605.20086) |
+| | Evolution or Illusion? | [arXiv:2609.19799](https://arxiv.org/abs/2609.19799) |
+| | OpenEvolve, our baseline and the source of the circle-packing seed | https://github.com/algorithmicsuperintelligence/openevolve |
 
 ## How it works
 
