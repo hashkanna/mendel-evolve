@@ -1682,7 +1682,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     else if (on) {
       const mine = info && info.status === 'running';
       if (testing && !mine) action = h('button', { class: 'btn', tip: 'Turn this idea back on and close the result',
-        onclick: (e) => { e.stopPropagation(); switchBackOn(g.name); } }, 'Switch back on');
+        onclick: (e) => { e.stopPropagation(); switchBackOn(g.name); } }, 'Switch on');
       else action = h('button', { class: 'btn', disabled: busy, tip: mine ? null : 'Switch this idea off and re-run the solver on paired seeds, live',
         onclick: (e) => { e.stopPropagation(); knockOut(g.name); } }, mine ? [h('span', { class: 'spin' }), 'Running'] : 'Knock out');
     } else action = h('span', { class: 'muted', style: { fontSize: '11px' }, tip: (STATUS[g.status] || [])[1] || null, text: (STATUS[g.status] || [g.status || 'proposed'])[0] });
@@ -1694,8 +1694,8 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       const ps = normPairs(info.pairs, 1).filter((p) => isNum(p.on) && isNum(p.off));
       if (ps.length) {
         const avg = (k) => ps.reduce((t, p) => t + p[k], 0) / ps.length;
-        val = [h('span', { class: 'v-eff v-ko', text: trimNum(avg('on')) + ' → ' + trimNum(avg('off')) }), h('span', { class: 'v-ci', text: 'score: with it → without it' })];
-      } else val = [h('span', { class: 'v-eff v-ko', text: '… → …' }), h('span', { class: 'v-ci', text: 'running without it' })];
+        val = h('span', { class: 'v-eff v-ko', text: trimNum(avg('on')) + ' → ' + trimNum(avg('off')), tip: 'Score with the idea → score without it, on the same seeds' });
+      } else val = h('span', { class: 'v-eff v-ko', text: '… → …', tip: 'Running without the idea' });
     }
     // what the number means when it is not a knockout of something in the champion
     const srcNote = !g.m ? '' : g.src === 'switch-on' ? 'would add if switched on' : g.src === 'screen' ? 'measured at screening' : '';
