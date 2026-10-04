@@ -72,8 +72,8 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 
 ## Research efficiency (the fourth judging area)
 
-- LLM calls scale with ideas, not evaluations: 383 calls ($128) for 21,206 evaluations across the nine engine
-  runs (figures at 01:15; `p59` is still running). The record searches and the deep screen used no LLM calls.
+- LLM calls scale with ideas, not evaluations: 399 calls (about $164) for 22,570 evaluations across the nine
+  engine runs. The record searches and the deep screen used no LLM calls.
 - Circle packing: Fable inventors reached the best known value after $10.95 and 8 calls ($26.07 for the whole
   run). Five Haiku runs with no hints: 2.314 to 2.440 for $6.55 to $8.40 each. OpenEvolve (its own two-phase
   recipe, same model, same strict evaluator): phase 1 plateau 2.17 to 2.29 for about $2.90 per seed; phase 2,

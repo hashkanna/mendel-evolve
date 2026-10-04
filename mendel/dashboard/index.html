@@ -1497,6 +1497,14 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     else if (ideas && gain > 0 && ideas.v > 0) cap.appendChild(h('div', null, 'Ideas gave ', h('b', { text: Math.round((ideas.v / gain) * 100) + '%' }), ' of the ', h('b', { text: trimSigned(gain) }), ' gain over the seed'));
     else if (steps.every((sp) => Math.abs(sp.v) < 1e-12)) cap.appendChild(h('div', { text: 'No gain over the seed solver measured yet' }));
     else cap.appendChild(h('div', null, gain < 0 ? 'Change against the seed solver: ' : 'Gain over the seed solver: ', h('b', { text: trimSigned(gain) })));
+    // "Ideas" are all the switches that are on in the champion, the seed solver's own included: say whose they are.
+    const onIdeas = S.genes.filter((g) => g.isIdea && g.status === 'active');
+    if (onIdeas.length) {
+      const fromSeed = onIdeas.filter((g) => g.author.kind === 'seed').length, fromLLM = onIdeas.filter((g) => g.author.kind === 'llm').length;
+      const typed = onIdeas.length - fromSeed - fromLLM;
+      cap.appendChild(h('div', { text: 'Switched on in the champion: ' + [fromSeed ? fromSeed + ' from the seed solver' : '', fromLLM ? fromLLM + ' from LLM inventors' : '', typed ? typed + ' typed in' : ''].filter(Boolean).join(', '),
+        tip: 'The ideas step counts every switch that is on in the champion, whoever wrote it.\nKnock each one out in the ledger to see what it is worth.' }));
+    }
     const unitBits = [str(dcm.unit), provisional ? 'provisional: the split is measured when the run ends' : ''].filter(Boolean);
     if (unitBits.length) cap.appendChild(h('div', { text: unitBits.join(' · ') }));
     const W = body.clientWidth, H = body.clientHeight;

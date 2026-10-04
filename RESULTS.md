@@ -238,10 +238,16 @@ On this problem the seed solver's own switches matter a great deal, and more tog
 (n = 64 / n = 100, mean of 3 seeds at a short budget): base 92.3 / 141.0; `greedy_victim` alone 95.7 / 145.0;
 `symmetric` alone 96.0 / 141.7; both 101.3 / 151.0.
 
-The engine run on this problem (`p59`, 9 generations so far) measures the same thing with intervals, on
-seeds the tuner never saw: `symmetric` +9.25 [8.5, 10.0], `greedy_victim` +4.56 [3.25, 5.88], `hollow` +1.81
-[0.94, 2.62], all labelled general on held-out sizes, with a pair synergy of +3.69 between the first two.
-27 LLM ideas were screened on top of that; none is conclusively positive.
+The engine run on this problem (`p59`, 14 generations) measures the same thing with intervals, on seeds the
+tuner never saw: `symmetric` +9.25 [8.5, 10.0], `greedy_victim` +4.56 [3.25, 5.88], `hollow` +1.81
+[0.94, 2.62], all labelled general on held-out sizes. The first two are worth more together (synergy +2.81
+[1.44, 4.25]) and `greedy_victim` and `hollow` overlap (-1.5 [-2.81, -0.06]). The end-of-run decomposition:
+seed solver 118.8, tuning of constants +2.7, switches +11.8. All of that is the seed solver's own three
+switches. 51 LLM ideas were screened on top (26 from Sonnet 5.5, 25 from Fable 5.1): none is conclusively
+positive, 15 are measured as harmful, and the two that sit in the champion have inconclusive knockouts
+(`low_cost_list` +0.62 [-0.56, +1.81], `band_clip` -0.25 [-0.88, +0.25]). The limits found on problem 60 apply
+here too: these screens are short and small, so "none conclusively positive" is a statement about what they
+could resolve.
 
 ## Explaining another system's result: what did OpenEvolve evolve?
 
@@ -311,8 +317,8 @@ evaluator with no overlap tolerance. Best known: 2.635983.
 
 | Run | Generations | LLM calls | LLM spend | Evaluations | CPU-hours |
 |---|---|---|---|---|---|
-| Problem 60 (`p60`) | 8 | 41 | $30.63 | 5,886 | 72.4 |
-| Problem 59 (`p59`, still running) | 9 | 36 | $18.23 | 3,720 | 29.0 |
+| Problem 60 (`p60`) | 7 | 41 | $30.63 | 6,198 | 76.5 |
+| Problem 59 (`p59`) | 14 | 60 | $63.57 (API-equivalent; the later generations ran on a subscription) | 5,480 | 41.9 |
 | Circle packing, Fable | 8 | 50 | $26.07 | 919 | 1.3 |
 | Circle packing, Haiku, five runs | 10 each | 40 to 42 each | $6.55 to $8.40 each | 1,518 to 2,103 each | 3.3 to 4.2 each |
 
