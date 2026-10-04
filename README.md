@@ -1,6 +1,10 @@
 # MendelEvolve
 
-![Frames from the MendelEvolve film: ideas as genes on a helix, a knockout on circle packing that costs 1.67, 17 new lower bounds on problem 60, and every idea measured twice](docs/img/hero.jpg)
+[![Frames from the MendelEvolve film: ideas as genes on a helix, a knockout on circle packing that costs 1.67, 17 new lower bounds on problem 60, and every idea measured twice. Click to watch the 2-minute film.](docs/img/hero.jpg)](https://youtu.be/129o5fS8ALY)
+
+**▶ [Watch the 2-minute film](https://youtu.be/129o5fS8ALY)** · [the full film (3 min)](https://youtu.be/r8c3jwGGm6c) ·
+[4-minute walkthrough](https://youtu.be/QK4ZIf9EN-4) · [2-minute walkthrough](https://youtu.be/zSHn5K7N-uw) ·
+**[live site](https://hashkanna.github.io/mendel-evolve/)** · [all results](RESULTS.md)
 
 **Genetics for algorithm discovery.** MendelEvolve (Mendel for short; the command is `mendel`) is an
 autoresearch framework that evolves *ideas* instead of whole programs, and measures what each idea is worth.
