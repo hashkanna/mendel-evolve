@@ -3,7 +3,7 @@
 Everything here comes from runs made during the hackathon (3-4 October 2026). Numbers are filled in as runs
 finish; a section that says "pending" has no result yet.
 
-## Problem 60: new lower bounds at 14 grid sizes
+## Problem 60: new lower bounds at 15 grid sizes
 
 C(n) is the size of the largest subset of an n x n x n grid with no 5 points on a common sphere or plane.
 "Published" is the best value we could find in public sources on 3 October 2026: the
@@ -13,31 +13,34 @@ AlphaEvolve problem repository and the record-holder's
 both last changed on 25 September 2026. Following that thread's convention we call these "apparently new":
 new relative to the public sources we found, with no claim of optimality or guaranteed priority.
 
-| n | ours | published | certificate |
-|---|---|---|---|
-| 15 | **41** | 40 | [n15_41.json](results/no5sphere/certificates/n15_41.json) |
-| 16 | **44** | 42 | [n16_44.json](results/no5sphere/certificates/n16_44.json) (evolved solver; 43 from the seed solver) |
-| 17 | **46** | 45 | [n17_46.json](results/no5sphere/certificates/n17_46.json) |
-| 21 | **56** | 55 | [n21_56.json](results/no5sphere/certificates/n21_56.json) |
-| 23 | **61** | 59 | [n23_61.json](results/no5sphere/certificates/n23_61.json) |
-| 24 | **64** | 62 | [n24_64.json](results/no5sphere/certificates/n24_64.json) |
-| 25 | **66** | 65 | [n25_66.json](results/no5sphere/certificates/n25_66.json) |
-| 26 | **68** | 67 | [n26_68.json](results/no5sphere/certificates/n26_68.json) |
-| 27 | **71** | 70 | [n27_71.json](results/no5sphere/certificates/n27_71.json) (evolved solver) |
-| 28 | **74** | 71 | [n28_74.json](results/no5sphere/certificates/n28_74.json) |
-| 29 | **76** | 75 | [n29_76.json](results/no5sphere/certificates/n29_76.json) |
-| 30 | **79** | 76 | [n30_79.json](results/no5sphere/certificates/n30_79.json) |
-| 31 | **81** | 79 | [n31_81.json](results/no5sphere/certificates/n31_81.json) (evolved solver; 80 from the seed solver) |
-| 32 | **84** | 82 | [n32_84.json](results/no5sphere/certificates/n32_84.json) |
+<!-- records:start -->
+| n | ours | published | certificate | found by |
+|---|---|---|---|---|
+| 15 | **41** | 40 | [n15_41.json](results/no5sphere/certificates/n15_41.json) | seed solver with centrosymmetric |
+| 16 | **44** | 42 | [n16_44.json](results/no5sphere/certificates/n16_44.json) | evolved champion of run p60 with centrosymmetric |
+| 17 | **46** | 45 | [n17_46.json](results/no5sphere/certificates/n17_46.json) | seed solver with centrosymmetric |
+| 19 | **51** | 50 | [n19_51.json](results/no5sphere/certificates/n19_51.json) | champion variant (kick_escalate) with centrosymmetric |
+| 21 | **56** | 55 | [n21_56.json](results/no5sphere/certificates/n21_56.json) | seed solver with centrosymmetric |
+| 23 | **62** | 59 | [n23_62.json](results/no5sphere/certificates/n23_62.json) | seed solver with the LLM idea layer_ruin with centrosymmetric |
+| 24 | **64** | 62 | [n24_64.json](results/no5sphere/certificates/n24_64.json) | seed solver with centrosymmetric |
+| 25 | **66** | 65 | [n25_66.json](results/no5sphere/certificates/n25_66.json) | seed solver with centrosymmetric |
+| 26 | **69** | 67 | [n26_69.json](results/no5sphere/certificates/n26_69.json) | seed solver with the LLM idea load_ruin with centrosymmetric |
+| 27 | **71** | 70 | [n27_71.json](results/no5sphere/certificates/n27_71.json) | evolved champion of run p60 with centrosymmetric |
+| 28 | **74** | 71 | [n28_74.json](results/no5sphere/certificates/n28_74.json) | seed solver with centrosymmetric |
+| 29 | **76** | 75 | [n29_76.json](results/no5sphere/certificates/n29_76.json) | seed solver with centrosymmetric |
+| 30 | **79** | 76 | [n30_79.json](results/no5sphere/certificates/n30_79.json) | seed solver with centrosymmetric |
+| 31 | **82** | 79 | [n31_82.json](results/no5sphere/certificates/n31_82.json) | seed solver with the LLM idea region_kick with centrosymmetric |
+| 32 | **84** | 82 | [n32_84.json](results/no5sphere/certificates/n32_84.json) | seed solver with centrosymmetric |
+<!-- records:end -->
 
 The first 13 (with 43 at n = 16 and 80 at n = 31), and the sets for n = 33 to 40, were posted on the record thread on 4 October 2026
 ([comment](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530)); the first three had been posted there the day before.
 
-We equal the published value at n = 13, 14, 18, 19, 20 and 22. For n = 33 to 40, where no sets are
+We equal the published value at n = 13, 14, 18, 20 and 22. For n = 33 to 40, where no sets are
 published (the n = 32 set implies 82 because C is non-decreasing), the search gives 86, 90, 91, 94, 96, 98, 100, 103.
 
-Each of the 24 certificates (the 14 above, the two earlier sets at n = 16 and 31, and those for n = 33 to 40)
-was checked over every 5-subset by three independent exact integer methods:
+Every certificate in `results/no5sphere/certificates` (the 15 above, earlier sets at some sizes, and those for
+n = 33 to 40) was checked over every 5-subset by three independent exact integer methods:
 
 - `problems/no5sphere/evaluate.py`: vectorised int64 determinants;
 - `problems/no5sphere/verify.py`: Bareiss elimination on each 5x5 matrix in Python integers;
@@ -47,9 +50,13 @@ Reproduce: `python results/no5sphere/third_check.py results/no5sphere/certificat
 
 ### How they were found, stated plainly
 
-Eleven of the 14 came from the **seed solver**, a from-scratch C ruin-and-recreate search written at the start
-of the hackathon, before any idea had been evolved, with its `centrosymmetric` switch on. The other three
-(n = 16, 27 and 31) came from the engine's evolved champion, run with the same switch on; see the next section. The first search (24 seeds per size, 120 CPU-seconds, about $0.90 of Modal compute) gave n = 21, 23
+Nine of the 15 came from the **seed solver**, a from-scratch C ruin-and-recreate search written at the start
+of the hackathon, before any idea had been evolved, with its `centrosymmetric` switch on. Three (n = 16, 19 and
+27) came from the engine's evolved champion or a variant of it, with the same switch on. Three (n = 23, 26 and
+31) came from the deep screen described below, in arms that ran the seed solver with one LLM idea switched on;
+their sources are in [results/no5sphere/idea_solvers](results/no5sphere/idea_solvers). The "found by" column
+says which search found a set, not what caused it: the deep screen made about 4,500 runs per size across 30
+arms, so the arm that happened to find the best one is not evidence for its idea. The first search (24 seeds per size, 120 CPU-seconds, about $0.90 of Modal compute) gave n = 21, 23
 and 26. The full search ran 100 to 150 seeds per size at 90 to 480 CPU-seconds, with and without the switch,
 for every size from 13 to 32, and 40 seeds at 720 CPU-seconds for 33 to 40: about 520 core-hours.
 
@@ -111,8 +118,8 @@ never used by it at all, so this is a test on data that could not have steered t
 
 - Over all 20 sizes the picture is the same: 8.6% against 5.3% (+3.3 points [+2.3, +4.2]) without the switch,
   12.5% against 10.3% (+2.2 points [+1.0, +3.5]) with it.
-- The evolved solver produced the best sets we have at n = 16 (44), n = 27 (71, a size where the seed solver
-  only equalled the published 70) and n = 31 (81).
+- The evolved solver produced the best sets we have at n = 16 (44) and n = 27 (71, a size where the seed solver
+  only equalled the published 70), and 81 at n = 31 before the deep screen found 82.
 - The engine's own measurement of the same champion against the same seed solver was +0.10, inside its noise.
   At 1,600 pairs and record budgets it is +0.20 with an interval that excludes zero, and the rate of
   record-beating runs is up by 60%.

@@ -23,7 +23,7 @@ but no genes. MendelEvolve evolves ideas instead of programs, and measures what 
    measure what the solver loses. That gives a causal effect per idea, an interaction map, and a test of whether
    each idea generalises to instance sizes it was never selected on. The ledger of measured effects is what the
    next inventors read, and it is the explanation of the result.
-3. **What it did in a weekend.** Apparently new lower bounds at 14 sizes of Tao et al.'s problem 60, and first
+3. **What it did in a weekend.** Apparently new lower bounds at 15 sizes of Tao et al.'s problem 60, and first
    point sets for eight more sizes, each verified by three independent exact checkers. On problem 59, two 58-point
    sets in the 32 x 32 grid where the literature states that the optimum is 56. On circle packing, Fable inventors took
    OpenEvolve's own starting program to the best known value with no hints, and the ledger names the one idea
@@ -100,7 +100,7 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
   inventors proposed an SLSQP polish with no hint, and its knockout costs 1.67 on training sizes and on held-out
   sizes. On problem 59, a map of which of the seed solver's switches matter and that two of them are worth more
   together (+3.69). On problem 60, a solver that beats the seed solver at record scale (13.6% of runs above the
-  published value against 8.5%, on seeds the engine never used) and three of the 14 record sets; whether that
+  published value against 8.5%, on seeds the engine never used) and three of the 15 record sets; whether that
   is the tuning, a seed switch or the LLM idea is [pending].
 - **Is "no idea helped" just an underpowered test?** It was, and we measured by how much. The engine's screen
   (48 seed pairs, 45 seconds) resolves about 0.2 points. The switch that finds our records is worth 0.22 on the
@@ -133,7 +133,7 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 0:55 Screen: the ledger on circle packing. Read one row. Press Knock out. Watch the dots land.
 1:30 Screen: the idea box. "A person typed OpenEvolve's own hint in. It became a gene. It measured +1.44."
 1:50 Screen: explain page. "We pointed it at a program OpenEvolve evolved. One switch is 99% of the gain."
-2:15 Screen: records strip on problem 60, then the DeepMind thread. "Apparently new lower bounds at 14 sizes, three
+2:15 Screen: records strip on problem 60, then the DeepMind thread. "Apparently new lower bounds at 15 sizes, three
      independent exact checkers each, posted with provenance. And the knockouts say where they came from: one
      switch of the seed solver doubles the record rate, and the evolved solver adds 60% more. [pending: which
      evolved component]"
@@ -164,7 +164,7 @@ Short description: MendelEvolve is an autoresearch framework that evolves ideas 
 LLM-proposed idea becomes a named, switchable gene with a stated hypothesis; the LLM only invents, classical
 search recombines and tunes, and knockouts (singly, in pairs, on fresh seeds and held-out instance sizes) give a
 causal effect per idea. The ledger of measured effects is what the next inventors read, and it explains the result. During
-the hackathon it produced apparently new lower bounds at 14 sizes of Tao et al.'s problem 60 (verified by three
+the hackathon it produced apparently new lower bounds at 15 sizes of Tao et al.'s problem 60 (verified by three
 independent exact checkers), 58-point isosceles-free sets in the 32 x 32 grid where 56 was reported, and the
 best known circle packing value from OpenEvolve's initial program with no hints. Its knockouts also say where
 results come from: on problem 60, one switch of the seed solver doubles the rate of record-beating runs and the

@@ -1,0 +1,3 @@
+problem = "no5sphere"
+build = "cc -O3 -o solver solver.c -lm"
+run = "./solver"

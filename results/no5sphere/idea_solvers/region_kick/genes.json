@@ -1,0 +1,133 @@
+{
+  "genes": [
+    {
+      "name": "centrosymmetric",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Building the set from antipodal pairs about the cube centre halves the search space, and the published records for n = 13 to 16 have exactly this symmetry (those for n >= 17 do not).",
+      "predicted": "+1 to +2 points for n >= 14, little or nothing for n <= 10",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "lookahead",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "When refilling, placing the free point that blocks the fewest other free points (best of lookahead_m samples) packs more points than placing a random one.",
+      "predicted": "+0.5 points at equal CPU time, more on large n where free lists are longer",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "guided_ruin",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Aiming the ruin at a grid point blocked by a single sphere (remove one of that sphere's four members, insert the point first) makes every step a real exchange instead of a mostly futile random removal.",
+      "predicted": "+0.5 to +1 point at equal CPU time",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "ruin_max",
+      "kind": "int",
+      "default": 3,
+      "low": 1,
+      "high": 10,
+      "log": false,
+      "of": null,
+      "hypothesis": "Each step removes 1..ruin_max points (pairs when centrosymmetric); larger ruins escape deeper local optima but cost more per step.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "accept_worse_prob",
+      "kind": "float",
+      "default": 0.02,
+      "low": 0.0,
+      "high": 0.3,
+      "log": false,
+      "of": null,
+      "hypothesis": "Probability of accepting a refill that is one unit smaller than the current set; a little downhill movement keeps the search from freezing on a plateau.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "patience",
+      "kind": "int",
+      "default": 3000,
+      "low": 100,
+      "high": 100000,
+      "log": true,
+      "of": null,
+      "hypothesis": "Steps without a new best before a kick; too small never finishes polishing, too large wastes time in a dead basin.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "kick_fraction",
+      "kind": "float",
+      "default": 0.25,
+      "low": 0.05,
+      "high": 1.0,
+      "log": false,
+      "of": null,
+      "hypothesis": "Fraction of the set removed by a kick; 1.0 is a full restart.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "lookahead_m",
+      "kind": "int",
+      "default": 3,
+      "low": 2,
+      "high": 12,
+      "log": false,
+      "of": "lookahead",
+      "hypothesis": "Number of free points sampled per placement when lookahead is on; each sample costs one pass over all member triples.",
+      "author": "seed",
+      "added_gen": 0
+    },
+    {
+      "name": "fresh_first",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "A one-step tabu on reinsertion: after a ruin the refill first places only free points that were not just removed, and the removed points fill what room is left, so a step with any fresh free point is a real exchange instead of usually putting the same points back, and the search walks its plateau much faster.",
+      "predicted": "Close to zero at the default constant: between -0.5 and +0.5 points at equal CPU time on n >= 17, sign not established",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "fresh_first_prob",
+      "kind": "float",
+      "default": 1.0,
+      "low": 0.2,
+      "high": 1.0,
+      "log": false,
+      "of": "fresh_first",
+      "hypothesis": "Chance per step that the removed points are held back until the fresh free points have been placed; below 1.0 some steps refill in the old uniformly random order.",
+      "author": "llm:claude-fable-5-1",
+      "added_gen": 1
+    },
+    {
+      "name": "region_kick",
+      "kind": "switch",
+      "default": false,
+      "hypothesis": "Removing a spatially compact cluster of members (a random member and its nearest neighbours) for kicks and some ruins reopens one region of the cube jointly, so the refill repacks it from scratch, an exchange that scattered random removals almost never make.",
+      "predicted": "Close to zero: between -0.3 and +0.5 points at n >= 17, sign not established",
+      "author": "llm:claude-sonnet-5-5",
+      "added_gen": 3
+    },
+    {
+      "name": "region_ruin_prob",
+      "kind": "float",
+      "default": 0.3,
+      "low": 0.0,
+      "high": 1.0,
+      "log": false,
+      "of": "region_kick",
+      "hypothesis": "Chance per ordinary ruin that the removed members form a spatial cluster instead of a random pick (kicks are always clustered when region_kick is on).",
+      "author": "llm:claude-sonnet-5-5",
+      "added_gen": 3
+    }
+  ]
+}

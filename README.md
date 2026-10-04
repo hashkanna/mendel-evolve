@@ -30,10 +30,11 @@ Algorithms". Everything here was written during the event.
 Details, verification and limits are in [RESULTS.md](RESULTS.md); read-only snapshots of the runs are at
 https://hashkanna.github.io/mendel-evolve/.
 
-- **Problem 60 of Tao et al. (no 5 points on a sphere): apparently new lower bounds at 14 grid sizes** from
+- **Problem 60 of Tao et al. (no 5 points on a sphere): apparently new lower bounds at 15 grid sizes** from
   n = 15 to 32, and first point sets for n = 33 to 40. Every set passes three independent exact checkers.
-- **Where those records came from, measured.** Eleven from the hand-written seed solver and three from the
-  solver the engine evolved. Knockouts at record scale put numbers on both. One switch of the seed solver
+- **Where those records came from, measured.** Nine from the hand-written seed solver, three from the solver
+  the engine evolved, and three from searches that ran the seed solver with one LLM idea switched on.
+  Knockouts at record scale put numbers on the first two. One switch of the seed solver
   doubles the share of runs that beat the published value (262 of 1,600 with it, 136 without). The evolved
   champion, frozen and run on seeds and sizes the engine never used, raises that share by a further 60% over
   the seed solver (218 against 136 of 1,600). The engine's own quick screens saw neither effect, and
