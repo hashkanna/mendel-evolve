@@ -52,17 +52,21 @@ drop the rest.
    with its measured effect, split into measured harmful and unresolved. Say: every row is an experiment, not an
    opinion, and an idea that was not shown to hurt is not called a failure.
 3. **Knock out live**, 20 s. Press "Knock out" on `slsqp_polish`. Dots appear per paired seed; the effect and
-   interval settle in about five seconds (+1.65 when tested at 01:00). Say: this is a fresh experiment on new
-   seeds, not a replay.
+   interval settle in about five seconds (+1.65 when tested at 01:00). Say: "The AI proposed several ideas.
+   Which one mattered? We switch this one off and measure the loss, on fresh seeds, right now. This idea carries
+   the result." On the public snapshot the button is not live; show the recorded +1.67 there.
 4. **Typed-in idea**, 15 s. Switch to `cp-haiku-hint`: OpenEvolve's phase 2 hint, typed into the idea box by a
    person, became a gene credited to its source and measured +1.44, labelled general. Judges can type one too.
 5. **Explain another system's result**, 15 s. Open `explain-oe-two-phase-seed3`: OpenEvolve's evolved program cut
    into five switches, bookend check passed bit for bit, SLSQP alone 99% of the gain, two components do nothing.
 
 6. **One verified construction**, 15 s. Open https://hashkanna.github.io/mendel-evolve/problem59-n32.html: 58
-   points in the 32 x 32 grid with no isosceles triangle, where the literature states 56. Say: DeepMind's own
-   verifier accepts it, it is on their repository as issue 10, and the ledger says it came from the seed solver
-   and compute, not from an evolved idea.
+   points in the 32 x 32 grid with no isosceles triangle, where the literature states 56. The page checks every
+   triple in the browser as it loads: 58 points, 30,856 triples, 0 violations. Say: "These coordinates are the
+   result. Every triple is checked in exact integers, here, now. DeepMind's own verifier accepts them too, and
+   the question is on their repository as issue 10." Keep the two examples apart: the knockout shows
+   attribution, the construction shows validity, and this set came from the seed solver, not from the
+   circle-packing gene.
 
 Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 

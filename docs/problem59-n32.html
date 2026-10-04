@@ -22,6 +22,13 @@
   details { margin: 10px 0; } summary { cursor: pointer; color: var(--dim); }
   pre { white-space: pre-wrap; word-break: break-word; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-size: 12.5px; }
   .note { color: var(--dim); font-size: 14px; }
+  .check { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px 4px; margin: 4px 0 18px; }
+  .check table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  .check th, .check td { text-align: left; padding: 6px 18px 6px 0; border-bottom: 1px solid var(--line); }
+  .check th { color: var(--dim); font-weight: 500; font-size: 14px; }
+  .check td:not(:first-child) { font-weight: 650; font-size: 18px; }
+  .check .ok { color: #7ee0a1; } .check .bad { color: #ff8f8f; }
+  button { background: transparent; color: var(--accent); border: 1px solid var(--line); border-radius: 8px; padding: 3px 10px; font: inherit; font-size: 13px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -285,6 +292,19 @@
 </svg><figcaption>Set B. It shares no point with set A and is not a rotation or reflection of it.</figcaption></figure>
   </div>
 
+  <div class="check" id="check">
+    <table>
+      <tr><th></th><th>Set A</th><th>Set B</th></tr>
+      <tr><td>Points, all distinct and inside the grid</td><td id="a-n">…</td><td id="b-n">…</td></tr>
+      <tr><td>Triples checked</td><td id="a-t">…</td><td id="b-t">…</td></tr>
+      <tr><td>Violations</td><td id="a-v">…</td><td id="b-v">…</td></tr>
+      <tr><td>Grid points that could still be added</td><td id="a-m">…</td><td id="b-m">…</td></tr>
+    </table>
+    <p class="note">Computed in your browser just now, in exact integers, from the coordinates on this page:
+    every triple of points is tested for two equal squared distances. <button id="again" type="button">Run the check again</button>
+    <span id="took"></span></p>
+  </div>
+
   <ul>
     <li>Each set passes all 30,856 triples under four independent checks, among them DeepMind's own
         <code>verify_construction</code> from the problem's notebook, run unchanged.</li>
@@ -303,5 +323,58 @@
 
 set_b = [(0, 3), (0, 6), (0, 7), (0, 24), (0, 25), (0, 28), (1, 8), (1, 9), (1, 12), (1, 19), (1, 22), (1, 23), (4, 0), (4, 11), (4, 20), (4, 31), (5, 0), (5, 11), (5, 20), (5, 31), (8, 11), (8, 20), (11, 3), (11, 6), (11, 7), (11, 24), (11, 25), (11, 28), (20, 3), (20, 6), (20, 7), (20, 24), (20, 25), (20, 28), (23, 11), (23, 20), (26, 0), (26, 11), (26, 20), (26, 31), (27, 0), (27, 11), (27, 20), (27, 31), (29, 1), (29, 30), (30, 8), (30, 9), (30, 12), (30, 19), (30, 22), (30, 23), (31, 3), (31, 6), (31, 7), (31, 24), (31, 25), (31, 28)]</pre></details>
 </main>
+<script>
+  // The two sets, and a check that anyone can read: no triple of points has two equal squared distances.
+  const SETS = { a: [[0, 4], [0, 5], [0, 26], [0, 27], [1, 2], [1, 29], [3, 0], [3, 11], [3, 20], [3, 31], [6, 0], [6, 11], [6, 20], [6, 31], [7, 0], [7, 11], [7, 20], [7, 31], [8, 1], [8, 30], [9, 1], [9, 30], [11, 4], [11, 5], [11, 8], [11, 23], [11, 26], [11, 27], [12, 1], [12, 30], [19, 1], [19, 30], [20, 4], [20, 5], [20, 8], [20, 23], [20, 26], [20, 27], [22, 1], [22, 30], [23, 1], [23, 30], [24, 0], [24, 11], [24, 20], [24, 31], [25, 0], [25, 11], [25, 20], [25, 31], [28, 0], [28, 11], [28, 20], [28, 31], [31, 4], [31, 5], [31, 26], [31, 27]], b: [[0, 3], [0, 6], [0, 7], [0, 24], [0, 25], [0, 28], [1, 8], [1, 9], [1, 12], [1, 19], [1, 22], [1, 23], [4, 0], [4, 11], [4, 20], [4, 31], [5, 0], [5, 11], [5, 20], [5, 31], [8, 11], [8, 20], [11, 3], [11, 6], [11, 7], [11, 24], [11, 25], [11, 28], [20, 3], [20, 6], [20, 7], [20, 24], [20, 25], [20, 28], [23, 11], [23, 20], [26, 0], [26, 11], [26, 20], [26, 31], [27, 0], [27, 11], [27, 20], [27, 31], [29, 1], [29, 30], [30, 8], [30, 9], [30, 12], [30, 19], [30, 22], [30, 23], [31, 3], [31, 6], [31, 7], [31, 24], [31, 25], [31, 28]] };
+  const N = 32;
+  const d2 = (p, q) => (p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2;
+  function violations(P) {            // over every unordered triple
+    let triples = 0, bad = 0;
+    for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) {
+      const dij = d2(P[i], P[j]);
+      for (let k = j + 1; k < P.length; k++) {
+        triples++;
+        const dik = d2(P[i], P[k]), djk = d2(P[j], P[k]);
+        if (dij === dik || dij === djk || dik === djk) bad++;
+      }
+    }
+    return { triples, bad };
+  }
+  function addable(P) {               // grid points that could join the set without creating a violation
+    const has = new Set(P.map((p) => p[0] * N + p[1]));
+    let free = 0;
+    for (let x = 0; x < N; x++) for (let y = 0; y < N; y++) {
+      if (has.has(x * N + y)) continue;
+      const q = [x, y];
+      let ok = true;
+      for (let i = 0; i < P.length && ok; i++) {
+        const di = d2(q, P[i]);
+        for (let j = i + 1; j < P.length; j++) {
+          const dj = d2(q, P[j]), dij = d2(P[i], P[j]);
+          if (di === dj || di === dij || dj === dij) { ok = false; break; }
+        }
+      }
+      if (ok) free++;
+    }
+    return free;
+  }
+  function run() {
+    const t0 = performance.now();
+    for (const key of ['a', 'b']) {
+      const P = SETS[key];
+      const distinct = new Set(P.map((p) => p[0] * N + p[1])).size === P.length;
+      const inside = P.every((p) => Number.isInteger(p[0]) && Number.isInteger(p[1]) && p[0] >= 0 && p[0] < N && p[1] >= 0 && p[1] < N);
+      const v = violations(P), free = addable(P);
+      const set = (id, text, good) => { const el = document.getElementById(key + '-' + id); el.textContent = text; el.className = good ? 'ok' : 'bad'; };
+      set('n', String(P.length) + (distinct && inside ? '' : ' (invalid)'), distinct && inside);
+      set('t', v.triples.toLocaleString('en-GB'), true);
+      set('v', String(v.bad), v.bad === 0);
+      set('m', String(free), free === 0);
+    }
+    document.getElementById('took').textContent = ' ' + Math.round(performance.now() - t0) + ' ms';
+  }
+  document.getElementById('again').addEventListener('click', run);
+  run();
+</script>
 </body>
 </html>
