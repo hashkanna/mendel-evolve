@@ -182,6 +182,9 @@ svg .pt { fill: var(--ink); }
 .switch.on::after { left: auto; right: 1.5px; background: #fff; }
 .switch.gone { border-style: dashed; }
 .v-eff.v-ko { color: var(--neg); white-space: nowrap; }
+.tile.ko { border-color: var(--neg); }
+.tile.ko .t-val { color: var(--neg); }
+.tile.ko-skip { opacity: .35; }
 
 .c-bar svg { display: block; }
 .l1 { display: flex; align-items: center; gap: 8px; min-width: 0; }
@@ -994,6 +997,12 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     note.textContent = '';
     if (!insts.length) { body.appendChild(empty('Scores appear here once the champion has been evaluated.')); return; }
     let nRec = 0, nEq = 0, nBehind = 0, nCert = 0;
+    // An idea switched off with a live knockout: tiles of the instances it re-ran show the score without it.
+    const koGene = [...S.knockedOut].find((n) => S.live.gene === n) || null, koBy = {};
+    if (koGene) for (const p of arr(S.live.pairs)) {
+      const q = obj(p);
+      if (typeof q.instance === 'string' && isNum(q.on) && isNum(q.off)) (koBy[q.instance] = koBy[q.instance] || []).push(q);
+    }
     const groups = [];
     let longest = 1, whole = true;
     for (const it of insts) {
@@ -1053,17 +1062,27 @@ body.snap #idea-form, body.snap #run-select { display: none; }
         }
         const canShow = !!V.sols[it.key];
         if (canShow) tipLines.push('Click to show this solution');
+        let valText = it.text, bkText = known != null ? 'vs ' + fmtScore(known) : ' ', capText = cap, koCls = '';
+        let deltaKids = [glyph ? h('span', { class: 'g ' + gcls, text: glyph }) : null, dtext];
+        if (koGene) {
+          const ko = koBy[it.key];
+          if (ko && ko.length) {
+            const avg = (k) => ko.reduce((t, q) => t + q[k], 0) / ko.length;
+            valText = fmtScore(avg('off')); bkText = 'without it'; deltaKids = ['with it ' + fmtScore(avg('on'))]; capText = 'idea off'; koCls = ' ko';
+            tipLines.unshift(koGene + ' switched off (live, ' + plural(ko.length, 'fresh seed') + '): ' + fmtScore(avg('on')) + ' with it, ' + fmtScore(avg('off')) + ' without it');
+          } else { koCls = ' ko-skip'; capText = 'not re-run'; }
+        }
         const tile = h('div', {
-          class: 'tile' + (better ? ' record' : '') + (canShow ? ' pick' : '') + (canShow && V.key === it.key ? ' shown' : ''),
+          class: 'tile' + koCls + (better && !koCls ? ' record' : '') + (canShow ? ' pick' : '') + (canShow && V.key === it.key ? ' shown' : ''),
           tip: tipLines.join('\n'), tabindex: canShow ? 0 : null, role: canShow ? 'button' : null,
           onclick: canShow ? () => pickInstance(it.key) : null,
           onkeydown: canShow ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickInstance(it.key); } } : null,
         },
           h('div', { class: 't-key' + (longKey ? ' long' : ''), text: longKey ? it.key.replace(/^([A-Za-z_]+)(\d)/, '$1\u200b$2') : it.key }),
-          h('div', { class: 't-val', style: { fontSize }, text: it.text }),
-          h('div', { class: 't-bk', text: known != null ? 'vs ' + fmtScore(known) : ' ' }),
-          h('div', { class: 't-delta' }, glyph ? h('span', { class: 'g ' + gcls, text: glyph }) : null, dtext),
-          h('div', { class: 't-cap', text: cap }),
+          h('div', { class: 't-val', style: { fontSize }, text: valText }),
+          h('div', { class: 't-bk', text: bkText }),
+          h('div', { class: 't-delta' }, ...deltaKids),
+          h('div', { class: 't-cap', text: capText }),
           it.cert ? h('div', { class: 't-cert', text: '★ ' + (tileW < 70 ? '' : 'search: ') + fmtScore(it.cert.value) }) : null);
         tiles.appendChild(tile);
       }
@@ -1076,7 +1095,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     if (nRec) parts.push(plural(nRec, 'new record'));
     if (nEq) parts.push(nEq + ' matched');
     if (nBehind) parts.push(nBehind + ' behind');
-    note.textContent = nCert ? 'own scores · ★ = separate search' : parts.length ? parts.join(' · ') : 'the champion’s best vs best published';
+    note.textContent = koGene ? koGene + ' switched off' : nCert ? 'own scores · ★ = separate search' : parts.length ? parts.join(' · ') : 'the champion’s best vs best published';
     note.setAttribute('data-tip', 'Each tile is what the champion itself scored' + (parts.length ? ': ' + parts.join(', ') : '')
       + (nCert ? '\n★ under a tile: a certificate from a separate record search goes further on ' + plural(nCert, 'instance') + '. The champion did not produce those; they are listed in the records strip' : ''));
   }
@@ -1765,6 +1784,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       if (sr.bottom > limit) list.scrollTop += sr.bottom - limit + 4;
     }
     S.stripGene = strip ? stripGene : '';
+    renderChampion();
   }
   const stripKey = () => [S.pending ? S.pending.gene : '', S.live.gene || '', S.live.status || '', arr(S.live.pairs).length, S.live.t || '', S.dismissed === S.liveText, S.localError ? S.localError.gene : ''].join('|');
 
