@@ -242,6 +242,9 @@ svg .pt { fill: var(--ink); }
 .st-big { font-size: 26px; font-weight: 650; line-height: 1.1; letter-spacing: -.01em; }
 .st-big small { font-size: 12px; font-weight: 500; color: var(--ink-3); letter-spacing: 0; margin-left: 6px; }
 .st-sub { font-size: 11px; color: var(--ink-2); }
+.st-onoff { font-size: 13px; color: var(--ink); margin-top: 4px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.st-onoff b { font-weight: 650; }
+.st-onoff .arr { color: var(--ink-3); margin: 0 6px; }
 .st-plot svg { display: block; }
 .st-x { background: none; border: 0; color: var(--ink-3); font-size: 16px; cursor: pointer; padding: 0; line-height: 1; align-self: start; }
 .st-x:hover { color: var(--ink); }
@@ -1650,13 +1653,19 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     else if (v === 'neu') sub = 'No clear effect: the interval spans zero';
     else if (act === 'off') sub = 'Switching it off ' + (v === 'pos' ? 'costs ' : 'gains ') + trimNum(Math.abs(m.effect)) + ' points';
     else sub = 'Switching it on ' + (v === 'pos' ? 'gains ' : 'costs ') + trimNum(Math.abs(m.effect)) + ' points';
+    // the scores themselves, so the drop can be read without hovering: mean over the paired seeds so far
+    const both = pairs.filter((p) => isNum(p.on) && isNum(p.off));
+    const mean = (k) => both.reduce((t, p) => t + p[k], 0) / both.length;
+    const onoff = both.length ? h('div', { class: 'st-onoff', tip: 'Mean score over ' + plural(both.length, 'paired seed') + ', same seeds both ways' },
+      act === 'off' ? ['with the idea ', h('b', { text: trimNum(mean('on')) }), h('span', { class: 'arr', text: '→' }), 'switched off ', h('b', { text: trimNum(mean('off')) })]
+                    : ['without the idea ', h('b', { text: trimNum(mean('off')) }), h('span', { class: 'arr', text: '→' }), 'switched on ', h('b', { text: trimNum(mean('on')) })]) : null;
     const cap = running ? 'Knocking out ' + g.name
       : 'Live knockout' + (pairs.length ? ' · ' + plural(pairs.length, 'paired run') : '') + (clock(info.t) ? ' · ' + clock(info.t) : '');
     return h('div', { class: 'strip v-' + (running ? 'neu' : v), 'data-gene': g.name, onclick: stop },
       h('div', null,
         h('div', { class: 'st-cap' }, running ? h('span', { class: 'spin' }) : null, cap),
         h('div', { class: 'st-big' }, m ? fmtSigned(m.effect) : '…', m && m.lo != null ? h('small', { text: ciText(m) }) : null),
-        h('div', { class: 'st-sub', text: sub })),
+        h('div', { class: 'st-sub', text: sub }), onoff),
       h('div', { class: 'st-plot' }, pairsPlot(pairs, m, plotW)),
       running ? h('span') : close);
   }
