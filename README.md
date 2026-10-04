@@ -284,6 +284,15 @@ What we have not found elsewhere, to our knowledge: interventional attribution i
 into a named switch with a hypothesis so that such interventions are possible, and a per-idea test of
 generalisation across instance sizes.
 
+## Hackathon sponsors we used
+
+| Sponsor | How MendelEvolve uses it |
+|---|---|
+| **Anthropic** | Claude Code agents are the idea inventors (Claude models; one gene per session, in a sandbox), and Claude Code built the framework during the event. |
+| **Modal** | Every solver evaluation, tuning run, knockout and record search ran on Modal: over 8,000 CPU core-hours, with the arms of a paired comparison in the same container so that hardware cannot fake an effect. |
+| **Cognition (Devin)** | Five parallel Devin sessions, each given only this README and PROTOCOL.md, added a new benchmark each ([pull requests #1 to #5](https://github.com/hashkanna/mendel-evolve/pulls?q=is%3Apr+is%3Amerged), all merged): the ease-of-use test. |
+| **Google DeepMind** | Problems 59 and 60 come from their [repository of problems](https://github.com/google-deepmind/alphaevolve_repository_of_problems); their verifier accepts our 58-point sets, and our results are posted there ([issue 6](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6), [issue 10](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/10)). Gemini (3.8 Flash TTS and 3.8 Live) narrates the videos and Lyria composed the film's music. |
+
 ## Credits
 
 [OpenEvolve](https://github.com/algorithmicsuperintelligence/openevolve) (Apache-2.0): the circle packing
