@@ -83,6 +83,7 @@ def main() -> None:
     paired_sets = sum(antipodal(n) for n in records + large)
     ties = [n for n in range(13, 33) if n not in records]
     base = f"https://github.com/hashkanna/mendel-evolve/tree/{commit}/results/no5sphere"
+    files = f"https://github.com/hashkanna/mendel-evolve/blob/{commit}/results/no5sphere"
     text = f"""**Certificate-backed lower bounds at {len(records)} sizes from n = {records[0]} to {records[-1]}, and point sets for n = 33 to 40**
 
 *Edited on 2026-10-04 with the results of deeper searches: the entries for n = {", ".join(str(n) for n in changed)} are new or improved since this comment was first posted. Everything below is the current state.*
@@ -126,7 +127,7 @@ What we measured about why, for anyone searching these sizes. All comparisons us
 - Ten other modifications tested the same way gave nothing resolved above +0.03 points.
 - A caution we learned the hard way: comparing two searches that ran on different machines can show differences of 0.1 points that are not real. Identical runs on different containers differed by 0.06 on the mean.
 
-Variant B was proposed by an LLM inside an evolutionary pipeline and rejected by that pipeline's own quick screening (48 paired runs of 45 CPU-seconds), which could not resolve effects of this size. As 0thernet reported for their pipeline, the evolutionary layer is not what found these: the sets come from a fixed local search, a symmetry constraint, one refill trick and compute. Per-run scores and the scripts behind these numbers: {base}/paired_scores.json and {base}/paired_effects.py.
+Variant B was proposed by an LLM inside our evolutionary pipeline and then rejected by that pipeline's own quick screening (48 paired runs of 45 CPU-seconds), which could not resolve effects of this size. So, much as 0thernet reported for their pipeline, the pipeline's selection is not what found these: the sets come from a local search, a symmetry constraint, automatic tuning of its constants, one refill trick and compute. Per-run scores and the script behind these numbers: {files}/paired_scores.json and {files}/paired_effects.py.
 
 **Disclosure.** These came out of a hackathon project, MendelEvolve (London AI x Science Hackathon, 3 to 4 October 2026). The search code, the checkers and this post were produced with an AI coding agent (Claude) under my direction. No search code from other contributors was read or used; the prose descriptions in this thread were read, and published certificates were used only to validate the checkers. I take responsibility for the claim; it rests on the published coordinates and the exact checkers, not on trust in model output.
 
