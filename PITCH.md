@@ -23,18 +23,20 @@ but no genes. MendelEvolve evolves ideas instead of programs, and measures what 
    measure what the solver loses. That gives a causal effect per idea, an interaction map, and a test of whether
    each idea generalises to instance sizes it was never selected on. The ledger of measured effects is what the
    next inventors read, so the search stops repeating itself, and it is also the explanation of the result.
-3. **What it did in a weekend.** Apparently new lower bounds at 13 sizes of Tao et al.'s problem 60, and first
+3. **What it did in a weekend.** Apparently new lower bounds at 14 sizes of Tao et al.'s problem 60, and first
    point sets for eight more sizes, each verified by three independent exact checkers. On problem 59, two 58-point
    sets in the 32 x 32 grid where the literature states that the optimum is 56. On circle packing, Fable inventors took
    OpenEvolve's own starting program to the best known value with no hints, and the ledger names the one idea
    that did it: knock it out and the score falls by 1.67.
-4. **The honest part, which is the point.** We turned the knockouts on our own records. They did not come from
-   evolved ideas. One switch in the hand-written seed solver doubles the share of runs that beat the published
-   value (16.4% against 8.5% over 1,600 paired runs) while moving the average by a fifth of a point, too small
-   for the engine's quick screens to see. So we screened all 30 evolved ideas again at that scale, 600 runs
-   each: [pending]. And on a program that OpenEvolve itself evolved, one switch, the optimiser its prompt
-   recommends by name, carries 99% of the gain. A framework that tells you when evolution did nothing, and when
-   its own measurement was too weak to know, is what this field is missing.
+4. **The honest part, which is the point.** We turned the knockouts on our own records. Eleven came from the
+   hand-written seed solver: one of its switches doubles the share of runs that beat the published value (16.4%
+   against 8.5% over 1,600 paired runs). The engine's quick screens said evolution added nothing. That was a
+   measurement too weak to see a fifth of a point, so we froze the evolved solver and tested it at record scale
+   on seeds it had never seen: 13.6% of its runs beat the published value against 8.5% for the seed solver, and
+   it produced three of our best sets. Which evolved component carries that, and whether any of the 30 LLM
+   ideas helps on its own: [pending]. And on a program that OpenEvolve itself evolved, one switch, the optimiser
+   its prompt recommends by name, carries 99% of the gain. A framework that tells you where a result came from,
+   and when its own measurement was too weak to know, is what this field is missing.
 
 ## The 90-second live demo
 
@@ -91,11 +93,13 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 - **What did your method itself discover?** On circle packing, the idea that carries the result: Fable
   inventors proposed an SLSQP polish with no hint, and its knockout costs 1.67 on training sizes and on held-out
   sizes. On problem 59, a map of which of the seed solver's switches matter and that two of them are worth more
-  together (+3.69). On problem 60, nothing: the records are the seed solver, one of its own switches and compute.
+  together (+3.69). On problem 60, a solver that beats the seed solver at record scale (13.6% of runs above the
+  published value against 8.5%, on seeds the engine never used) and three of the 14 record sets; whether that
+  is the tuning, a seed switch or the LLM idea is [pending].
 - **Is "no idea helped" just an underpowered test?** It was, and we measured by how much. The engine's screen
   (48 seed pairs, 45 seconds) resolves about 0.2 points. The switch that finds our records is worth 0.22 on the
-  mean, so that screen could not have seen it. We reran every idea at 600 paired runs with a control arm:
-  [pending]. The engine now also reports, for each knockout, how many seed pairs differed at all: one kept idea
+  mean, so that screen could not have seen it; nor could it see that the evolved champion as a whole is worth
+  0.20. We reran every idea at 600 paired runs with a control arm: [pending]. The engine now also reports, for each knockout, how many seed pairs differed at all: one kept idea
   (`kick_escalate`) turned out never to have executed in its own knockout.
 - **So is the mean the wrong objective?** For record hunting, yes. A record is the best of hundreds of long runs;
   the engine selects on the mean of a few short ones. Selecting on the rate of runs above a target is the first
@@ -123,9 +127,10 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 0:55 Screen: the ledger on circle packing. Read one row. Press Knock out. Watch the dots land.
 1:30 Screen: the idea box. "A person typed OpenEvolve's own hint in. It became a gene. It measured +1.44."
 1:50 Screen: explain page. "We pointed it at a program OpenEvolve evolved. One switch is 99% of the gain."
-2:15 Screen: records strip on problem 60, then the DeepMind thread. "Apparently new lower bounds at 13 sizes, three
-     independent exact checkers each, posted with provenance. And the knockout says where they came from: one
-     switch of the seed solver doubles the record rate. The evolved ideas: [pending]."
+2:15 Screen: records strip on problem 60, then the DeepMind thread. "Apparently new lower bounds at 14 sizes, three
+     independent exact checkers each, posted with provenance. And the knockouts say where they came from: one
+     switch of the seed solver doubles the record rate, and the evolved solver adds 60% more. [pending: which
+     evolved component]"
 2:40 Screen: problem 59 point set. "58 points where the literature says 56 is optimal. We raised it as a
      discrepancy to be understood, not a correction."
 3:00 "What it cost": the efficiency tile. LLM calls, dollars, evaluations, cost per kept idea.
@@ -153,10 +158,10 @@ Short description: MendelEvolve is an autoresearch framework that evolves ideas 
 LLM-proposed idea becomes a named, switchable gene with a stated hypothesis; the LLM only invents, classical
 search recombines and tunes, and knockouts (singly, in pairs, on fresh seeds and held-out instance sizes) give a
 causal effect per idea. The ledger of measured effects steers the next inventors and explains the result. During
-the hackathon it produced apparently new lower bounds at 13 sizes of Tao et al.'s problem 60 (verified by three
+the hackathon it produced apparently new lower bounds at 14 sizes of Tao et al.'s problem 60 (verified by three
 independent exact checkers), 58-point isosceles-free sets in the 32 x 32 grid where 56 was reported, and the
 best known circle packing value from OpenEvolve's initial program with no hints. Its knockouts also say where
-results come from: our problem 60 records trace to one switch of the seed solver, which doubles the rate of
-record-beating runs, and not to evolved ideas; a program OpenEvolve itself evolved owes 99% of its gain to one
-switch. Ten problem packs (five added by outside agents from the docs alone), a protocol for adding more, and a
+results come from: on problem 60, one switch of the seed solver doubles the rate of record-beating runs and the
+evolved solver raises it by a further 60% on seeds it never saw; a program OpenEvolve itself evolved owes 99%
+of its gain to one switch. Ten problem packs (five added by outside agents from the docs alone), a protocol for adding more, and a
 dashboard with live knockouts are in the repo.

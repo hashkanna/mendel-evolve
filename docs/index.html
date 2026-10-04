@@ -55,30 +55,32 @@
   <table>
     <tr><th>n</th><th>ours</th><th>best published</th></tr>
     <tr><td>15</td><td><b>41</b></td><td>40</td></tr>
-    <tr><td>16</td><td><b>43</b></td><td>42</td></tr>
+    <tr><td>16</td><td><b>44</b></td><td>42</td></tr>
     <tr><td>17</td><td><b>46</b></td><td>45</td></tr>
     <tr><td>21</td><td><b>56</b></td><td>55</td></tr>
     <tr><td>23</td><td><b>61</b></td><td>59</td></tr>
     <tr><td>24</td><td><b>64</b></td><td>62</td></tr>
     <tr><td>25</td><td><b>66</b></td><td>65</td></tr>
     <tr><td>26</td><td><b>68</b></td><td>67</td></tr>
+    <tr><td>27</td><td><b>71</b></td><td>70</td></tr>
     <tr><td>28</td><td><b>74</b></td><td>71</td></tr>
     <tr><td>29</td><td><b>76</b></td><td>75</td></tr>
     <tr><td>30</td><td><b>79</b></td><td>76</td></tr>
-    <tr><td>31</td><td><b>80</b></td><td>79</td></tr>
+    <tr><td>31</td><td><b>81</b></td><td>79</td></tr>
     <tr><td>32</td><td><b>84</b></td><td>82</td></tr>
   </table>
   <p class="note">Each set is verified by three independent exact checkers over every 5-point subset.
-  Certificates and checkers are in the repository, and all 13 are posted on
+  Certificates and checkers are in the repository, and the first 13 are posted on
   <a href="https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530">DeepMind's record thread</a>. First point sets for n = 33 to 40, where none are published:
   86, 90, 91, 94, 96, 98, 100 and 103 points, checked the same way.</p>
 
   <h2>Where those records came from</h2>
-  <p>From the seed solver and compute, not from evolved ideas, and the ledger says so. One of the seed solver's
-  own switches (build the set from antipodal pairs) moves the average run by a fifth of a point and doubles the
-  share of runs that beat the published value: 262 of 1,600 with it, 136 of 1,600 without, on the same seeds and
-  budgets. The engine's short screens could not see an effect that small, so every idea is being screened again
-  at record-search scale; see
+  <p>Eleven from the hand-written seed solver, and three (n = 16, 27, 31) from the solver the engine evolved.
+  Knockouts at record scale measure both. One of the seed solver's own switches (build the set from antipodal
+  pairs) doubles the share of runs that beat the published value: 262 of 1,600 with it, 136 without. The evolved
+  champion, frozen and run on seeds the engine never used, raises that share by a further 60% over the seed
+  solver: 218 against 136 of 1,600. The engine's short screens saw neither effect, so every idea is being
+  screened again at record-search scale; see
   <a href="https://github.com/hashkanna/mendel-evolve/blob/main/RESULTS.md">RESULTS.md</a>.</p>
 
   <h2>Other results</h2>
