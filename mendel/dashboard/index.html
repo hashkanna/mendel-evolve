@@ -181,6 +181,7 @@ svg .pt { fill: var(--ink); }
 .switch.on { background: var(--pos); border-color: var(--pos); }
 .switch.on::after { left: auto; right: 1.5px; background: #fff; }
 .switch.gone { border-style: dashed; }
+.v-eff.v-ko { color: var(--neg); white-space: nowrap; }
 
 .c-bar svg { display: block; }
 .l1 { display: flex; align-items: center; gap: 8px; min-width: 0; }
@@ -1685,9 +1686,17 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       else action = h('button', { class: 'btn', disabled: busy, tip: mine ? null : 'Switch this idea off and re-run the solver on paired seeds, live',
         onclick: (e) => { e.stopPropagation(); knockOut(g.name); } }, mine ? [h('span', { class: 'spin' }), 'Running'] : 'Knock out');
     } else action = h('span', { class: 'muted', style: { fontSize: '11px' }, tip: (STATUS[g.status] || [])[1] || null, text: (STATUS[g.status] || [g.status || 'proposed'])[0] });
-    const val = g.m
+    let val = g.m
       ? [h('span', { class: 'v-eff', text: fmtSigned(g.m.effect) }), h('span', { class: 'v-ci', text: ciText(g.m) })]
       : h('span', { class: 'v-ci', text: 'not measured' });
+    // switched off by a live knockout: the row itself shows the score with the idea and without it
+    if (testing && info) {
+      const ps = normPairs(info.pairs, 1).filter((p) => isNum(p.on) && isNum(p.off));
+      if (ps.length) {
+        const avg = (k) => ps.reduce((t, p) => t + p[k], 0) / ps.length;
+        val = [h('span', { class: 'v-eff v-ko', text: trimNum(avg('on')) + ' → ' + trimNum(avg('off')) }), h('span', { class: 'v-ci', text: 'score: with it → without it' })];
+      } else val = [h('span', { class: 'v-eff v-ko', text: '… → …' }), h('span', { class: 'v-ci', text: 'running without it' })];
+    }
     // what the number means when it is not a knockout of something in the champion
     const srcNote = !g.m ? '' : g.src === 'switch-on' ? 'would add if switched on' : g.src === 'screen' ? 'measured at screening' : '';
     const srcTitle = g.src === 'switch-on' ? 'Effect of switching it on' : g.src === 'screen' ? 'Screening effect' : 'Knockout effect';
