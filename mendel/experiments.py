@@ -44,8 +44,9 @@ def run_arms(executor, problem, arms: dict, instances: list[dict], seeds, budget
 def contrast(problem, runs: dict, weights: dict, keys: list[str], seeds) -> dict:
     """A paired linear contrast between arms, e.g. {"on": 1, "off": -1}.
 
-    Returns {"effect", "ci", "runs", "pairs", "dropped", "per_instance"}; each pair lists the arms'
-    scores and the signed difference."""
+    Returns {"effect", "ci", "runs", "pairs", "dropped", "differing", "per_instance"}; each pair lists
+    the arms' scores and the signed difference. `dropped` counts pairs left out because a run failed;
+    `differing` counts pairs whose difference is not zero (none means the arms never told apart)."""
     diffs: list[float] = []
     strata: list[str] = []
     pairs: list[dict] = []
@@ -68,7 +69,7 @@ def contrast(problem, runs: dict, weights: dict, keys: list[str], seeds) -> dict
             e, l, h = paired_bootstrap(own)
             per_instance[key] = {"effect": e, "ci": [l, h], "runs": len(own) * len(weights)}
     return {"effect": effect, "ci": [lo, hi], "runs": len(diffs) * len(weights), "pairs": pairs,
-            "dropped": dropped, "per_instance": per_instance}
+            "dropped": dropped, "differing": sum(1 for d in diffs if d != 0), "per_instance": per_instance}
 
 
 def _failed(runs: dict) -> int:

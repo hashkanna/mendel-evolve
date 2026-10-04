@@ -690,7 +690,8 @@ class Engine:
                                          "the proposal was not measured")
                 continue
             s["screen"] = res
-            s["summary"] = {"effect": res["effect"], "ci": res["ci"], "runs": res["runs"], "generation": g}
+            s["summary"] = {"effect": res["effect"], "ci": res["ci"], "runs": res["runs"], "generation": g,
+                            **_pair_counts(res)}
             screened.append(s)
             self.ledger.event("gene_screened", gene=p.genes[0],
                               detail=f"effect {res['effect']:+.4g}, 95% interval [{res['ci'][0]:+.4g}, "
@@ -823,7 +824,7 @@ class Engine:
                                    cfg.budget, skip=pruned)
         for name, r in {**kos, **ins}.items():
             ledger.upsert_gene(name, knockout={"effect": r["effect"], "ci": r["ci"], "runs": r["runs"],
-                                               "generation": g})
+                                               "generation": g, **_pair_counts(r)})
         # pruning: off in the champion and no measurable effect when switched on, round after round
         tol = self._neutral_tol()
         for name in kos:
@@ -883,6 +884,18 @@ class Engine:
                                               "compute": 0.0, "unit": d["unit"]}
         self.ledger.event("decomposition", detail=f"seed {d['seed']:.4g}, tuning {d['tuning']:+.4g}, "
                                                   f"ideas {d['ideas']:+.4g}", seeds=self._fresh_seeds())
+
+
+def _pair_counts(result: dict) -> dict:
+    """How many seed pairs a comparison rests on: compared, differing (score not equal between the
+    arms) and dropped (a run failed). An idea whose arms never differ was probably never exercised."""
+    out = {}
+    if isinstance(result.get("pairs"), list):
+        out["pairs"] = len(result["pairs"])
+    for key in ("differing", "dropped"):
+        if result.get(key) is not None:
+            out[key] = result[key]
+    return out
 
 
 def run_engine(cfg: EngineConfig, inventor=None, executor=None, resume: bool = False,

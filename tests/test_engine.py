@@ -128,7 +128,9 @@ def test_engine_state_matches_the_protocol(run):
     active = [n for n, g in genes.items() if g["status"] == "active" and g["kind"] == "switch"]
     assert active
     for name in active:                                   # every active idea was knocked out and labelled
-        assert set(genes[name]["knockout"]) == {"effect", "ci", "runs", "generation"}
+        assert {"effect", "ci", "runs", "generation"} <= set(genes[name]["knockout"])
+        assert set(genes[name]["knockout"]) <= {"effect", "ci", "runs", "generation", "pairs", "differing", "dropped"}
+        assert genes[name]["knockout"]["differing"] <= genes[name]["knockout"]["pairs"]
         assert genes[name]["label"] in ("general", "specific", "neutral", "harmful", "inconclusive")
         assert set(genes[name]["generality"]) == {"n8", "n10"}
     assert len(state["interactions"]) == 1

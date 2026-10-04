@@ -601,7 +601,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     let lo = num(ci[0]), hi = num(ci[1]);
     if (lo != null && hi != null && lo > hi) { const t = lo; lo = hi; hi = t; }
     if (lo == null || hi == null) { lo = null; hi = null; }
-    return { effect, lo, hi, runs: num(m.runs), generation: num(m.generation) };
+    return { effect, lo, hi, runs: num(m.runs), generation: num(m.generation), pairs: num(m.pairs), differing: num(m.differing), dropped: num(m.dropped) };
   }
   // 'pos' helps, 'neg' hurts, 'neu' inconclusive (the 95% interval spans zero)
   function verdict(m) {
@@ -618,6 +618,10 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     if (m.generation != null) meta.push('generation ' + m.generation);
     if (meta.length) lines.push(meta.join(' · '));
     if (verdict(m) === 'neu') lines.push('Interval spans zero: inconclusive');
+    if (m.pairs != null && m.differing != null) lines.push(m.differing === 0 && m.pairs > 0
+      ? 'Identical scores in all ' + plural(m.pairs, 'pair') + ': the idea may never have executed at this budget'
+      : 'Scores differ in ' + m.differing + ' of ' + plural(m.pairs, 'pair'));
+    if (m.dropped) lines.push(plural(m.dropped, 'pair') + ' dropped because a run failed');
     if (extra) lines.push(extra);
     return lines.join('\n');
   }
@@ -643,7 +647,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     proposed: ['proposed', 'Proposed in this generation; being checked by the invariance gate'],
     screening: ['screening', 'Passed the gate; its effect is being measured now'],
     screened: ['screened', 'Screened; waiting for the merge decision'],
-    rejected: ['rejected', 'Failed screening and was not merged'],
+    rejected: ['rejected', 'Not merged: its screening effect was not positive. See the interval for whether it was measured as harmful or left unresolved'],
     pruned: ['pruned', 'Removed from the solver after repeated null knockouts'],
     'failed-gate': ['failed gate', 'Broke the invariance rule or crashed, so it was never measured'],
     failed_gate: ['failed gate', 'Broke the invariance rule or crashed, so it was never measured'],
@@ -651,7 +655,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
   const LABELS = {
     general: ['pos', 'Helps on held-out instances too'],
     specific: ['half', 'Helps on training instances only'],
-    neutral: ['neu', 'No measurable effect'],
+    neutral: ['neu', 'No measurable effect: both intervals span zero and lie within the practical tolerance\n(0.5% of the champion’s mean score unless the run sets another)'],
     harmful: ['neg', 'Makes the solver worse'],
     inconclusive: ['unk', 'The 95% interval spans zero'],
   };
@@ -1704,10 +1708,14 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     for (const g of main) append(list, [ledgerRow(g, sc, false, plotW)]);
     if (dim.length) {
       const mini = (g) => h('span', { class: 'mini' }, g.m ? h('i', { class: 'sw ' + verdict(g.m) }) : null, g.name, h('b', { text: g.m ? fmtSigned(g.m.effect) : (STATUS[g.status] || [g.status])[0] }));
+      // An interval that spans zero is not a demonstrated failure: keep it apart from the ideas measured as harmful.
+      const nHurt = dim.filter((g) => g.m && verdict(g.m) === 'neg').length, nOpen = dim.filter((g) => g.m && verdict(g.m) === 'neu').length;
+      const notKept = [nHurt ? nHurt + ' measured harmful' : '', nOpen ? nOpen + ' unresolved' : '', dim.length - nHurt - nOpen ? dim.length - nHurt - nOpen + ' other' : ''].filter(Boolean).join(' · ');
       list.appendChild(h('button', { class: 'dimhead' + (S.collapsed ? ' stick' : ''), type: 'button', 'aria-expanded': String(!S.collapsed), onclick: () => { S.collapsed = !S.collapsed; renderLedger(); } },
         h('span', { text: S.collapsed ? '▸' : '▾' }),
-        h('span', { class: 'dh-title', text: 'What did not work (' + dim.length + ')' }),
-        h('span', { class: 'dh-sum' }, S.collapsed ? dim.map(mini) : 'rejected at screening, failed the invariance gate, or pruned after null knockouts')));
+        h('span', { class: 'dh-title', text: 'Not kept (' + dim.length + ')',
+          tip: 'Ideas that were not merged, or were removed again.\nMeasured harmful: the 95% interval lies below zero.\nUnresolved: the interval spans zero, so at this budget and sample size the idea was shown neither to help nor to hurt.' }),
+        h('span', { class: 'dh-sum' }, h('span', { text: notKept }), S.collapsed ? dim.map(mini) : '· rejected at screening, failed the invariance gate, or pruned after null knockouts')));
       if (!S.collapsed) for (const g of dim) append(list, [ledgerRow(g, sc, true, plotW)]);
     }
     list.scrollTop = keep;
