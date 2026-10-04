@@ -3,7 +3,7 @@
 Everything here comes from runs made during the hackathon (3-4 October 2026). Numbers are filled in as runs
 finish; a section that says "pending" has no result yet.
 
-## Problem 60: new lower bounds at 15 grid sizes
+## Problem 60: new lower bounds at 16 grid sizes
 
 C(n) is the size of the largest subset of an n x n x n grid with no 5 points on a common sphere or plane.
 "Published" is the best value we could find in public sources on 3 October 2026: the
@@ -20,12 +20,13 @@ new relative to the public sources we found, with no claim of optimality or guar
 | 16 | **44** | 42 | [n16_44.json](results/no5sphere/certificates/n16_44.json) | evolved champion of run p60 with centrosymmetric |
 | 17 | **46** | 45 | [n17_46.json](results/no5sphere/certificates/n17_46.json) | seed solver with centrosymmetric |
 | 19 | **51** | 50 | [n19_51.json](results/no5sphere/certificates/n19_51.json) | champion variant (kick_escalate) with centrosymmetric |
+| 20 | **54** | 53 | [n20_54.json](results/no5sphere/certificates/n20_54.json) | seed solver with centrosymmetric |
 | 21 | **56** | 55 | [n21_56.json](results/no5sphere/certificates/n21_56.json) | seed solver with centrosymmetric |
 | 23 | **62** | 59 | [n23_62.json](results/no5sphere/certificates/n23_62.json) | seed solver with the LLM idea layer_ruin with centrosymmetric |
 | 24 | **64** | 62 | [n24_64.json](results/no5sphere/certificates/n24_64.json) | seed solver with centrosymmetric |
 | 25 | **66** | 65 | [n25_66.json](results/no5sphere/certificates/n25_66.json) | seed solver with centrosymmetric |
 | 26 | **69** | 67 | [n26_69.json](results/no5sphere/certificates/n26_69.json) | seed solver with the LLM idea load_ruin with centrosymmetric |
-| 27 | **71** | 70 | [n27_71.json](results/no5sphere/certificates/n27_71.json) | evolved champion of run p60 with centrosymmetric |
+| 27 | **72** | 70 | [n27_72.json](results/no5sphere/certificates/n27_72.json) | seed solver with centrosymmetric |
 | 28 | **74** | 71 | [n28_74.json](results/no5sphere/certificates/n28_74.json) | seed solver with centrosymmetric |
 | 29 | **76** | 75 | [n29_76.json](results/no5sphere/certificates/n29_76.json) | seed solver with centrosymmetric |
 | 30 | **79** | 76 | [n30_79.json](results/no5sphere/certificates/n30_79.json) | seed solver with centrosymmetric |
@@ -36,8 +37,8 @@ new relative to the public sources we found, with no claim of optimality or guar
 The first 13 (with 43 at n = 16 and 80 at n = 31), and the sets for n = 33 to 40, were posted on the record thread on 4 October 2026
 ([comment](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530)); the first three had been posted there the day before.
 
-We equal the published value at n = 13, 14, 18, 20 and 22. For n = 33 to 40, where no sets are
-published (the n = 32 set implies 82 because C is non-decreasing), the search gives 86, 90, 91, 94, 96, 98, 100, 103.
+We equal the published value at n = 13, 14, 18 and 22. For n = 33 to 40, where no sets are
+published (the n = 32 set implies 82 because C is non-decreasing), the searches give 86, 90, 91, 94, 96, 98, 102, 104.
 
 Every certificate in `results/no5sphere/certificates` (the 15 above, earlier sets at some sizes, and those for
 n = 33 to 40) was checked over every 5-subset by three independent exact integer methods:
@@ -50,11 +51,13 @@ Reproduce: `python results/no5sphere/third_check.py results/no5sphere/certificat
 
 ### How they were found, stated plainly
 
-Nine of the 15 came from the **seed solver**, a from-scratch C ruin-and-recreate search written at the start
-of the hackathon, before any idea had been evolved, with its `centrosymmetric` switch on. Three (n = 16, 19 and
-27) came from the engine's evolved champion or a variant of it, with the same switch on. Three (n = 23, 26 and
-31) came from the deep screen described below, in arms that ran the seed solver with one LLM idea switched on;
-their sources are in [results/no5sphere/idea_solvers](results/no5sphere/idea_solvers). The "found by" column
+Eleven of the 16 came from the **seed solver**, a from-scratch C ruin-and-recreate search written at the start
+of the hackathon, before any idea had been evolved, with its `centrosymmetric` switch on. Two (n = 16 and 19)
+came from the engine's evolved champion or a variant of it, with the same switch on; a deeper search with the
+seed solver later reached the same 44 at n = 16. Three (n = 23, 26 and 31) came from the deep screen described
+below, in arms that ran the seed solver with one LLM idea switched on; the seed solver alone later reached the
+same 82 at n = 31. The sources of those arms
+are in [results/no5sphere/idea_solvers](results/no5sphere/idea_solvers). The "found by" column
 says which search found a set, not what caused it: the deep screen made about 4,500 runs per size across 30
 arms, so the arm that happened to find the best one is not evidence for its idea. The first search (24 seeds per size, 120 CPU-seconds, about $0.90 of Modal compute) gave n = 21, 23
 and 26. The full search ran 100 to 150 seeds per size at 90 to 480 CPU-seconds, with and without the switch,
@@ -118,8 +121,9 @@ never used by it at all, so this is a test on data that could not have steered t
 
 - Over all 20 sizes the picture is the same: 8.6% against 5.3% (+3.3 points [+2.3, +4.2]) without the switch,
   12.5% against 10.3% (+2.2 points [+1.0, +3.5]) with it.
-- The evolved solver produced the best sets we have at n = 16 (44) and n = 27 (71, a size where the seed solver
-  only equalled the published 70), and 81 at n = 31 before the deep screen found 82.
+- The evolved solver was the first to reach 44 at n = 16, 71 at n = 27 and 81 at n = 31. Deeper searches with
+  the seed solver have since matched or passed all three (44, 72 and 82), so those sets are not evidence for
+  the evolved solver by themselves; the rates in the table are.
 - The engine's own measurement of the same champion against the same seed solver was +0.10, inside its noise.
   At 1,600 pairs and record budgets it is +0.20 with an interval that excludes zero, and the rate of
   record-beating runs is up by 60%.
