@@ -22,3 +22,4 @@ media/*.m4a
 media/frames/
 media/work/
 media/tmp/
+media/.key_file
