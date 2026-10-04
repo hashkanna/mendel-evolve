@@ -128,6 +128,19 @@ written in any language; the two shipped ones are C and Python.
 The task: place 26 circles in a unit square so that the sum of their radii is as large as possible. The best
 known value is 2.635983. Run `cp-fable-1`, open it in the dashboard with `uv run mendel serve`.
 
+```mermaid
+flowchart TD
+    A["Seed: OpenEvolve's initial program<br/>circles in rings, score 0.96"] --> B["Invent: Claude agents over 8 generations<br/>17 ideas, each behind a switch"]
+    B --> C{"Gate: with the switch off,<br/>is the solver unchanged?"}
+    C -- "10 fail" --> X1["rejected"]
+    C -- "7 pass" --> D{"Screen: idea on vs off,<br/>paired seeds"}
+    D -- "5 do not help" --> X2["rejected"]
+    D -- "2 help" --> E["Merge and tune<br/>classical optimiser, no LLM"]
+    E --> F{"Knock out each idea<br/>on fresh seeds"}
+    F -- "lattice_start: no effect" --> X3["pruned"]
+    F -- "slsqp_polish: worth 1.67" --> G["Kept: slsqp_polish<br/>2.635983, the best known value"]
+```
+
 1. **Start.** The seed solver is OpenEvolve's own initial program, which puts the circles in rings: score 0.96.
    Its few constants (circles per ring, ring radii, margin) are its first switches.
 2. **Invent.** Over 8 generations, Claude agents each added one idea behind a switch: 17 ideas in all.
