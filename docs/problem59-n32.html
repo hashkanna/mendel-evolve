@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>58 points, no isosceles triangle · MendelEvolve</title>
+<style>
+  :root { color-scheme: dark; --bg: #0b0f17; --panel: #121826; --line: #232c3f; --text: #e6eaf2; --dim: #8e9ab0; --accent: #6ea8fe; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 48px 16px 72px; }
+  h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .tag { color: var(--dim); font-size: 17px; margin: 0 0 22px; }
+  a { color: var(--accent); text-decoration: none; } a:hover { text-decoration: underline; }
+  .sets { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin: 18px 0; }
+  figure { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  figcaption { color: var(--dim); font-size: 14px; margin-top: 6px; }
+  svg { width: 100%; height: auto; display: block; }
+  .frame { fill: none; stroke: #3a4763; stroke-width: 1; } .grid { stroke: #1a2233; stroke-width: 1; }
+  .axis { stroke: #3a4763; stroke-width: 1; stroke-dasharray: 4 4; } .pt { fill: var(--accent); }
+  ul { padding-left: 20px; } li { margin: 4px 0; }
+  details { margin: 10px 0; } summary { cursor: pointer; color: var(--dim); }
+  pre { white-space: pre-wrap; word-break: break-word; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-size: 12.5px; }
+  .note { color: var(--dim); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <p class="note"><a href="index.html">MendelEvolve</a></p>
+  <h1>58 points in the 32 x 32 grid, no isosceles triangle</h1>
+  <p class="tag">Tao et al., problem 59. The value stated in the literature for n = 32 is 56.</p>
+
+  <p>Choose as many points of the n x n grid as possible so that no three of them form an isosceles triangle,
+  flat ones included: for distinct chosen points a, b, c, the distance from a to b never equals the distance from
+  b to c. Two different sets of 58 points for n = 32:</p>
+
+  <div class="sets">
+    <figure><svg viewBox="0 0 484 484" role="img" aria-label="First 58-point set">
+<rect x="18" y="18" width="448" height="448" class="frame"/>
+<line x1="32" y1="18" x2="32" y2="466" class="grid"/>
+<line x1="18" y1="32" x2="466" y2="32" class="grid"/>
+<line x1="46" y1="18" x2="46" y2="466" class="grid"/>
+<line x1="18" y1="46" x2="466" y2="46" class="grid"/>
+<line x1="60" y1="18" x2="60" y2="466" class="grid"/>
+<line x1="18" y1="60" x2="466" y2="60" class="grid"/>
+<line x1="74" y1="18" x2="74" y2="466" class="grid"/>
+<line x1="18" y1="74" x2="466" y2="74" class="grid"/>
+<line x1="88" y1="18" x2="88" y2="466" class="grid"/>
+<line x1="18" y1="88" x2="466" y2="88" class="grid"/>
+<line x1="102" y1="18" x2="102" y2="466" class="grid"/>
+<line x1="18" y1="102" x2="466" y2="102" class="grid"/>
+<line x1="116" y1="18" x2="116" y2="466" class="grid"/>
+<line x1="18" y1="116" x2="466" y2="116" class="grid"/>
+<line x1="130" y1="18" x2="130" y2="466" class="grid"/>
+<line x1="18" y1="130" x2="466" y2="130" class="grid"/>
+<line x1="144" y1="18" x2="144" y2="466" class="grid"/>
+<line x1="18" y1="144" x2="466" y2="144" class="grid"/>
+<line x1="158" y1="18" x2="158" y2="466" class="grid"/>
+<line x1="18" y1="158" x2="466" y2="158" class="grid"/>
+<line x1="172" y1="18" x2="172" y2="466" class="grid"/>
+<line x1="18" y1="172" x2="466" y2="172" class="grid"/>
+<line x1="186" y1="18" x2="186" y2="466" class="grid"/>
+<line x1="18" y1="186" x2="466" y2="186" class="grid"/>
+<line x1="200" y1="18" x2="200" y2="466" class="grid"/>
+<line x1="18" y1="200" x2="466" y2="200" class="grid"/>
+<line x1="214" y1="18" x2="214" y2="466" class="grid"/>
+<line x1="18" y1="214" x2="466" y2="214" class="grid"/>
+<line x1="228" y1="18" x2="228" y2="466" class="grid"/>
+<line x1="18" y1="228" x2="466" y2="228" class="grid"/>
+<line x1="242" y1="18" x2="242" y2="466" class="grid"/>
+<line x1="18" y1="242" x2="466" y2="242" class="grid"/>
+<line x1="256" y1="18" x2="256" y2="466" class="grid"/>
+<line x1="18" y1="256" x2="466" y2="256" class="grid"/>
+<line x1="270" y1="18" x2="270" y2="466" class="grid"/>
+<line x1="18" y1="270" x2="466" y2="270" class="grid"/>
+<line x1="284" y1="18" x2="284" y2="466" class="grid"/>
+<line x1="18" y1="284" x2="466" y2="284" class="grid"/>
+<line x1="298" y1="18" x2="298" y2="466" class="grid"/>
+<line x1="18" y1="298" x2="466" y2="298" class="grid"/>
+<line x1="312" y1="18" x2="312" y2="466" class="grid"/>
+<line x1="18" y1="312" x2="466" y2="312" class="grid"/>
+<line x1="326" y1="18" x2="326" y2="466" class="grid"/>
+<line x1="18" y1="326" x2="466" y2="326" class="grid"/>
+<line x1="340" y1="18" x2="340" y2="466" class="grid"/>
+<line x1="18" y1="340" x2="466" y2="340" class="grid"/>
+<line x1="354" y1="18" x2="354" y2="466" class="grid"/>
+<line x1="18" y1="354" x2="466" y2="354" class="grid"/>
+<line x1="368" y1="18" x2="368" y2="466" class="grid"/>
+<line x1="18" y1="368" x2="466" y2="368" class="grid"/>
+<line x1="382" y1="18" x2="382" y2="466" class="grid"/>
+<line x1="18" y1="382" x2="466" y2="382" class="grid"/>
+<line x1="396" y1="18" x2="396" y2="466" class="grid"/>
+<line x1="18" y1="396" x2="466" y2="396" class="grid"/>
+<line x1="410" y1="18" x2="410" y2="466" class="grid"/>
+<line x1="18" y1="410" x2="466" y2="410" class="grid"/>
+<line x1="424" y1="18" x2="424" y2="466" class="grid"/>
+<line x1="18" y1="424" x2="466" y2="424" class="grid"/>
+<line x1="438" y1="18" x2="438" y2="466" class="grid"/>
+<line x1="18" y1="438" x2="466" y2="438" class="grid"/>
+<line x1="452" y1="18" x2="452" y2="466" class="grid"/>
+<line x1="18" y1="452" x2="466" y2="452" class="grid"/>
+<line x1="18" y1="242" x2="466" y2="242" class="axis"/>
+<circle cx="25.0" cy="403.0" r="4.2" class="pt"><title>(0, 4)</title></circle>
+<circle cx="25.0" cy="389.0" r="4.2" class="pt"><title>(0, 5)</title></circle>
+<circle cx="25.0" cy="95.0" r="4.2" class="pt"><title>(0, 26)</title></circle>
+<circle cx="25.0" cy="81.0" r="4.2" class="pt"><title>(0, 27)</title></circle>
+<circle cx="39.0" cy="431.0" r="4.2" class="pt"><title>(1, 2)</title></circle>
+<circle cx="39.0" cy="53.0" r="4.2" class="pt"><title>(1, 29)</title></circle>
+<circle cx="67.0" cy="459.0" r="4.2" class="pt"><title>(3, 0)</title></circle>
+<circle cx="67.0" cy="305.0" r="4.2" class="pt"><title>(3, 11)</title></circle>
+<circle cx="67.0" cy="179.0" r="4.2" class="pt"><title>(3, 20)</title></circle>
+<circle cx="67.0" cy="25.0" r="4.2" class="pt"><title>(3, 31)</title></circle>
+<circle cx="109.0" cy="459.0" r="4.2" class="pt"><title>(6, 0)</title></circle>
+<circle cx="109.0" cy="305.0" r="4.2" class="pt"><title>(6, 11)</title></circle>
+<circle cx="109.0" cy="179.0" r="4.2" class="pt"><title>(6, 20)</title></circle>
+<circle cx="109.0" cy="25.0" r="4.2" class="pt"><title>(6, 31)</title></circle>
+<circle cx="123.0" cy="459.0" r="4.2" class="pt"><title>(7, 0)</title></circle>
+<circle cx="123.0" cy="305.0" r="4.2" class="pt"><title>(7, 11)</title></circle>
+<circle cx="123.0" cy="179.0" r="4.2" class="pt"><title>(7, 20)</title></circle>
+<circle cx="123.0" cy="25.0" r="4.2" class="pt"><title>(7, 31)</title></circle>
+<circle cx="137.0" cy="445.0" r="4.2" class="pt"><title>(8, 1)</title></circle>
+<circle cx="137.0" cy="39.0" r="4.2" class="pt"><title>(8, 30)</title></circle>
+<circle cx="151.0" cy="445.0" r="4.2" class="pt"><title>(9, 1)</title></circle>
+<circle cx="151.0" cy="39.0" r="4.2" class="pt"><title>(9, 30)</title></circle>
+<circle cx="179.0" cy="403.0" r="4.2" class="pt"><title>(11, 4)</title></circle>
+<circle cx="179.0" cy="389.0" r="4.2" class="pt"><title>(11, 5)</title></circle>
+<circle cx="179.0" cy="347.0" r="4.2" class="pt"><title>(11, 8)</title></circle>
+<circle cx="179.0" cy="137.0" r="4.2" class="pt"><title>(11, 23)</title></circle>
+<circle cx="179.0" cy="95.0" r="4.2" class="pt"><title>(11, 26)</title></circle>
+<circle cx="179.0" cy="81.0" r="4.2" class="pt"><title>(11, 27)</title></circle>
+<circle cx="193.0" cy="445.0" r="4.2" class="pt"><title>(12, 1)</title></circle>
+<circle cx="193.0" cy="39.0" r="4.2" class="pt"><title>(12, 30)</title></circle>
+<circle cx="291.0" cy="445.0" r="4.2" class="pt"><title>(19, 1)</title></circle>
+<circle cx="291.0" cy="39.0" r="4.2" class="pt"><title>(19, 30)</title></circle>
+<circle cx="305.0" cy="403.0" r="4.2" class="pt"><title>(20, 4)</title></circle>
+<circle cx="305.0" cy="389.0" r="4.2" class="pt"><title>(20, 5)</title></circle>
+<circle cx="305.0" cy="347.0" r="4.2" class="pt"><title>(20, 8)</title></circle>
+<circle cx="305.0" cy="137.0" r="4.2" class="pt"><title>(20, 23)</title></circle>
+<circle cx="305.0" cy="95.0" r="4.2" class="pt"><title>(20, 26)</title></circle>
+<circle cx="305.0" cy="81.0" r="4.2" class="pt"><title>(20, 27)</title></circle>
+<circle cx="333.0" cy="445.0" r="4.2" class="pt"><title>(22, 1)</title></circle>
+<circle cx="333.0" cy="39.0" r="4.2" class="pt"><title>(22, 30)</title></circle>
+<circle cx="347.0" cy="445.0" r="4.2" class="pt"><title>(23, 1)</title></circle>
+<circle cx="347.0" cy="39.0" r="4.2" class="pt"><title>(23, 30)</title></circle>
+<circle cx="361.0" cy="459.0" r="4.2" class="pt"><title>(24, 0)</title></circle>
+<circle cx="361.0" cy="305.0" r="4.2" class="pt"><title>(24, 11)</title></circle>
+<circle cx="361.0" cy="179.0" r="4.2" class="pt"><title>(24, 20)</title></circle>
+<circle cx="361.0" cy="25.0" r="4.2" class="pt"><title>(24, 31)</title></circle>
+<circle cx="375.0" cy="459.0" r="4.2" class="pt"><title>(25, 0)</title></circle>
+<circle cx="375.0" cy="305.0" r="4.2" class="pt"><title>(25, 11)</title></circle>
+<circle cx="375.0" cy="179.0" r="4.2" class="pt"><title>(25, 20)</title></circle>
+<circle cx="375.0" cy="25.0" r="4.2" class="pt"><title>(25, 31)</title></circle>
+<circle cx="417.0" cy="459.0" r="4.2" class="pt"><title>(28, 0)</title></circle>
+<circle cx="417.0" cy="305.0" r="4.2" class="pt"><title>(28, 11)</title></circle>
+<circle cx="417.0" cy="179.0" r="4.2" class="pt"><title>(28, 20)</title></circle>
+<circle cx="417.0" cy="25.0" r="4.2" class="pt"><title>(28, 31)</title></circle>
+<circle cx="459.0" cy="403.0" r="4.2" class="pt"><title>(31, 4)</title></circle>
+<circle cx="459.0" cy="389.0" r="4.2" class="pt"><title>(31, 5)</title></circle>
+<circle cx="459.0" cy="95.0" r="4.2" class="pt"><title>(31, 26)</title></circle>
+<circle cx="459.0" cy="81.0" r="4.2" class="pt"><title>(31, 27)</title></circle>
+</svg><figcaption>Set A. Symmetric under the reflection shown by the dashed line.</figcaption></figure>
+    <figure><svg viewBox="0 0 484 484" role="img" aria-label="Second 58-point set">
+<rect x="18" y="18" width="448" height="448" class="frame"/>
+<line x1="32" y1="18" x2="32" y2="466" class="grid"/>
+<line x1="18" y1="32" x2="466" y2="32" class="grid"/>
+<line x1="46" y1="18" x2="46" y2="466" class="grid"/>
+<line x1="18" y1="46" x2="466" y2="46" class="grid"/>
+<line x1="60" y1="18" x2="60" y2="466" class="grid"/>
+<line x1="18" y1="60" x2="466" y2="60" class="grid"/>
+<line x1="74" y1="18" x2="74" y2="466" class="grid"/>
+<line x1="18" y1="74" x2="466" y2="74" class="grid"/>
+<line x1="88" y1="18" x2="88" y2="466" class="grid"/>
+<line x1="18" y1="88" x2="466" y2="88" class="grid"/>
+<line x1="102" y1="18" x2="102" y2="466" class="grid"/>
+<line x1="18" y1="102" x2="466" y2="102" class="grid"/>
+<line x1="116" y1="18" x2="116" y2="466" class="grid"/>
+<line x1="18" y1="116" x2="466" y2="116" class="grid"/>
+<line x1="130" y1="18" x2="130" y2="466" class="grid"/>
+<line x1="18" y1="130" x2="466" y2="130" class="grid"/>
+<line x1="144" y1="18" x2="144" y2="466" class="grid"/>
+<line x1="18" y1="144" x2="466" y2="144" class="grid"/>
+<line x1="158" y1="18" x2="158" y2="466" class="grid"/>
+<line x1="18" y1="158" x2="466" y2="158" class="grid"/>
+<line x1="172" y1="18" x2="172" y2="466" class="grid"/>
+<line x1="18" y1="172" x2="466" y2="172" class="grid"/>
+<line x1="186" y1="18" x2="186" y2="466" class="grid"/>
+<line x1="18" y1="186" x2="466" y2="186" class="grid"/>
+<line x1="200" y1="18" x2="200" y2="466" class="grid"/>
+<line x1="18" y1="200" x2="466" y2="200" class="grid"/>
+<line x1="214" y1="18" x2="214" y2="466" class="grid"/>
+<line x1="18" y1="214" x2="466" y2="214" class="grid"/>
+<line x1="228" y1="18" x2="228" y2="466" class="grid"/>
+<line x1="18" y1="228" x2="466" y2="228" class="grid"/>
+<line x1="242" y1="18" x2="242" y2="466" class="grid"/>
+<line x1="18" y1="242" x2="466" y2="242" class="grid"/>
+<line x1="256" y1="18" x2="256" y2="466" class="grid"/>
+<line x1="18" y1="256" x2="466" y2="256" class="grid"/>
+<line x1="270" y1="18" x2="270" y2="466" class="grid"/>
+<line x1="18" y1="270" x2="466" y2="270" class="grid"/>
+<line x1="284" y1="18" x2="284" y2="466" class="grid"/>
+<line x1="18" y1="284" x2="466" y2="284" class="grid"/>
+<line x1="298" y1="18" x2="298" y2="466" class="grid"/>
+<line x1="18" y1="298" x2="466" y2="298" class="grid"/>
+<line x1="312" y1="18" x2="312" y2="466" class="grid"/>
+<line x1="18" y1="312" x2="466" y2="312" class="grid"/>
+<line x1="326" y1="18" x2="326" y2="466" class="grid"/>
+<line x1="18" y1="326" x2="466" y2="326" class="grid"/>
+<line x1="340" y1="18" x2="340" y2="466" class="grid"/>
+<line x1="18" y1="340" x2="466" y2="340" class="grid"/>
+<line x1="354" y1="18" x2="354" y2="466" class="grid"/>
+<line x1="18" y1="354" x2="466" y2="354" class="grid"/>
+<line x1="368" y1="18" x2="368" y2="466" class="grid"/>
+<line x1="18" y1="368" x2="466" y2="368" class="grid"/>
+<line x1="382" y1="18" x2="382" y2="466" class="grid"/>
+<line x1="18" y1="382" x2="466" y2="382" class="grid"/>
+<line x1="396" y1="18" x2="396" y2="466" class="grid"/>
+<line x1="18" y1="396" x2="466" y2="396" class="grid"/>
+<line x1="410" y1="18" x2="410" y2="466" class="grid"/>
+<line x1="18" y1="410" x2="466" y2="410" class="grid"/>
+<line x1="424" y1="18" x2="424" y2="466" class="grid"/>
+<line x1="18" y1="424" x2="466" y2="424" class="grid"/>
+<line x1="438" y1="18" x2="438" y2="466" class="grid"/>
+<line x1="18" y1="438" x2="466" y2="438" class="grid"/>
+<line x1="452" y1="18" x2="452" y2="466" class="grid"/>
+<line x1="18" y1="452" x2="466" y2="452" class="grid"/>
+<line x1="18" y1="242" x2="466" y2="242" class="axis"/>
+<circle cx="25.0" cy="417.0" r="4.2" class="pt"><title>(0, 3)</title></circle>
+<circle cx="25.0" cy="375.0" r="4.2" class="pt"><title>(0, 6)</title></circle>
+<circle cx="25.0" cy="361.0" r="4.2" class="pt"><title>(0, 7)</title></circle>
+<circle cx="25.0" cy="123.0" r="4.2" class="pt"><title>(0, 24)</title></circle>
+<circle cx="25.0" cy="109.0" r="4.2" class="pt"><title>(0, 25)</title></circle>
+<circle cx="25.0" cy="67.0" r="4.2" class="pt"><title>(0, 28)</title></circle>
+<circle cx="39.0" cy="347.0" r="4.2" class="pt"><title>(1, 8)</title></circle>
+<circle cx="39.0" cy="333.0" r="4.2" class="pt"><title>(1, 9)</title></circle>
+<circle cx="39.0" cy="291.0" r="4.2" class="pt"><title>(1, 12)</title></circle>
+<circle cx="39.0" cy="193.0" r="4.2" class="pt"><title>(1, 19)</title></circle>
+<circle cx="39.0" cy="151.0" r="4.2" class="pt"><title>(1, 22)</title></circle>
+<circle cx="39.0" cy="137.0" r="4.2" class="pt"><title>(1, 23)</title></circle>
+<circle cx="81.0" cy="459.0" r="4.2" class="pt"><title>(4, 0)</title></circle>
+<circle cx="81.0" cy="305.0" r="4.2" class="pt"><title>(4, 11)</title></circle>
+<circle cx="81.0" cy="179.0" r="4.2" class="pt"><title>(4, 20)</title></circle>
+<circle cx="81.0" cy="25.0" r="4.2" class="pt"><title>(4, 31)</title></circle>
+<circle cx="95.0" cy="459.0" r="4.2" class="pt"><title>(5, 0)</title></circle>
+<circle cx="95.0" cy="305.0" r="4.2" class="pt"><title>(5, 11)</title></circle>
+<circle cx="95.0" cy="179.0" r="4.2" class="pt"><title>(5, 20)</title></circle>
+<circle cx="95.0" cy="25.0" r="4.2" class="pt"><title>(5, 31)</title></circle>
+<circle cx="137.0" cy="305.0" r="4.2" class="pt"><title>(8, 11)</title></circle>
+<circle cx="137.0" cy="179.0" r="4.2" class="pt"><title>(8, 20)</title></circle>
+<circle cx="179.0" cy="417.0" r="4.2" class="pt"><title>(11, 3)</title></circle>
+<circle cx="179.0" cy="375.0" r="4.2" class="pt"><title>(11, 6)</title></circle>
+<circle cx="179.0" cy="361.0" r="4.2" class="pt"><title>(11, 7)</title></circle>
+<circle cx="179.0" cy="123.0" r="4.2" class="pt"><title>(11, 24)</title></circle>
+<circle cx="179.0" cy="109.0" r="4.2" class="pt"><title>(11, 25)</title></circle>
+<circle cx="179.0" cy="67.0" r="4.2" class="pt"><title>(11, 28)</title></circle>
+<circle cx="305.0" cy="417.0" r="4.2" class="pt"><title>(20, 3)</title></circle>
+<circle cx="305.0" cy="375.0" r="4.2" class="pt"><title>(20, 6)</title></circle>
+<circle cx="305.0" cy="361.0" r="4.2" class="pt"><title>(20, 7)</title></circle>
+<circle cx="305.0" cy="123.0" r="4.2" class="pt"><title>(20, 24)</title></circle>
+<circle cx="305.0" cy="109.0" r="4.2" class="pt"><title>(20, 25)</title></circle>
+<circle cx="305.0" cy="67.0" r="4.2" class="pt"><title>(20, 28)</title></circle>
+<circle cx="347.0" cy="305.0" r="4.2" class="pt"><title>(23, 11)</title></circle>
+<circle cx="347.0" cy="179.0" r="4.2" class="pt"><title>(23, 20)</title></circle>
+<circle cx="389.0" cy="459.0" r="4.2" class="pt"><title>(26, 0)</title></circle>
+<circle cx="389.0" cy="305.0" r="4.2" class="pt"><title>(26, 11)</title></circle>
+<circle cx="389.0" cy="179.0" r="4.2" class="pt"><title>(26, 20)</title></circle>
+<circle cx="389.0" cy="25.0" r="4.2" class="pt"><title>(26, 31)</title></circle>
+<circle cx="403.0" cy="459.0" r="4.2" class="pt"><title>(27, 0)</title></circle>
+<circle cx="403.0" cy="305.0" r="4.2" class="pt"><title>(27, 11)</title></circle>
+<circle cx="403.0" cy="179.0" r="4.2" class="pt"><title>(27, 20)</title></circle>
+<circle cx="403.0" cy="25.0" r="4.2" class="pt"><title>(27, 31)</title></circle>
+<circle cx="431.0" cy="445.0" r="4.2" class="pt"><title>(29, 1)</title></circle>
+<circle cx="431.0" cy="39.0" r="4.2" class="pt"><title>(29, 30)</title></circle>
+<circle cx="445.0" cy="347.0" r="4.2" class="pt"><title>(30, 8)</title></circle>
+<circle cx="445.0" cy="333.0" r="4.2" class="pt"><title>(30, 9)</title></circle>
+<circle cx="445.0" cy="291.0" r="4.2" class="pt"><title>(30, 12)</title></circle>
+<circle cx="445.0" cy="193.0" r="4.2" class="pt"><title>(30, 19)</title></circle>
+<circle cx="445.0" cy="151.0" r="4.2" class="pt"><title>(30, 22)</title></circle>
+<circle cx="445.0" cy="137.0" r="4.2" class="pt"><title>(30, 23)</title></circle>
+<circle cx="459.0" cy="417.0" r="4.2" class="pt"><title>(31, 3)</title></circle>
+<circle cx="459.0" cy="375.0" r="4.2" class="pt"><title>(31, 6)</title></circle>
+<circle cx="459.0" cy="361.0" r="4.2" class="pt"><title>(31, 7)</title></circle>
+<circle cx="459.0" cy="123.0" r="4.2" class="pt"><title>(31, 24)</title></circle>
+<circle cx="459.0" cy="109.0" r="4.2" class="pt"><title>(31, 25)</title></circle>
+<circle cx="459.0" cy="67.0" r="4.2" class="pt"><title>(31, 28)</title></circle>
+</svg><figcaption>Set B. It shares no point with set A and is not a rotation or reflection of it.</figcaption></figure>
+  </div>
+
+  <ul>
+    <li>Each set passes all 30,856 triples under four independent checks, among them DeepMind's own
+        <code>verify_construction</code> from the problem's notebook, run unchanged.</li>
+    <li>The same definition reproduces every published optimal value from n = 4 to 10 by exhaustive search
+        (6, 7, 9, 10, 13, 16, 18), and the same solver equals the published 28 and 48 at n = 16 and 27.</li>
+    <li>At n = 32 the search ends at 56 in 185 of 200 runs and at 58 in the other 15.</li>
+    <li>Where it came from: the seed solver with two of its own switches on, and compute. No evolved idea.</li>
+  </ul>
+  <p>Raised with DeepMind as <a href="https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/10">issue 10</a>,
+  as a discrepancy to be explained. Details and limits are in
+  <a href="https://github.com/hashkanna/mendel-evolve/blob/main/RESULTS.md">RESULTS.md</a>; certificates are in
+  <a href="https://github.com/hashkanna/mendel-evolve/tree/main/results/noisosceles/certificates">the repository</a>.</p>
+
+  <details><summary>Coordinates, 0-based (x, y)</summary>
+  <pre>set_a = [(0, 4), (0, 5), (0, 26), (0, 27), (1, 2), (1, 29), (3, 0), (3, 11), (3, 20), (3, 31), (6, 0), (6, 11), (6, 20), (6, 31), (7, 0), (7, 11), (7, 20), (7, 31), (8, 1), (8, 30), (9, 1), (9, 30), (11, 4), (11, 5), (11, 8), (11, 23), (11, 26), (11, 27), (12, 1), (12, 30), (19, 1), (19, 30), (20, 4), (20, 5), (20, 8), (20, 23), (20, 26), (20, 27), (22, 1), (22, 30), (23, 1), (23, 30), (24, 0), (24, 11), (24, 20), (24, 31), (25, 0), (25, 11), (25, 20), (25, 31), (28, 0), (28, 11), (28, 20), (28, 31), (31, 4), (31, 5), (31, 26), (31, 27)]
+
+set_b = [(0, 3), (0, 6), (0, 7), (0, 24), (0, 25), (0, 28), (1, 8), (1, 9), (1, 12), (1, 19), (1, 22), (1, 23), (4, 0), (4, 11), (4, 20), (4, 31), (5, 0), (5, 11), (5, 20), (5, 31), (8, 11), (8, 20), (11, 3), (11, 6), (11, 7), (11, 24), (11, 25), (11, 28), (20, 3), (20, 6), (20, 7), (20, 24), (20, 25), (20, 28), (23, 11), (23, 20), (26, 0), (26, 11), (26, 20), (26, 31), (27, 0), (27, 11), (27, 20), (27, 31), (29, 1), (29, 30), (30, 8), (30, 9), (30, 12), (30, 19), (30, 22), (30, 23), (31, 3), (31, 6), (31, 7), (31, 24), (31, 25), (31, 28)]</pre></details>
+</main>
+</body>
+</html>

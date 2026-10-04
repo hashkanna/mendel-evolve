@@ -5,8 +5,10 @@ evolved solver at record budgets, and the ledger ablation. Every other number is
 
 ## One line
 
-Evolutionary coding agents are Darwin without Mendel: selection, but no genes. MendelEvolve evolves ideas instead
-of programs, and measures what each idea is worth.
+MendelEvolve searches for better algorithms, and measures which ideas deserve the credit.
+
+The hook, if there is room for a second sentence: evolutionary coding agents are Darwin without Mendel, selection
+but no genes. MendelEvolve evolves ideas instead of programs, and measures what each idea is worth.
 
 ## The 90-second pitch
 
@@ -38,6 +40,9 @@ of programs, and measures what each idea is worth.
 
 Open http://127.0.0.1:8765 (or the public snapshots at https://hashkanna.github.io/mendel-evolve/).
 
+The core is two things: one knockout and one verified construction. If time is short, do steps 2, 3 and 6 and
+drop the rest.
+
 1. **Circle packing run with Fable inventors** (`cp-fable-1`), 15 s. Header: best known reached, 8 LLM calls,
    dollars. Timeline: the step where each idea joined.
 2. **Gene ledger**, 25 s. Read the top row aloud: `slsqp_polish`, its hypothesis in plain words, knockout effect
@@ -51,6 +56,11 @@ Open http://127.0.0.1:8765 (or the public snapshots at https://hashkanna.github.
    person, became a gene credited to its source and measured +1.44, labelled general. Judges can type one too.
 5. **Explain another system's result**, 15 s. Open `explain-oe-two-phase-seed3`: OpenEvolve's evolved program cut
    into five switches, bookend check passed bit for bit, SLSQP alone 99% of the gain, two components do nothing.
+
+6. **One verified construction**, 15 s. Open https://hashkanna.github.io/mendel-evolve/problem59-n32.html: 58
+   points in the 32 x 32 grid with no isosceles triangle, where the literature states 56. Say: DeepMind's own
+   verifier accepts it, it is on their repository as issue 10, and the ledger says it came from the seed solver
+   and compute, not from an evolved idea.
 
 Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 
