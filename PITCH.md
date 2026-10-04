@@ -96,9 +96,10 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
   (https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530). For problem 59, DeepMind's own notebook verifier accepts the sets, the same
   definition reproduces every published value from n = 4 to 10 by exhaustive search, and the result is raised on
   their repository as issue 10 (https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/10).
-- **Reusable?** Five problem packs in the repo (C and Python solvers) and a protocol document. Five Devin
-  sessions given only the README and the protocol each added a new benchmark, with solver, gate, attribution run
-  and a verified record search, in about 20 to 45 minutes. Their reports named three gaps in the docs, all fixed.
+- **Reusable?** Ten problem packs in the repo (C and Python solvers) and a protocol document. Five of the ten
+  were added by Devin sessions given only the README and the protocol: each wrote a solver and ran the gate, an
+  attribution run and a verified record search in about 20 to 45 minutes, and all five are merged. Their reports
+  named three gaps in the docs, all fixed.
 - **What is weak?** The OpenEvolve baseline is three seeds. The explain result is one
   program and one decomposition. Attribution seeds are reused across generations, so the final numbers we quote
   for problem 60 come from separate searches on seeds the engine never used.
@@ -147,5 +148,5 @@ independent exact checkers), 58-point isosceles-free sets in the 32 x 32 grid wh
 best known circle packing value from OpenEvolve's initial program with no hints. Its knockouts also say where
 results come from: our problem 60 records trace to one switch of the seed solver, which doubles the rate of
 record-beating runs, and not to evolved ideas; a program OpenEvolve itself evolved owes 99% of its gain to one
-switch. Five problem packs, a protocol for adding more (five outside agents each added a benchmark from the docs
-alone), and a dashboard with live knockouts are in the repo.
+switch. Ten problem packs (five added by outside agents from the docs alone), a protocol for adding more, and a
+dashboard with live knockouts are in the repo.

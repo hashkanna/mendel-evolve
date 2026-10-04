@@ -241,7 +241,9 @@ benchmark from Tao et al.'s repository and to write down what was unclear. All f
 [#2](https://github.com/hashkanna/mendel-evolve/pull/2) flat polynomials,
 [#3](https://github.com/hashkanna/mendel-evolve/pull/3) difference bases,
 [#4](https://github.com/hashkanna/mendel-evolve/pull/4) Erdos minimum overlap,
-[#5](https://github.com/hashkanna/mendel-evolve/pull/5) ring loading. Each contains a `USABILITY.md`.
+[#5](https://github.com/hashkanna/mendel-evolve/pull/5) ring loading. Each contains a `USABILITY.md`. All five
+are merged: each adds only its own `problems/`, `solvers/` and `results/` folders, the test suite passes, and
+each solver runs through `mendel score` on the main branch.
 
 - **What worked.** All five wrote a problem pack and a solver (C or Python) that `mendel score` accepted,
   checked the solver's switches with the invariance gate, ran the attribution engine, and ran a record search

@@ -38,7 +38,8 @@ https://hashkanna.github.io/mendel-evolve/.
 - **Explaining another system.** `mendel explain` cut a program evolved by OpenEvolve into five switches: one
   of them, the optimiser its prompt recommends by name, is 99% of the gain, and two do nothing.
 - **Ease of use.** Five outside coding agents, given only this README and PROTOCOL.md, each added a new
-  benchmark with a solver, an attribution run and a verified record search in about 20 to 45 minutes.
+  benchmark with a solver, an attribution run and a verified record search in about 20 to 45 minutes. Their
+  five packs are merged, so the repository holds ten problem packs and a toy with known ground truth.
 
 ## How it works
 
@@ -126,6 +127,11 @@ uv run python -m mendel.campaign --solver runs/p60/trunk/gen012 --problem proble
 | `noisosceles`: largest subset of an n x n grid with no isosceles triangle (Tao et al., [problem 59](https://google-deepmind.github.io/alphaevolve_repository_of_problems/problems/59.html)) | C, local search with symmetry switches | exact integer distances, plus an independent perpendicular-bisector checker | a second grid problem, where the seed solver's own switches have large, interacting effects |
 | `heilbronn`: point sets that maximise the smallest triangle area (Tao et al., problems 48 and 49) | Python | checked against all 100 published sets | a benchmark with many published instances; no record claimed |
 | `autocorr3`: third autocorrelation inequality, upper bound (Tao et al., problem 6.4) | Python | exact, checked against the public leaderboard's verifier | a continuous problem with a live leaderboard; no record claimed |
+| `distratio`: n points with the smallest ratio of largest to smallest distance (Tao et al., problem 50) | Python | exact, checked against the public leaderboard's solutions | added by an outside agent from the docs alone ([#1](https://github.com/hashkanna/mendel-evolve/pull/1)); no record claimed |
+| `flatpoly`: flat polynomials with +-1 coefficients (Tao et al., problem 6.28) | C | exact, checked against the public leaderboard's solutions | added by an outside agent ([#2](https://github.com/hashkanna/mendel-evolve/pull/2)); no record claimed |
+| `diffbasis`: difference bases (Tao et al., problem 6.7) | C | exact integers | added by an outside agent ([#3](https://github.com/hashkanna/mendel-evolve/pull/3)); no record claimed |
+| `minoverlap`: Erdos minimum overlap, upper bound (Tao et al., problem 6.5) | Python | checked against the public leaderboard's solutions | added by an outside agent ([#4](https://github.com/hashkanna/mendel-evolve/pull/4)); no record claimed |
+| `ringloading`: ring loading (Tao et al., problem 61) | C | exact | added by an outside agent ([#5](https://github.com/hashkanna/mendel-evolve/pull/5)); no record claimed |
 | `toy` (under `tests/fixtures`) | Python | exact | known ground truth for testing attribution |
 
 ### Adding a problem
