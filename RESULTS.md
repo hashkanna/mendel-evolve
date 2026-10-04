@@ -29,6 +29,9 @@ new relative to the public sources we found, with no claim of optimality or guar
 | 31 | **80** | 79 | [n31_80.json](results/no5sphere/certificates/n31_80.json) |
 | 32 | **84** | 82 | [n32_84.json](results/no5sphere/certificates/n32_84.json) |
 
+All 13, with the sets for n = 33 to 40, were posted on the record thread on 4 October 2026
+([comment](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530)); the first three had been posted there the day before.
+
 We equal the published value at n = 13, 14, 18, 19, 20, 22 and 27. For n = 33 to 40, where no sets are
 published (the n = 32 set implies 82 because C is non-decreasing), the search gives 86, 90, 91, 94, 96, 98, 100, 103.
 

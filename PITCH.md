@@ -91,9 +91,9 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
   the engine selects on the mean of a few short ones. Selecting on the rate of runs above a target is the first
   thing we would change, and the record-rate analysis in `RESULTS.md` is that statistic computed after the fact.
 - **Why should we believe the records?** Three independent exact checkers over every 5-subset (int64 determinants,
-  Bareiss elimination, cofactor-plus-dot-product), all 21 sets re-checked on Sunday, certificates public. The
-  first three are on DeepMind's record thread with provenance; the update with all 13 is written and is posted
-  once [the user runs the command in HANDOFF.md]. For problem 59, DeepMind's own notebook verifier accepts the sets.
+  Bareiss elimination, cofactor-plus-dot-product), all 21 sets re-checked on Sunday, certificates public. All
+  13 are on DeepMind's record thread with provenance and the checker output
+  (https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530). For problem 59, DeepMind's own notebook verifier accepts the sets.
 - **Reusable?** Five problem packs in the repo (C and Python solvers) and a protocol document. Five Devin
   sessions given only the README and the protocol each added a new benchmark, with solver, gate, attribution run
   and a verified record search, in about 20 to 45 minutes. Their reports named three gaps in the docs, all fixed.
