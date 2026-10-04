@@ -20,6 +20,26 @@ In Mendel every idea is a **gene**: a named switch in the solver with a stated h
 Built at the London AI x Science Hackathon, 3-4 October 2026, for the track "AI Automated Discovery of
 Algorithms". Everything here was written during the event.
 
+## Results at a glance
+
+Details, verification and limits are in [RESULTS.md](RESULTS.md); read-only snapshots of the runs are at
+https://hashkanna.github.io/mendel-evolve/.
+
+- **Problem 60 of Tao et al. (no 5 points on a sphere): apparently new lower bounds at 13 grid sizes** from
+  n = 15 to 32, and first point sets for n = 33 to 40. All 21 sets pass three independent exact checkers.
+- **Where those records came from, measured.** Not from evolved ideas. One switch of the hand-written seed
+  solver doubles the share of runs that beat the published value (262 of 1,600 with it, 136 of 1,600 without,
+  same seeds and budgets) while moving the average by 0.22 points. The engine's quick screens could not see an
+  effect that small, and RESULTS.md says what that means for the claim that no evolved idea helped.
+- **Problem 59 (no isosceles triangles): 58-point sets in the 32 x 32 grid**, where 56 is reported as the best.
+  DeepMind's own verifier accepts them.
+- **Circle packing, n = 26: the best known value, 2.635983**, starting from OpenEvolve's initial program with no
+  hints. One gene carries it: knocking it out costs 1.67, on training and on held-out sizes.
+- **Explaining another system.** `mendel explain` cut a program evolved by OpenEvolve into five switches: one
+  of them, the optimiser its prompt recommends by name, is 99% of the gain, and two do nothing.
+- **Ease of use.** Five outside coding agents, given only this README and PROTOCOL.md, each added a new
+  benchmark with a solver, an attribution run and a verified record search in about 20 to 45 minutes.
+
 ## How it works
 
 ```
@@ -60,7 +80,7 @@ Requires Python 3.11+, [uv](https://docs.astral.sh/uv/) and a C compiler.
 
 ```bash
 uv sync --extra modal --extra dev
-uv run pytest -q                      # 32+ tests on a toy problem with known ground truth
+uv run pytest -q                      # 46 tests on a toy problem with known ground truth
 ```
 
 Optional: the [Claude Code CLI](https://claude.com/claude-code) for the idea inventor, and a
@@ -103,6 +123,9 @@ uv run python -m mendel.campaign --solver runs/p60/trunk/gen012 --problem proble
 |---|---|---|---|
 | `no5sphere`: largest subset of an n x n x n grid with no 5 points on a sphere or plane (Tao et al., [problem 60](https://google-deepmind.github.io/alphaevolve_repository_of_problems/problems/60.html)) | C, ruin-and-recreate | exact integer determinants over every 5-subset, plus an independent Bareiss checker | open problem with many instance sizes and recent public records |
 | `circle_packing`: n circles in the unit square, maximise the sum of radii | Python; the seed is a port of OpenEvolve's initial program | exact rational feasibility, no tolerance | the standard benchmark; head-to-head with OpenEvolve from the same starting point |
+| `noisosceles`: largest subset of an n x n grid with no isosceles triangle (Tao et al., [problem 59](https://google-deepmind.github.io/alphaevolve_repository_of_problems/problems/59.html)) | C, local search with symmetry switches | exact integer distances, plus an independent perpendicular-bisector checker | a second grid problem, where the seed solver's own switches have large, interacting effects |
+| `heilbronn`: point sets that maximise the smallest triangle area (Tao et al., problems 48 and 49) | Python | checked against all 100 published sets | a benchmark with many published instances; no record claimed |
+| `autocorr3`: third autocorrelation inequality, upper bound (Tao et al., problem 6.4) | Python | exact, checked against the public leaderboard's verifier | a continuous problem with a live leaderboard; no record claimed |
 | `toy` (under `tests/fixtures`) | Python | exact | known ground truth for testing attribution |
 
 ### Adding a problem
@@ -125,12 +148,14 @@ recombination and attribution are plain compute. Every evaluation is cached by s
 instance, seed and budget. On Modal, the two arms of a paired comparison run in the same container so that
 hardware differences cancel. The run state records LLM calls, dollars, CPU-seconds and evaluations.
 
-**Compute on Modal.** Every solver evaluation runs on [Modal](https://modal.com), one core per container.
+**Compute on Modal.** Every solver evaluation runs on [Modal](https://modal.com). The plan caps containers,
+not cores, so each container runs 8, 16 or 64 jobs side by side.
 - Solver sources and the trusted evaluator travel with each batch, named by a hash of their contents, so a
   new solver version needs no redeploy; containers compile it on first sight.
 - Batches keep both arms of a paired comparison in the same container, so hardware differences cancel.
-- There are two lanes over the same code: `run_batch` for the engine's short paired experiments and
-  `run_batch_bg` for long record campaigns, so a campaign cannot starve the engine.
+- There are separate lanes over the same code, each with its own queue: `run_batch_x8` and `run_batch_e8` for
+  the engine's short paired experiments, `run_batch_bg_x16` and `run_batch_bg_x64` for long record searches,
+  so a search cannot starve an engine.
 - The inventor agents' own trial runs go to Modal as well, which keeps a laptop usable while a dozen agents
   work and keeps their timings meaningful.
 - Every executor has a hard cap on core-hours, so an overnight loop cannot spend the whole credit.
@@ -145,12 +170,21 @@ is one, and does not announce a tie with a published value as a record.
 
 **Honest attribution.** Knockouts use seeds the tuner never saw, because measuring a selected configuration
 on the seeds that selected it biases every effect upward. Intervals are reported and an effect whose interval
-spans zero is labelled inconclusive.
+spans zero is labelled inconclusive, not failed. Each screening and knockout also records how many seed pairs
+differed at all, so an idea that never executed is not mistaken for one that has no effect. The attribution
+seeds are reused from one generation to the next and their results reach the next inventors through the
+ledger, so they are validation data, not a final test: the numbers we quote as final for problem 60 come from
+separate searches on seeds and instance sizes the engine never used.
 
 **Limits.**
 - An idea that needs a whole-program rewrite does not fit behind a switch.
 - Leave-one-out effects depend on context; pairwise knockouts only cover the top ideas.
-- Integer-valued objectives make small effects hard to see without many seeds.
+- Integer-valued objectives make small effects hard to see without many seeds. On problem 60 the default
+  screen (48 seed pairs at 45 seconds) resolves about 0.2 points, and the one switch that finds records is
+  worth about that much.
+- The engine selects on the mean of short runs. A record is the best of hundreds of long runs, and an idea can
+  change that tail without moving the mean much. Selecting on the rate of runs above a target is not built yet;
+  `results/no5sphere/tail_effect.py` computes that statistic after the fact.
 - Generality labels and pairwise interactions exist only for ideas that are on in the champion. Seed
   switches start off, so until a merge or the tuner turns one on it is measured as a knock-in (on versus
   off) and has no label.
