@@ -64,7 +64,7 @@ def write(rows: list, path: str) -> None:
         headline = (f"One idea the engine rejected, <code>multi_recreate</code>, is worth {best['effect']:+.2f} points at record "
                     f"scale{second} and takes the share of record-beating runs from {100 * best['above_b']:.0f}% to "
                     f"{100 * best['above_a']:.0f}%. The evolved champion as a whole is worth {champ['effect']:+.2f} against the "
-                    f"seed solver. None of the other ten ideas tested is worth more than a few hundredths of a point.")
+                    f"seed solver. Of the other ten ideas tested, none is resolved above +0.03.")
     noise = (f"Two identical arms differ by {floor['effect']:+.2f} [{floor['lo']:+.2f}, {floor['hi']:+.2f}] "
              f"({100 * floor['differ']:.0f}% of pairs differ at all)." if floor else "")
     page = f'''<!doctype html>

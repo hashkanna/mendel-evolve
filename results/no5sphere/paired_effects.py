@@ -70,7 +70,7 @@ def rows(data: dict) -> list:
     out = []
     if p1:
         ref = [("two identical controls (noise floor)", "control2", "control", None),
-               ("`centrosymmetric` (seed switch)", "control", "seed", {"effect": -0.01, "ci": [-0.19, 0.17]}),
+               ("`centrosymmetric` (seed switch)", "control", "seed", {"effect": 0.0, "ci": [-0.19, 0.17]}),
                ("evolved champion, whole", "evolved", "seed", {"effect": 0.10, "ci": None}),
                ("evolved champion, with `centrosymmetric`", "evolved+centro", "control", None)]
         for label, a, b, screen in ref:

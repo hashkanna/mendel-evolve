@@ -39,14 +39,14 @@ https://hashkanna.github.io/mendel-evolve/.
   one switch of the seed solver is worth +0.13 points and takes the share of record-beating runs from 10% to
   34%; the engine's evolved champion is worth +0.24 over the seed solver; and one LLM idea, `multi_recreate`,
   is worth +0.19 to +0.31.
-- **What the engine's own quick screens said about those three: nothing.** They measured the switch at -0.01,
+- **What the engine's own quick screens said about those three: nothing.** They measured the switch at 0.00,
   the champion at +0.10 inside the noise, and they rejected `multi_recreate` at -0.04. The
   [chart](https://hashkanna.github.io/mendel-evolve/record-scale.html) shows every tested idea measured both
   ways, and RESULTS.md says why the quick screens could not see it.
 - **Problem 59 (no isosceles triangles): 58-point sets in the 32 x 32 grid**, where 56 is reported as the best.
   DeepMind's own verifier accepts them.
 - **Circle packing, n = 26: the best known value, 2.635983**, starting from OpenEvolve's initial program with no
-  hints. One gene carries it: knocking it out costs 1.67, on training and on held-out sizes.
+  hints. One gene carries it: knocking it out costs 1.67 on the training sizes and 1.5 to 1.9 on held-out sizes.
 - **Explaining another system.** `mendel explain` cut a program evolved by OpenEvolve into five switches: one
   of them, the optimiser its prompt recommends by name, is 99% of the gain, and two do nothing.
 - **Ease of use.** Five outside coding agents, given only this README and PROTOCOL.md, each added a new

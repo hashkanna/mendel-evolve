@@ -33,7 +33,7 @@ but no genes. MendelEvolve evolves ideas instead of programs, and measures what 
    repeated the knockouts at record scale: 600 paired runs per arm, every pair in one container, seeds the
    engine never saw. Three things showed up that the quick screens had missed. One switch of the hand-written
    seed solver takes the share of record-beating runs from 10% to 34%. The solver the engine evolved is worth a
-   quarter of a point over the seed solver, all of it from tuning. And one idea from an LLM inventor,
+   quarter of a point over the seed solver, nearly all of it from tuning. And one idea from an LLM inventor,
    `multi_recreate`, which the engine had rejected in its first generation, is worth more than anything it kept:
    +0.19 to +0.31 points. On a program that OpenEvolve itself evolved, one switch, the optimiser its prompt
    recommends by name, carries 99% of the gain. A framework that tells you where a result came from, and
@@ -76,7 +76,7 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 
 ## Research efficiency (the fourth judging area)
 
-- LLM calls scale with ideas, not evaluations: 399 calls (about $164) for 22,570 evaluations across the nine
+- LLM calls scale with ideas, not evaluations: 399 calls (about $164) for 22,802 evaluations across the nine
   engine runs. The record searches and the deep screen used no LLM calls.
 - Circle packing: Fable inventors reached the best known value after $10.95 and 8 calls ($26.07 for the whole
   run). Five Haiku runs with no hints: 2.314 to 2.440 for $6.55 to $8.40 each. OpenEvolve (its own two-phase
@@ -89,7 +89,7 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
   not resolved at four runs each), and the ledger costs about a quarter more per run. Its value so far is as
   the explanation, not as a search heuristic. Say this plainly if asked.
 - Every evaluation is cached by solver version, config, instance, seed and budget; paired arms run in the same
-  container; 100 Modal containers running 8 to 16 jobs each.
+  container; 100 Modal containers running 8 to 64 jobs each.
 
 ## Q&A preparation
 
@@ -101,26 +101,27 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 - **What about ideas that need a whole-program rewrite?** They do not fit behind a switch; they would start a
   separate lineage. The invariance gate rejects anything that changes behaviour while off.
 - **What did your method itself discover?** On circle packing, the idea that carries the result: Fable
-  inventors proposed an SLSQP polish with no hint, and its knockout costs 1.67 on training sizes and on held-out
+  inventors proposed an SLSQP polish with no hint, and its knockout costs 1.67 on training sizes and 1.5 to 1.9 on held-out
   sizes. On problem 59, a map of which of the seed solver's switches matter and that two of them are worth more
   together (+2.81). On problem 60, two things, both visible only at record scale: a tuned solver that beats the
   seed solver by +0.24 [0.18, 0.29], and an LLM idea, `multi_recreate`, worth +0.19 to +0.31 that the engine
-  itself had rejected. Ten other ideas tested the same way show nothing.
+  itself had rejected. Of ten other ideas tested the same way, none is resolved above +0.03.
 - **Is "no idea helped" just an underpowered test?** It was, and we measured by how much. The engine's screen
   (48 seed pairs, 45 seconds) resolves about 0.2 points, and everything that matters here is that size or
   smaller. At 600 paired runs in shared containers the noise floor is 0.01, and one of the eleven ideas we
   re-tested is clearly positive. The engine now also reports, for each knockout, how many seed pairs differed at
   all: one kept idea (`kick_escalate`) turned out almost never to have executed in its own knockout.
 - **Did you get anything wrong along the way?** Yes, and it is in `RESULTS.md`. Our first deep screen ran each
-  idea in its own containers and made four more ideas look helpful by 0.11 to 0.16. A same-program control
-  showed that container hardware alone moves the mean by 0.06, and in the shared-container test those four
-  effects vanished. Pairing has to include the machine.
+  idea in its own containers and made eight more ideas look helpful by 0.11 to 0.16. A same-program control
+  showed that container hardware alone moves the mean by 0.06, and in the shared-container test none of the
+  eight is above +0.08. Pairing has to include the machine.
 - **So is the mean the wrong objective?** For record hunting, yes. A record is the best of hundreds of long runs;
   the engine selects on the mean of a few short ones. Selecting on the rate of runs above a target is the first
   thing we would change, and the record-rate analysis in `RESULTS.md` is that statistic computed after the fact.
 - **Why should we believe the records?** Three independent exact checkers over every 5-subset (int64 determinants,
-  Bareiss elimination, cofactor-plus-dot-product), all 21 sets re-checked on Sunday, certificates public. All
-  13 are on DeepMind's record thread with provenance and the checker output
+  Bareiss elimination, cofactor-plus-dot-product), every set checked all three ways, certificates public.
+  Thirteen of the 17 sizes are on DeepMind's record thread with provenance and the checker output, seven of them
+  at earlier values; the text with all 17 is ready and goes up as an edit of that comment
   (https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530). For problem 59, DeepMind's own notebook verifier accepts the sets, the same
   definition reproduces every published value from n = 4 to 10 by exhaustive search, and the result is raised on
   their repository as issue 10 (https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/10).
@@ -143,7 +144,7 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 1:50 Screen: explain page. "We pointed it at a program OpenEvolve evolved. One switch is 99% of the gain."
 2:15 Screen: records strip on problem 60, then the DeepMind thread. "Apparently new lower bounds at 17 sizes, three
      independent exact checkers each, posted with provenance. And the knockouts say where they came from: one
-     switch of the seed solver triples the record rate, the engine's tuning adds a quarter of a point, and one
+     switch of the seed solver takes the record rate from 10% to 34%, the engine's tuning adds a quarter of a point, and one
      LLM idea the engine had thrown away turns out to be the best single change." Show record-scale.html.
 2:40 Screen: problem 59 point set. "58 points where the literature says 56 is optimal. We raised it as a
      discrepancy to be understood, not a correction."
@@ -175,7 +176,8 @@ causal effect per idea. The ledger of measured effects is what the next inventor
 the hackathon it produced apparently new lower bounds at 17 sizes of Tao et al.'s problem 60 (verified by three
 independent exact checkers), 58-point isosceles-free sets in the 32 x 32 grid where 56 was reported, and the
 best known circle packing value from OpenEvolve's initial program with no hints. Its knockouts also say where
-results come from: on problem 60, one switch of the seed solver doubles the rate of record-beating runs and the
-evolved solver raises it by a further 60% on seeds it never saw; a program OpenEvolve itself evolved owes 99%
-of its gain to one switch. Ten problem packs (five added by outside agents from the docs alone), a protocol for adding more, and a
+results come from: on problem 60, one switch of the seed solver takes the share of record-beating runs from
+10% to 34%, the solver the engine evolved doubles the seed solver's rate (21% against 10%), and one LLM idea
+that the engine's quick screen had rejected is worth more than anything it kept; a program OpenEvolve itself
+evolved owes 99% of its gain to one switch. Ten problem packs (five added by outside agents from the docs alone), a protocol for adding more, and a
 dashboard with live knockouts are in the repo.

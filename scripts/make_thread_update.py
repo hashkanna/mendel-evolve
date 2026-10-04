@@ -24,12 +24,12 @@ POSTED_FIRST = {15: 41, 16: 43, 17: 46, 21: 56, 23: 61, 24: 64, 25: 66, 26: 68, 
 
 def variant(cert: dict) -> str:
     solver = cert.get("solver") or ""
+    if "champion" in solver:           # the evolved champion of run p60, or a variant of it
+        return "variant A"
     if "multi_recreate" in solver:
         return "variant B"
     if "LLM idea" in solver:
         return "variant C (" + re.search(r"LLM idea (\w+)", solver).group(1) + ")"
-    if "champion" in solver:
-        return "variant A"
     return "base search"
 
 
@@ -45,7 +45,12 @@ def main() -> None:
     records = [n for n in sorted(best) if n <= 32 and best[n][0] > published[n]]
     large = [n for n in sorted(best) if n > 32]
 
+    cache_path = os.environ.get("THIRD_CHECK_CACHE")
+    cache = json.load(open(cache_path)) if cache_path and os.path.exists(cache_path) else {}
+
     def check(n: int) -> str:
+        if best[n][1] in cache:
+            return cache[best[n][1]]
         done = subprocess.run([sys.executable, os.path.join(ROOT, "results/no5sphere/third_check.py"),
                                os.path.join(CERTS, best[n][1])], capture_output=True, text=True)
         line = done.stdout.strip().splitlines()[-1]
@@ -55,6 +60,8 @@ def main() -> None:
 
     with ThreadPoolExecutor(8) as pool:
         lines = list(pool.map(check, records + large))
+    if cache_path:
+        json.dump({best[n][1]: line for n, line in zip(records + large, lines)}, open(cache_path, "w"))
 
     def source(n: int) -> str:
         if n in PUBLIC_SOURCE:
@@ -104,7 +111,7 @@ Output of the third checker on the files in the table (pure Python, no dependenc
 {chr(10).join(lines)}
 ```
 
-**How they were found.** One exact ruin-and-recreate local search in C, started from scratch at every size, in three variants. {paired_sets} of the {len(records) + len(large)} sets are built from antipodal pairs about the cube centre (p together with (n-1, n-1, n-1) - p), some with one extra unpaired point.
+**How they were found.** One exact ruin-and-recreate local search in C, started from scratch at every size, in three variants. {"Every set is" if paired_sets == len(records) + len(large) else f"{paired_sets} of the {len(records) + len(large)} sets are"} built from antipodal pairs about the cube centre (p together with (n-1, n-1, n-1) - p), some with one extra unpaired point.
 
 - *Base search:* 100 to 500 seeded runs per size at 90 to 720 CPU-seconds.
 - *Variant A:* the same code with constants tuned by an automatic tuner (far fewer restarts: a kick only after about 30,000 steps without improvement, instead of 3,000), plus two small modifications that did not measurably matter.
@@ -116,7 +123,7 @@ What we measured about why, for anyone searching these sizes. All comparisons us
 - The antipodal constraint is worth +0.13 points on the mean (95% interval 0.06 to 0.20) and takes the share of runs that beat the previous public value from 10% to 34%.
 - Variant B is worth +0.19 (0.11 to 0.28) in one experiment and +0.31 (0.22 to 0.39) in a second.
 - Variant A is worth +0.24 (0.18 to 0.29) over the base search without the antipodal constraint, and +0.12 with it.
-- Ten other modifications tested the same way gave nothing larger than a few hundredths of a point.
+- Ten other modifications tested the same way gave nothing resolved above +0.03 points.
 - A caution we learned the hard way: comparing two searches that ran on different machines can show differences of 0.1 points that are not real. Identical runs on different containers differed by 0.06 on the mean.
 
 Variant B was proposed by an LLM inside an evolutionary pipeline and rejected by that pipeline's own quick screening (48 paired runs of 45 CPU-seconds), which could not resolve effects of this size. As 0thernet reported for their pipeline, the evolutionary layer is not what found these: the sets come from a fixed local search, a symmetry constraint, one refill trick and compute. Per-run scores and the scripts behind these numbers: {base}/paired_scores.json and {base}/paired_effects.py.

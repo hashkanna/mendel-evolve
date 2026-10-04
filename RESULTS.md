@@ -35,13 +35,14 @@ new relative to the public sources we found, with no claim of optimality or guar
 | 32 | **85** | 82 | [n32_85.json](results/no5sphere/certificates/n32_85.json) | seed solver with the LLM idea multi_recreate with centrosymmetric |
 <!-- records:end -->
 
-The first 13 (with 43 at n = 16 and 80 at n = 31), and the sets for n = 33 to 40, were posted on the record thread on 4 October 2026
-([comment](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530)); the first three had been posted there the day before.
+Thirteen of these sizes were posted on the record thread on 4 October 2026
+([comment](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530)), seven of them at earlier, lower values, after three (n = 21, 23, 26) the day before. The
+text with the whole current table is [results/no5sphere/update_comment.md](results/no5sphere/update_comment.md).
 
 We equal the published value at n = 13, 14 and 18. For n = 33 to 40, where no sets are
 published (the n = 32 set implies 82 because C is non-decreasing), the searches give 86, 90, 91, 94, 96, 99, 102, 104.
 
-Every certificate in `results/no5sphere/certificates` (the 15 above, earlier sets at some sizes, and those for
+Every certificate in `results/no5sphere/certificates` (the 17 above, earlier sets at some sizes, and those for
 n = 33 to 40) was checked over every 5-subset by three independent exact integer methods:
 
 - `problems/no5sphere/evaluate.py`: vectorised int64 determinants;
@@ -64,7 +65,8 @@ arms, so the arm that happened to find the best one is not evidence for its idea
 is measured in the sections below; `multi_recreate` and the evolved champion both have measured effects, and
 the other ideas do not. The first search (24 seeds per size, 120 CPU-seconds, about $0.90 of Modal compute) gave n = 21, 23
 and 26. The full search ran 100 to 150 seeds per size at 90 to 480 CPU-seconds, with and without the switch,
-for every size from 13 to 32, and 40 seeds at 720 CPU-seconds for 33 to 40: about 520 core-hours.
+for every size from 13 to 32, and 40 seeds at 720 CPU-seconds for 33 to 40: about 440 core-hours. The later,
+deeper searches and the record-scale knockouts described below used about 7,700 more.
 
 A strong model's first program plus compute already reaches the frontier here. That is the situation the two
 studies in the README's related work warn about: a high score need not come from evolved structure
@@ -121,7 +123,7 @@ this design differ in 1% of pairs, by +0.00 [-0.00, +0.01] points on average: th
 
 | arm, against its baseline | engine's quick screen (48 pairs, 45 s) | at record scale: mean difference, 95% interval | runs above the published value |
 |---|---|---|---|
-| `centrosymmetric` on, against the seed solver | -0.01 [-0.19, +0.17] | **+0.13 [+0.06, +0.20]** | 34% against 10% |
+| `centrosymmetric` on, against the seed solver | 0.00 [-0.19, +0.17] | **+0.13 [+0.06, +0.20]** | 34% against 10% |
 | evolved champion, against the seed solver | +0.10 | **+0.24 [+0.18, +0.29]** | 21% against 10% |
 | evolved champion with `centrosymmetric`, against the control | | **+0.12 [+0.04, +0.22]** | 40% against 34% |
 | `multi_recreate` (Fable 5.1, generation 1, rejected), against the control | -0.04 [-0.23, +0.12] | **+0.19 [+0.11, +0.28]** | 44% against 34% |
@@ -149,10 +151,11 @@ Chart: [docs/record-scale.html](https://hashkanna.github.io/mendel-evolve/record
 - **The other ideas do nothing we can resolve**, including two that the engine had measured as harmful.
   `incidence_index` has a small real effect (+0.03, in 3% of pairs).
 - **A first pass got this wrong, and it is worth saying how.** We first ran each of the 30 ideas as its own
-  search (`results/no5sphere/deep_screen.py`), so each arm had its own containers. That pass put four more
-  ideas at +0.11 to +0.16 with intervals clear of zero. A control against an identical earlier search then
-  showed -0.06 [-0.10, -0.03] between two runs of one program: container hardware alone moves the mean by
-  that much. In the same-container test those four effects are gone. The engine keeps both arms of a pair in
+  search (`results/no5sphere/deep_screen.py`), so each arm had its own containers. That pass put eight more
+  ideas at +0.11 to +0.16 with 95% intervals clear of zero, five of them even after correcting for 30
+  comparisons. A control against an identical earlier search then showed -0.06 [-0.10, -0.03] between two runs
+  of one program: container hardware alone moves the mean by that much. In the same-container test none of the
+  eight is above +0.08, and the only one resolved is `incidence_index` at +0.03. The engine keeps both arms of a pair in
   one container for this reason; the first pass did not. The 19 ideas that were not re-tested had first-pass
   readings between -0.10 and +0.08, apart from the two clearly harmful ones (`axis_symmetry` -0.41,
   `revisit_tabu` -0.33).
@@ -167,7 +170,7 @@ evolved solver: [results/no5sphere/evolved_solver](results/no5sphere/evolved_sol
 Each of these is a limit of the framework as it stands.
 
 1. **Power.** 48 pairs at 45 seconds resolve about +-0.2 points. The effects that matter here are that size or
-   smaller: `centrosymmetric` is worth +0.13 to +0.22 at record scale and measured -0.01 [-0.19, +0.17] in the
+   smaller: `centrosymmetric` is worth +0.13 to +0.22 at record scale and measured 0.00 [-0.19, +0.17] in the
    engine; the evolved champion is worth +0.24 and measured +0.10; `multi_recreate` is worth +0.19 to +0.31 and
    measured -0.04. The default tolerance for the `neutral` label (0.5% of the champion's mean, 0.27 points
    here) is wider than all of them.
@@ -248,10 +251,12 @@ tuner never saw: `symmetric` +9.25 [8.5, 10.0], `greedy_victim` +4.56 [3.25, 5.8
 [0.94, 2.62], all labelled general on held-out sizes. The first two are worth more together (synergy +2.81
 [1.44, 4.25]) and `greedy_victim` and `hollow` overlap (-1.5 [-2.81, -0.06]). The end-of-run decomposition:
 seed solver 118.8, tuning of constants +2.7, switches +11.8. All of that is the seed solver's own three
-switches. 51 LLM ideas were screened on top (26 from Sonnet 5.5, 25 from Fable 5.1): none is conclusively
-positive, 15 are measured as harmful, and the two that sit in the champion have inconclusive knockouts
+switches. 51 LLM ideas were screened on top (26 from Sonnet 5.5, 25 from Fable 5.1). One, `border_first`,
+screened at +4.88 [+4.06, +5.75] in the first generation, before the seed solver's switches were on; once
+they were, the tuner switched it off and its knockout is -0.44 [-1.50, +0.81]. None is positive in the
+champion's context, 15 are measured as harmful, and the two that sit in the champion have inconclusive knockouts
 (`low_cost_list` +0.62 [-0.56, +1.81], `band_clip` -0.25 [-0.88, +0.25]). The limits found on problem 60 apply
-here too: these screens are short and small, so "none conclusively positive" is a statement about what they
+here too: these screens are short and small, so "none positive" is a statement about what they
 could resolve.
 
 ## Explaining another system's result: what did OpenEvolve evolve?
@@ -306,10 +311,11 @@ evaluator with no overlap tolerance. Best known: 2.635983.
 
 - What the ledger says did it. In the Fable run one kept gene, `slsqp_polish`, has a knockout effect of +1.67
   [1.67, 1.68] and is labelled general. In the hint run, the typed-in idea (credited to "OpenEvolve phase-2
-  prompt") has a knockout effect of +1.44 and is labelled general. In the five Haiku runs the main gene is a
-  local-search idea worth +0.2 to +1.8, with several small genes correctly labelled inconclusive or harmful.
+  prompt") has a knockout effect of +1.44 and is labelled general. In four of the five Haiku runs the main gene
+  is a local-search idea worth +0.2 to +1.8, with several small genes correctly labelled inconclusive or
+  harmful; in the fifth no kept gene is worth more than +0.05.
 - The comparison in plain terms: without the technique hint, MendelEvolve's Haiku runs end at or above
-  OpenEvolve's phase 1 plateau, for about twice the money per run, because an inventor session costs more than a
+  OpenEvolve's phase 1 plateau, for two to three times the money per run, because an inventor session costs more than a
   single completion. With the hint, both systems land near 2.62. With a stronger inventor and no hint,
   MendelEvolve reaches the best known value.
 - Limits of the comparison: the OpenEvolve baseline has three seeds (five were planned). All three completed
@@ -322,13 +328,14 @@ evaluator with no overlap tolerance. Best known: 2.635983.
 
 | Run | Generations | LLM calls | LLM spend | Evaluations | CPU-hours |
 |---|---|---|---|---|---|
-| Problem 60 (`p60`) | 7 | 41 | $30.63 | 6,198 | 76.5 |
+| Problem 60 (`p60`) | 7 | 41 | $30.63 | 6,430 | 79.5 |
 | Problem 59 (`p59`) | 14 | 60 | $63.57 (API-equivalent; the later generations ran on a subscription) | 5,480 | 41.9 |
 | Circle packing, Fable | 8 | 50 | $26.07 | 919 | 1.3 |
 | Circle packing, Haiku, five runs | 10 each | 40 to 42 each | $6.55 to $8.40 each | 1,518 to 2,103 each | 3.3 to 4.2 each |
 
-LLM calls are spent only on inventing genes; every other evaluation is plain compute. The record searches used
-no LLM calls at all: about 520 core-hours on Modal.
+LLM calls are spent only on inventing genes; every other evaluation is plain compute. The record searches and
+the record-scale knockouts used no LLM calls at all: about 8,100 core-hours on Modal for problem 60 (440 for
+the first seed-solver searches) and about 530 for the problem 59 searches.
 
 ## Ease of use: five outside agents added a benchmark each
 
