@@ -11,6 +11,7 @@ synthesised. Run from the repo root:
 """
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -26,15 +27,23 @@ from script import SCENES  # noqa: E402
 FFMPEG, FFPROBE = "/opt/homebrew/bin/ffmpeg", "/opt/homebrew/bin/ffprobe"
 WORK = ROOT / "media" / "work" / "film"
 TTS = WORK / "tts"
-FRAMES = WORK / "frames"
+TAG = os.environ.get("FILM_TAG", "")
+FRAMES = WORK / (f"frames_{TAG}" if TAG else "frames")
 FPS = 30
 SR = 48000
 W, H = 1920, 1080
-VOICE, TTS_MODEL, ACCENT = "Algieba", "gemini-3.8-flash-tts", "en-GB"   # see media/work/film/voices for samples
+# The narrator. SOURCE "tts" uses media/tts_gemini.py, "live" uses media/film/live_tts.py (a Live native-audio model,
+# which takes a TONE). ACCENT "none" leaves the accent to the voice. Each can be overridden from the environment:
+# FILM_VOICE, FILM_SOURCE, FILM_MODEL, FILM_ACCENT, FILM_TONE. Samples are in media/work/film/voices.
+VOICE = os.environ.get("FILM_VOICE", "Algieba")
+SOURCE = os.environ.get("FILM_SOURCE", "live")     # chosen on 4 October: Algieba on Gemini 3.8 Live
+TTS_MODEL = os.environ.get("FILM_MODEL", "gemini-3.8-live" if SOURCE == "live" else "gemini-3.8-flash-tts")
+ACCENT = os.environ.get("FILM_ACCENT", "en-GB" if SOURCE == "tts" else "none")
+TONE = os.environ.get("FILM_TONE", "")
 SEC_PER_WORD = 0.43
 LOUDNESS = -17.0
 XFADE = 0.8          # scenes overlap by this much; the voice never does
-OUT = ROOT / "media" / "mendelevolve_film.mp4"
+OUT = ROOT / "media" / (f"mendelevolve_film_{TAG}.mp4" if TAG else "mendelevolve_film.mp4")
 SCORE = HERE / "score_lyria.mp3"      # made by lyria.py; delete it to use the synthesised score
 LYRIA_GAIN = 1.6
 MUSIC_GAIN, FX_GAIN = 0.34, 0.4   # under a voice at about -20 dB RMS
@@ -59,7 +68,7 @@ def beats():
 
 
 def key(text):
-    tag = VOICE if (TTS_MODEL, ACCENT) == ("gemini-3.8-flash-tts", "en-GB") else f"{VOICE}|{TTS_MODEL}|{ACCENT}"
+    tag = VOICE if (SOURCE, TTS_MODEL, ACCENT) == ("tts", "gemini-3.8-flash-tts", "en-GB") else f"{VOICE}|{SOURCE}|{TTS_MODEL}|{ACCENT}|{TONE}"
     return hashlib.sha1(f"{tag}|{text}".encode()).hexdigest()[:12]
 
 
@@ -71,7 +80,11 @@ def synth(bid, text):
     words = len(text.split())
     for attempt in range(3):
         tmp = TTS / f"{key(text)}.try{attempt}.wav"
-        run(["python3", ROOT / "media" / "tts_gemini.py", tmp, text, "--voice", VOICE, "--model", TTS_MODEL, "--language", ACCENT])
+        if SOURCE == "live":
+            run(["uv", "run", "-q", "--with", "websockets", "python", HERE / "live_tts.py", tmp, text, "--voice", VOICE,
+                 "--model", TTS_MODEL] + (["--tone", TONE] if TONE else []))
+        else:
+            run(["python3", ROOT / "media" / "tts_gemini.py", tmp, text, "--voice", VOICE, "--model", TTS_MODEL, "--language", ACCENT])
         dur = wav_seconds(tmp)
         if dur <= words * SEC_PER_WORD * 1.35 + 1.5:
             tmp.rename(raw)
@@ -113,9 +126,43 @@ def voice():
         wav = prepare(text, synth(bid, text))
         return bid, wav_seconds(wav)
 
-    with ThreadPoolExecutor(4) as pool:
-        for bid, dur in pool.map(one, todo):
-            print(f"{bid}: {dur:.2f} s")
+    for round_ in range(3):
+        with ThreadPoolExecutor(4) as pool:
+            for bid, dur in pool.map(one, todo):
+                print(f"{bid}: {dur:.2f} s")
+        bad = check_takes(todo)
+        if not bad:
+            return
+        for scene, bid, text, pause in bad:          # the model strayed from the script: take it again
+            for f in TTS.glob(f"{key(text)}*.wav"):
+                f.unlink()
+    raise SystemExit("some lines still differ from the script after three takes; listen to them")
+
+
+NUMBER_WORDS = set("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen "
+                   "seventeen eighteen nineteen twenty thirty forty fifty sixty seventy eighty ninety hundred thousand "
+                   "and point percent".split())
+
+
+def check_takes(todo):
+    """Whisper every take not checked yet; return the lines whose words differ from the script."""
+    import difflib
+    checked_path = TTS / "checked.json"
+    checked = json.loads(checked_path.read_text()) if checked_path.exists() else {}
+    new = [(item, TTS / f"{key(item[2])}.wav") for item in todo if key(item[2]) not in checked]
+    if new:
+        asr = WORK / "asr_takes"; asr.mkdir(exist_ok=True)
+        run(["/opt/homebrew/bin/whisper", *[w for _, w in new], "--model", "base.en", "--language", "en",
+             "--output_format", "txt", "--output_dir", asr, "--fp16", "False"])
+        norm = lambda t: [w for w in re.sub(r"[^a-z0-9 ]", " ", t.lower().replace("mendelevolve", "mendel evolve")
+                                               .replace("-", " ")).split() if w not in NUMBER_WORDS and not w[0].isdigit()]
+        for (scene, bid, text, pause), w in new:
+            heard = (asr / (w.stem + ".txt")).read_text()
+            ratio = difflib.SequenceMatcher(a=norm(text), b=norm(heard), autojunk=False).ratio()
+            checked[key(text)] = round(ratio, 3)
+            print(f"  {bid}: {ratio:.2f} {'' if ratio >= 0.85 else 'DIFFERS: ' + heard.strip()[:120]}")
+        checked_path.write_text(json.dumps(checked, indent=1))
+    return [item for item in todo if checked.get(key(item[2]), 0) < 0.85]
 
 
 # ------------------------------------------------------------------------------------------------ timeline
@@ -369,10 +416,9 @@ def audio():
 
     def riser(d=2.0):
         n = int(d * SR); t = np.arange(n) / SR
-        noise = swept_noise(400 * 12 ** (t / d))
-        f = 180 * (4 ** (t / d))
-        tone = np.sin(2 * np.pi * np.cumsum(f) / SR) * 0.25
-        return (noise * 0.6 + tone) * (t / d) ** 2
+        f = 180 * (4 ** (t / d))                      # a tonal sweep only: no noise, so nothing swishes
+        tone = sum(np.sin(2 * np.pi * np.cumsum(f * k) / SR) / k for k in (1, 2, 3)) * 0.3
+        return tone * (t / d) ** 2
 
     def glitch(d=0.45):
         n = int(d * SR); t = np.arange(n) / SR
@@ -443,7 +489,6 @@ def audio():
     # iso
     for i in range(58):
         place(fx, pluck(60 + [0, 2, 4, 7, 9][i % 5] + 12 * ((i // 5) % 4), 0.3), bt["b16"] + 0.4 + i * 0.045, 0.13, -0.7 + (i % 15) * 0.1)
-    place(fx, whoosh(0.6, 0.6), bw("b17", 0.9) - 0.2, 0.3)
     place(fx, boom(1.0, 200, 70), bw("b17", 0.9) + 0.25, 0.35)
     ca, cb = bw("b18", 0.0) + 0.1, bw("b18", 0.62)
     t = ca
@@ -454,7 +499,6 @@ def audio():
     for i in range(13):
         place(fx, tick(2000 + 90 * i), bt["b20"] + 0.2 + i * 0.09, 0.15)
     place(fx, riser(1.7), bw("b21", 0.25) - 0.1, 0.4)
-    place(fx, whoosh(1.0, 0.5), bw("b21", 0.25) + 1.3, 0.25)
     place(fx, bell(83, 2.5), bt["b22"], 0.35)
     place(fx, boom(0.9, 260, 80), bt["b23"] + 1.4, 0.55)
     place(fx, glitch(0.15), bt["b23"] + 1.4, 0.2)
@@ -517,7 +561,8 @@ def audio():
         ly = np.frombuffer(raw, dtype=np.float32).reshape(-1, 2).astype(float)
         ly *= 10 ** (-20 / 20) / np.sqrt(np.mean(ly ** 2))
         lyria = np.zeros((N, 2)); lyria[:min(N, len(ly))] = ly[:N]
-        keep = np.clip((np.arange(N) / SR - (sc["close"]["start"] + 3.0)) / 4.0, 0, 1)
+        tail_from = min(sc["close"]["start"] + 3.0, len(ly) / SR - 9.0)   # Lyria fades over its last ~9 s
+        keep = np.clip((np.arange(N) / SR - tail_from) / 4.0, 0, 1)
         music = lyria * LYRIA_GAIN + music * keep[:, None]
         print(f"score: Lyria, {len(ly) / SR:.1f} s")
 
@@ -554,7 +599,7 @@ def audio():
     # fade out at the end
     fo = int(2.0 * SR); mix[-fo:] *= np.linspace(1, 0, fo)[:, None]
     mix /= max(1.0, np.abs(mix).max() / 0.95)
-    out = WORK / "film_mix.wav"
+    out = WORK / (f"film_mix_{TAG}.wav" if TAG else "film_mix.wav")
     with wave.open(str(out), "wb") as w:
         w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
         w.writeframes((mix * 32767).astype(np.int16).tobytes())
@@ -570,7 +615,7 @@ def audio():
 def mux():
     if sys.argv[2:] == ["sound"]:                    # frames unchanged: keep the encoded picture, replace the sound
         tmp = OUT.with_suffix(".tmp.mp4")
-        run([FFMPEG, "-y", "-i", OUT, "-i", WORK / "film_mix.wav", "-map", "0:v", "-map", "1:a", "-c:v", "copy",
+        run([FFMPEG, "-y", "-i", OUT, "-i", WORK / (f"film_mix_{TAG}.wav" if TAG else "film_mix.wav"), "-map", "0:v", "-map", "1:a", "-c:v", "copy",
              "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-ar", SR, "-c:a", "aac", "-b:a", "256k", "-movflags", "+faststart",
              "-shortest", tmp])
         tmp.replace(OUT)
@@ -581,7 +626,7 @@ def mux():
     missing = [f for f in range(frames) if not (FRAMES / f"f{f:05d}.jpg").exists()]
     if missing:
         raise SystemExit(f"{len(missing)} frames missing, first {missing[:5]}")
-    run([FFMPEG, "-y", "-framerate", FPS, "-i", FRAMES / "f%05d.jpg", "-i", WORK / "film_mix.wav",
+    run([FFMPEG, "-y", "-framerate", FPS, "-i", FRAMES / "f%05d.jpg", "-i", WORK / (f"film_mix_{TAG}.wav" if TAG else "film_mix.wav"),
          "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-ar", SR,
          "-c:v", "libx264", "-preset", "slow", "-crf", "17", "-pix_fmt", "yuv420p", "-tune", "film",
          "-c:a", "aac", "-b:a", "256k", "-movflags", "+faststart", "-shortest", OUT])

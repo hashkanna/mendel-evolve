@@ -170,10 +170,12 @@ Captions:
 A three-minute motion-graphics version, every frame drawn in code from the real data: the circle packing
 climbing from 0.959 to 2.635983 and falling back when `slsqp_polish` is knocked out (the solver's own runs), the
 85-point set for problem 60 with spheres through four of its points, the 58-point set for problem 59 and the
-record-scale effect table. The narration is in `media/film/script.py`, one Gemini clip per sentence, and the
-visuals are cued to those sentences. The score and the effects are synthesised in `build_film.py`.
+record-scale effect table. The narration is in `media/film/script.py`, one clip per sentence from the Algieba
+voice on Gemini 3.8 Live (`live_tts.py`; every take is checked against the script with Whisper), and the visuals
+are cued to those sentences. The score is from Google's Lyria model (`lyria.py`, `score_lyria.mp3`); the effects
+are synthesised in `build_film.py`, with no noise sweeps.
 
-    python3 media/film/build_film.py voice
+    python3 media/film/build_film.py voice        # needs uv (websockets) and whisper
     uv run --with numpy --with scipy python media/film/build_film.py data FOLDER   # FOLDER holds cp_on.json, cp_off.json
     python3 media/film/build_film.py timeline
     uv run --with playwright python media/film/build_film.py render 6
