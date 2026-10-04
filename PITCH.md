@@ -61,8 +61,9 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 - Circle packing: Fable inventors reached the best known value after $10.95 and 8 calls ($26.07 for the whole
   run). Five Haiku runs with no hints: 2.314 to 2.440 for $6.55 to $8.40 each. OpenEvolve (its own two-phase
   recipe, same model, same strict evaluator): phase 1 plateau 2.17 to 2.29 for about $2.90 per seed; phase 2,
-  whose prompt names the SLSQP technique, 2.607 to 2.624 when first stopped. That baseline is three seeds and
-  its phase 2 is incomplete; say so if asked.
+  whose prompt names the SLSQP technique, 2.612 to 2.626, for $7.01 to $7.60 per seed in all. That baseline is
+  three seeds; with the hint it costs about the same as our Haiku run with the same hint ($7.60 for 2.620) and
+  passes 2.6 early (seed 1 after $2.94). Say so if asked.
 - Does showing inventors the measured ledger help? Same model, seed program and budgets, with and without the
   ledger: [pending].
 - Every evaluation is cached by solver version, config, instance, seed and budget; paired arms run in the same
@@ -96,7 +97,7 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 - **Reusable?** Five problem packs in the repo (C and Python solvers) and a protocol document. Five Devin
   sessions given only the README and the protocol each added a new benchmark, with solver, gate, attribution run
   and a verified record search, in about 20 to 45 minutes. Their reports named three gaps in the docs, all fixed.
-- **What is weak?** The OpenEvolve baseline is three seeds with phase 2 incomplete. The explain result is one
+- **What is weak?** The OpenEvolve baseline is three seeds. The explain result is one
   program and one decomposition. Attribution seeds are reused across generations, so the final numbers we quote
   for problem 60 come from separate searches on seeds the engine never used.
 

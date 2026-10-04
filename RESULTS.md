@@ -157,8 +157,8 @@ initial program into a named switch, checks that all-off reproduces the initial 
 reproduces the evolved one (here: bit for bit), and then runs knockouts.
 
 Applied to the best program of one OpenEvolve run on circle packing (its two-phase recipe on
-`claude-haiku-4-5`, seed 3, stopped at 61 of 100 phase 2 iterations; strict score 2.624480 from an initial
-0.959765):
+`claude-haiku-4-5`, seed 3, taken at iteration 61 of 100 in phase 2; strict score 2.624480 from an initial
+0.959765; the run later finished at 2.625659):
 
 | switch | knocked out of the evolved program | switched on alone in the initial program |
 |---|---|---|
@@ -198,7 +198,7 @@ evaluator with no overlap tolerance. Best known: 2.635983.
 | MendelEvolve, Haiku 4.5 inventors, plus OpenEvolve's hint typed in as an idea | 2.6199 | $7.60 | 45 |
 | MendelEvolve, Haiku 4.5 inventors, no hints (five runs) | 2.314 to 2.440 | $6.55 to $8.40 each | 40 to 42 each |
 | OpenEvolve, Haiku 4.5, phase 1, no technique hint (three seeds) | 2.17 to 2.29 | about $2.90 each | 100 each |
-| OpenEvolve, Haiku 4.5, phase 2, whose prompt names the SLSQP technique (three seeds, incomplete) | 2.607 to 2.624 when first stopped | $21.99 for all three seeds so far | 137 to 161 each when first stopped |
+| OpenEvolve, Haiku 4.5, after phase 2, whose prompt names the SLSQP technique (three seeds) | 2.612 to 2.626 | $7.01 to $7.60 per seed for both phases | 200 each |
 
 - What the ledger says did it. In the Fable run one kept gene, `slsqp_polish`, has a knockout effect of +1.67
   [1.67, 1.68] and is labelled general. In the hint run, the typed-in idea (credited to "OpenEvolve phase-2
@@ -208,9 +208,11 @@ evaluator with no overlap tolerance. Best known: 2.635983.
   OpenEvolve's phase 1 plateau, for about twice the money per run, because an inventor session costs more than a
   single completion. With the hint, both systems land near 2.62. With a stronger inventor and no hint,
   MendelEvolve reaches the best known value.
-- Limits of the comparison: the OpenEvolve baseline has three seeds, its phase 2 was stopped part-way twice (a
-  spending cap, then to save credits), and its evaluations ran on a heavily loaded laptop with a wall-clock limit
-  while ours ran on Modal. Per-seed data: `baselines/openevolve/results/`.
+- Limits of the comparison: the OpenEvolve baseline has three seeds (five were planned). All three completed
+  both phases, 100 iterations each. Its evaluations ran on a heavily loaded laptop under a wall-clock limit,
+  which was raised from 90 to 360 seconds during phase 2, while ours ran on Modal. With the hint the two systems
+  cost about the same per run ($7 to $8), and OpenEvolve gets there quickly: its first seed passed 2.6 after
+  $2.94. Per-seed data: `baselines/openevolve/results/`.
 
 ## Research efficiency
 
