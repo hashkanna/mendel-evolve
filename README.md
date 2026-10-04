@@ -152,7 +152,8 @@ check a new solver's switches with `mendel gate`. `tests/fixtures` has the small
 
 ## Results
 
-Results from the hackathon runs are in [RESULTS.md](RESULTS.md).
+Results from the hackathon runs are in [RESULTS.md](RESULTS.md). What we would do next, including the
+framework changes the weekend showed are needed, is in [TODO.md](TODO.md).
 
 ## Design notes
 
