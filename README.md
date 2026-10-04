@@ -1,5 +1,7 @@
 # MendelEvolve
 
+![Frames from the MendelEvolve film: ideas as genes on a helix, a knockout on circle packing that costs 1.67, 17 new lower bounds on problem 60, and every idea measured twice](docs/img/hero.jpg)
+
 **Genetics for algorithm discovery.** MendelEvolve (Mendel for short; the command is `mendel`) is an
 autoresearch framework that evolves *ideas* instead of whole programs, and measures what each idea is worth.
 
@@ -52,21 +54,22 @@ screen recordings are real runs.
   hints. One gene carries it: knocking it out costs 1.67 on the training sizes and 1.5 to 1.9 on held-out sizes.
 - **Explaining another system.** `mendel explain` cut a program evolved by OpenEvolve into five switches: one
   of them, the optimiser its prompt recommends by name, is 99% of the gain, and two do nothing.
-- **Ease of use.** Five outside coding agents, given only this README and PROTOCOL.md, each added a new
+- **Ease of use.** Five outside coding agents (Devin sessions), given only this README and PROTOCOL.md, each added a new
   benchmark with a solver, an attribution run and a verified record search in about 20 to 45 minutes. Their
   five packs are merged, so the repository holds ten problem packs and a toy with known ground truth.
 
 ## How it works
 
-```
-            +--------------------- ledger: every idea and its measured effect ---------------------+
-            |                                                                                      |
-            v                                                                                      |
-   invent (LLM agent, K in parallel) --> gate --> screen --> merge --> tune --> knock out --> generalise
-   one new gene each, in a sandbox      invariance  on vs off   best     constants   each idea    held-out
-                                        rule        paired      idea     and         off, pairs   instance
-                                                    seeds       joins    switches    off          sizes
-                                                                trunk    (no LLM)
+```mermaid
+flowchart LR
+    L[("Ledger<br/>every idea and<br/>its measured effect")] --> I["1 Invent<br/>K LLM agents in parallel,<br/>one new gene each"]
+    I --> G["2 Gate<br/>gene at its default<br/>changes nothing"]
+    G --> S["3 Screen<br/>on vs off,<br/>paired seeds"]
+    S --> M["4 Merge<br/>best idea<br/>joins the trunk"]
+    M --> T["5 Tune<br/>switches and constants,<br/>no LLM"]
+    T --> K["6 Knock out<br/>each idea off,<br/>top ideas in pairs"]
+    K --> X["7 Generalise<br/>held-out<br/>instance sizes"]
+    X --> L
 ```
 
 1. **Invent.** K headless agent sessions each get a copy of the current solver, the problem statement and the
@@ -158,6 +161,21 @@ plus a `genes.json` and a three-line `mendel.toml`. See [PROTOCOL.md](PROTOCOL.m
 check a new solver's switches with `mendel gate`. `tests/fixtures` has the smallest complete example and
 `problems/no5sphere` has every optional file.
 
+## Repository layout
+
+| Path | What is there |
+|---|---|
+| `mendel/` | the framework: `engine.py` (the loop), `inventor.py` (LLM agents), `experiments.py` and `stats.py` (paired screens, knockouts, intervals), `tune.py` (Optuna), `executor.py` and `backends/` (local and Modal), `ledger.py`, `explain.py`, `campaign.py` (record searches), `dashboard/`, `cli.py` |
+| `problems/` | ten problem packs: statement, exact evaluator, independent verifier, published records |
+| `solvers/` | seed solvers whose ideas are named switches (`genes.json`) |
+| `results/` | every claimed result with its certificate and the scripts that check it |
+| `tests/` | 46 tests on a toy problem with known ground truth |
+| `configs/`, `scripts/` | experiment arms and helpers (paired searches, record collection, site refresh) |
+| `baselines/` | the OpenEvolve comparison runs |
+| `docs/` | the site at https://hashkanna.github.io/mendel-evolve/ (run snapshots, charts, the 58-point sets checked in the browser) |
+| `media/` | how the videos and the film are built |
+| [PROTOCOL.md](PROTOCOL.md), [RESULTS.md](RESULTS.md), [TODO.md](TODO.md), [PITCH.md](PITCH.md) | the contract for new problems and solvers, all results with their limits, next steps, the pitch |
+
 ## Results
 
 Results from the hackathon runs are in [RESULTS.md](RESULTS.md). What we would do next, including the
@@ -241,8 +259,22 @@ generalisation across instance sizes.
 [OpenEvolve](https://github.com/algorithmicsuperintelligence/openevolve) (Apache-2.0): the circle packing
 seed solver is a port of its initial program, and it is our baseline.
 [Optuna](https://optuna.org) for tuning, [Modal](https://modal.com) for compute,
-[Claude Code](https://claude.com/claude-code) for the inventor agent.
+[Claude Code](https://claude.com/claude-code) for the inventor agent, [Devin](https://devin.ai) for the
+ease-of-use test (five sessions, pull requests #1 to #5). The videos' narration is Google Gemini (3.8 Flash TTS
+and 3.8 Live) and the film's score is Google's Lyria.
 Problem 60 and its published records: Georgiev, Gómez-Serrano, Tao and Wagner,
 [Mathematical exploration and discovery at scale](https://arxiv.org/abs/2511.02864), and the contributors to
 the [record threads](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6); their
 certificates are used only to validate our evaluator.
+
+## Citation
+
+```bibtex
+@software{mendelevolve2026,
+  title  = {MendelEvolve: evolving ideas, not programs, and measuring what each idea is worth},
+  author = {Sirchabesan, Kannappan},
+  year   = {2026},
+  url    = {https://github.com/hashkanna/mendel-evolve},
+  note   = {Built at the London AI x Science Hackathon, 3-4 October 2026}
+}
+```
