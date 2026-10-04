@@ -3,7 +3,7 @@
 Everything here comes from runs made during the hackathon (3-4 October 2026). Numbers are filled in as runs
 finish; a section that says "pending" has no result yet.
 
-## Problem 60: new lower bounds at 13 grid sizes
+## Problem 60: new lower bounds at 14 grid sizes
 
 C(n) is the size of the largest subset of an n x n x n grid with no 5 points on a common sphere or plane.
 "Published" is the best value we could find in public sources on 3 October 2026: the
@@ -16,27 +16,28 @@ new relative to the public sources we found, with no claim of optimality or guar
 | n | ours | published | certificate |
 |---|---|---|---|
 | 15 | **41** | 40 | [n15_41.json](results/no5sphere/certificates/n15_41.json) |
-| 16 | **43** | 42 | [n16_43.json](results/no5sphere/certificates/n16_43.json) |
+| 16 | **44** | 42 | [n16_44.json](results/no5sphere/certificates/n16_44.json) (evolved solver; 43 from the seed solver) |
 | 17 | **46** | 45 | [n17_46.json](results/no5sphere/certificates/n17_46.json) |
 | 21 | **56** | 55 | [n21_56.json](results/no5sphere/certificates/n21_56.json) |
 | 23 | **61** | 59 | [n23_61.json](results/no5sphere/certificates/n23_61.json) |
 | 24 | **64** | 62 | [n24_64.json](results/no5sphere/certificates/n24_64.json) |
 | 25 | **66** | 65 | [n25_66.json](results/no5sphere/certificates/n25_66.json) |
 | 26 | **68** | 67 | [n26_68.json](results/no5sphere/certificates/n26_68.json) |
+| 27 | **71** | 70 | [n27_71.json](results/no5sphere/certificates/n27_71.json) (evolved solver) |
 | 28 | **74** | 71 | [n28_74.json](results/no5sphere/certificates/n28_74.json) |
 | 29 | **76** | 75 | [n29_76.json](results/no5sphere/certificates/n29_76.json) |
 | 30 | **79** | 76 | [n30_79.json](results/no5sphere/certificates/n30_79.json) |
-| 31 | **80** | 79 | [n31_80.json](results/no5sphere/certificates/n31_80.json) |
+| 31 | **81** | 79 | [n31_81.json](results/no5sphere/certificates/n31_81.json) (evolved solver; 80 from the seed solver) |
 | 32 | **84** | 82 | [n32_84.json](results/no5sphere/certificates/n32_84.json) |
 
-All 13, with the sets for n = 33 to 40, were posted on the record thread on 4 October 2026
+The first 13 (with 43 at n = 16 and 80 at n = 31), and the sets for n = 33 to 40, were posted on the record thread on 4 October 2026
 ([comment](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530)); the first three had been posted there the day before.
 
-We equal the published value at n = 13, 14, 18, 19, 20, 22 and 27. For n = 33 to 40, where no sets are
+We equal the published value at n = 13, 14, 18, 19, 20 and 22. For n = 33 to 40, where no sets are
 published (the n = 32 set implies 82 because C is non-decreasing), the search gives 86, 90, 91, 94, 96, 98, 100, 103.
 
-Each of the 21 sets (the 13 above and those for n = 33 to 40) was checked over every 5-subset by three
-independent exact integer methods:
+Each of the 24 certificates (the 14 above, the two earlier sets at n = 16 and 31, and those for n = 33 to 40)
+was checked over every 5-subset by three independent exact integer methods:
 
 - `problems/no5sphere/evaluate.py`: vectorised int64 determinants;
 - `problems/no5sphere/verify.py`: Bareiss elimination on each 5x5 matrix in Python integers;
@@ -46,9 +47,9 @@ Reproduce: `python results/no5sphere/third_check.py results/no5sphere/certificat
 
 ### How they were found, stated plainly
 
-All of them came from the **seed solver**, a from-scratch C ruin-and-recreate search written at the start of
-the hackathon, before any idea had been evolved, and all 13 records were found with its `centrosymmetric`
-switch on. The first search (24 seeds per size, 120 CPU-seconds, about $0.90 of Modal compute) gave n = 21, 23
+Eleven of the 14 came from the **seed solver**, a from-scratch C ruin-and-recreate search written at the start
+of the hackathon, before any idea had been evolved, with its `centrosymmetric` switch on. The other three
+(n = 16, 27 and 31) came from the engine's evolved champion, run with the same switch on; see the next section. The first search (24 seeds per size, 120 CPU-seconds, about $0.90 of Modal compute) gave n = 21, 23
 and 26. The full search ran 100 to 150 seeds per size at 90 to 480 CPU-seconds, with and without the switch,
 for every size from 13 to 32, and 40 seeds at 720 CPU-seconds for 33 to 40: about 520 core-hours.
 
@@ -72,7 +73,9 @@ switch can be knocked out at record-search scale:
 - Per-run scores are in [search_scores.json](results/no5sphere/search_scores.json); reproduce the table with
   `python results/no5sphere/tail_effect.py`.
 
-## Problem 60: what the evolved ideas are worth
+## Problem 60: what evolution was worth, and why the engine could not see it
+
+### What the engine measured
 
 The engine ran seven full generations on this problem (run `p60`) and was stopped during the eighth. Its final
 ledger holds 30 ideas, 8 from Fable 5.1 inventors and 22 from Sonnet 5.5. Counting generations that were
@@ -86,32 +89,57 @@ interrupted and run again, 39 screenings were made. Each idea passed the invaria
   interrupted eighth generation all screened negative (-0.10 to -0.67).
 - Two were merged on their point estimates. On seeds the selection never saw, `fresh_first` measures -0.10
   [-0.29, +0.08] and the tuner switched it off again; `kick_escalate` measures +0.04 [-0.04, +0.13].
-- Mean over the training sizes: seed solver 54.90, champion 55.00. How that +0.10 splits into
-  tuning and ideas: pending (the end-of-run decomposition is being measured).
+- The end-of-run decomposition, mean over the training sizes: seed solver 54.90, tuning +0.06, ideas +0.04,
+  champion 55.00. Every step is inside the noise of that measurement.
 
-So on this problem evolution added nothing we can measure. That sentence needs three qualifications, and each
-one is a limit of the framework as it stands.
+On these numbers alone the conclusion would be that evolution added nothing. It is not the right conclusion.
 
-1. **The screen cannot see effects of the size that matter here.** 48 pairs at 45 seconds resolve about
-   +-0.2 points. The seed's own `centrosymmetric` switch measured -0.01 [-0.19, +0.17] in the engine. Over 1,600
-   pairs at record-search budgets it is worth +0.22 [+0.19, +0.26] and doubles the rate of record-beating runs
-   (previous section). An LLM idea as valuable as that switch would have been screened out as "not positive".
-   The default tolerance for the `neutral` label (0.5% of the champion's mean, 0.27 points here) is wider than
-   that effect too.
-2. **One kept idea was almost never exercised.** `kick_escalate` changes only the second and later kicks in a
-   row that fail to improve the best set. At the champion's tuned patience (30,531 iterations) that needs about
-   61,000 iterations after the last improvement. Of the 5,763 stored 45-second runs, 319 were long enough,
-   nearly all at n = 17, and 1 of 2,941 at n >= 21. In most pairs both arms of its knockout ran the same code,
-   and its knockout on the held-out sizes is exactly zero in all 32 pairs. Its "+0.04" is the noise between
-   two runs of one program under a CPU-time budget, not a small benefit. The engine now records, for every
-   screening and knockout, how many pairs differed at all, and the dashboard says when none did.
-3. **The budget is short of convergence at the larger sizes.** At n = 26 half of the 45-second runs were still
-   improving after 20 seconds. A screen at that budget measures how fast an idea climbs, not where a long
-   search ends, and records come from long searches.
+### A final test at record scale: the evolved solver is better
 
-Two experiments that address this are running and will be reported here: every ledger idea screened again at
-record-search scale (600 runs per idea, with a control arm), and the evolved champion run on the same seeds
-and budgets as the seed solver's record searches. Results: pending.
+The champion (the seed solver's constants as tuned by the engine, its switch `guided_ruin` turned on, and the
+LLM idea `kick_escalate`) was frozen and run on the same seeds and budgets as the seed solver's record
+searches: 2,550 runs per arm over n = 13 to 32. The engine never used these seeds, and 12 of the 20 sizes were
+never used by it at all, so this is a test on data that could not have steered the search.
+
+| 13 record sizes, 1,600 paired runs per arm | runs above the published value | difference, 95% interval | mean score, 95% interval |
+|---|---|---|---|
+| evolved against seed | 218 (13.6%) against 136 (8.5%) | +5.1 points [+3.5, +6.8] | +0.20 [+0.17, +0.24] |
+| evolved against seed, both with `centrosymmetric` on | 318 (19.9%) against 262 (16.4%) | +3.5 points [+1.5, +5.4] | +0.08 [+0.04, +0.12] |
+
+- Over all 20 sizes the picture is the same: 8.6% against 5.3% (+3.3 points [+2.3, +4.2]) without the switch,
+  12.5% against 10.3% (+2.2 points [+1.0, +3.5]) with it.
+- The evolved solver produced the best sets we have at n = 16 (44), n = 27 (71, a size where the seed solver
+  only equalled the published 70) and n = 31 (81).
+- The engine's own measurement of the same champion against the same seed solver was +0.10, inside its noise.
+  At 1,600 pairs and record budgets it is +0.20 with an interval that excludes zero, and the rate of
+  record-beating runs is up by 60%.
+- Which part of the champion carries this (the tuned constants, `guided_ruin`, or the LLM idea
+  `kick_escalate`) is being measured by knocking each one out at the same scale. Results: pending.
+- Source of the evolved solver: [results/no5sphere/evolved_solver](results/no5sphere/evolved_solver). Per-run
+  scores of all four arms: [search_scores.json](results/no5sphere/search_scores.json), table from
+  `python results/no5sphere/tail_effect.py`.
+
+### Why the engine could not see it
+
+Each of these is a limit of the framework as it stands.
+
+1. **Power.** 48 pairs at 45 seconds resolve about +-0.2 points. The effects that matter here are that size:
+   `centrosymmetric` is worth +0.22 at record scale and measured -0.01 [-0.19, +0.17] in the engine; the whole
+   evolved champion is worth +0.20 and measured +0.10. The default tolerance for the `neutral` label (0.5% of
+   the champion's mean, 0.27 points here) is wider than both.
+2. **Activation.** `kick_escalate` changes only the second and later kicks in a row that fail to improve the
+   best set. At the champion's tuned patience (30,531 iterations) that needs about 61,000 iterations after the
+   last improvement. Of the 5,763 stored 45-second runs, 319 were long enough, nearly all at n = 17, and 1 of
+   2,941 at n >= 21. In most pairs both arms of its knockout ran the same code, and its knockout on the
+   held-out sizes is exactly zero in all 32 pairs. The engine now records, for every screening and knockout,
+   how many pairs differed at all, and the dashboard says when none did.
+3. **Budget.** At n = 26 half of the 45-second runs were still improving after 20 seconds. A screen at that
+   budget measures how fast an idea climbs, not where a long search ends, and records come from long searches.
+4. **Statistic.** The engine selects on the mean. Records are in the tail: a change worth a fifth of a point
+   on the mean moves the rate of record-beating runs by a half or more.
+
+One more experiment is running: every idea in the ledger, including the 28 that were not kept, screened again
+at record-search scale (600 runs per idea, with a control arm). Results: pending.
 
 ## Problem 59: a 58-point set at n = 32, where 56 is reported as the best
 

@@ -1,0 +1,14 @@
+{
+ "centrosymmetric": false,
+ "lookahead": false,
+ "guided_ruin": false,
+ "ruin_max": 3,
+ "accept_worse_prob": 0.013850333408982469,
+ "patience": 30531,
+ "kick_fraction": 0.74036570774508,
+ "lookahead_m": 3,
+ "fresh_first": false,
+ "fresh_first_prob": 1.0,
+ "kick_escalate": false,
+ "kick_escalate_step": 1.122478810547095
+}
