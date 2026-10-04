@@ -1022,7 +1022,10 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       const tiles = h('div', { class: 'tiles' });
       for (const it of grp.items) {
         const sc = it.sc, rec = it.rec, ours = it.ours, known = it.known;
-        const delta = ours != null && known != null ? ours - known : null;
+        // A decimal score within one part in a billion of the published value is a match, not a gap
+        // (the record searches use the same margin before they call anything a record).
+        const raw = ours != null && known != null ? ours - known : null;
+        const delta = raw != null && Math.abs(raw) <= 1e-9 * Math.max(1, Math.abs(known)) ? 0 : raw;
         const better = delta != null && (minimise ? delta < 0 : delta > 0);
         let glyph = '', gcls = 'neu', dtext = '', cap = '';
         if (ours == null) cap = 'pending';
