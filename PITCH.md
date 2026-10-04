@@ -165,8 +165,8 @@ Subject: Track 1 submission: MendelEvolve
 
 Team name: MendelEvolve
 Repo: https://github.com/hashkanna/mendel-evolve
-Video (2 minutes, as the organisers asked on Discord): https://youtu.be/BWDx5ijEeTc (YouTube, unlisted; 1:33)
-Longer walkthrough, optional (3:42): https://youtu.be/zJbiS09MMh8
+Video (2 minutes, as the organisers asked on Discord): https://youtu.be/129o5fS8ALY (the 2-minute film, 1:58)
+Optional, longer: the full film (3:12) https://youtu.be/r8c3jwGGm6c, and a walkthrough with screen recordings (3:42) https://youtu.be/QK4ZIf9EN-4
 Live demo pages: https://hashkanna.github.io/mendel-evolve/
 
 Short description: MendelEvolve is an autoresearch framework that evolves ideas instead of programs. Every
