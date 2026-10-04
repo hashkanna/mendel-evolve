@@ -71,9 +71,10 @@ switch can be knocked out at record-search scale:
 
 ## Problem 60: what the evolved ideas are worth
 
-The engine ran seven full generations on this problem (run `p60`) and was stopped during the eighth. 34 ideas
-were screened, 8 from Fable 5.1 inventors and 26 from Sonnet 5.5. Each passed the invariance gate and was
-screened on 48 seed pairs (n = 17, 20, 23 and 26, 12 seeds each, 45 CPU-seconds per run).
+The engine ran seven full generations on this problem (run `p60`) and was stopped during the eighth. Its final
+ledger holds 30 ideas, 8 from Fable 5.1 inventors and 22 from Sonnet 5.5. Counting generations that were
+interrupted and run again, 39 screenings were made. Each idea passed the invariance gate and was screened on
+48 seed pairs (n = 17, 20, 23 and 26, 12 seeds each, 45 CPU-seconds per run).
 
 - No idea has a positive effect whose 95% interval excludes zero.
 - Of the 30 ideas in the final ledger, five are measured as harmful (interval below zero): `axis_symmetry`
@@ -82,7 +83,7 @@ screened on 48 seed pairs (n = 17, 20, 23 and 26, 12 seeds each, 45 CPU-seconds 
   interrupted eighth generation all screened negative (-0.10 to -0.67).
 - Two were merged on their point estimates. On seeds the selection never saw, `fresh_first` measures -0.10
   [-0.29, +0.08] and the tuner switched it off again; `kick_escalate` measures +0.04 [-0.04, +0.13].
-- Champion against seed solver, mean over the training sizes: 54.90 against 55.00. How that +0.10 splits into
+- Mean over the training sizes: seed solver 54.90, champion 55.00. How that +0.10 splits into
   tuning and ideas: pending (the end-of-run decomposition is being measured).
 
 So on this problem evolution added nothing we can measure. That sentence needs three qualifications, and each
