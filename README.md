@@ -61,19 +61,15 @@ screen recordings are real runs.
 ## How it works
 
 ```mermaid
-flowchart TB
-    L[("Ledger: every idea<br/>and its measured effect")]
-    subgraph propose [" "]
-        direction LR
-        I["1 Invent<br/>K LLM agents,<br/>one new gene each"] --> G["2 Gate<br/>default changes<br/>nothing"] --> S["3 Screen<br/>on vs off,<br/>paired seeds"] --> M["4 Merge<br/>best idea joins<br/>the trunk"]
-    end
-    subgraph measure [" "]
-        direction LR
-        T["5 Tune<br/>switches and constants,<br/>no LLM"] --> K["6 Knock out<br/>each idea off,<br/>top ideas in pairs"] --> X["7 Generalise<br/>held-out<br/>instance sizes"]
-    end
-    L --> I
-    M --> T
-    X --> L
+flowchart TD
+    L[("Ledger: every idea and its measured effect")] --> I["1. Invent: K LLM agents in parallel, one new gene each"]
+    I --> G["2. Gate: with the gene at its default, the solver behaves exactly as before"]
+    G --> S["3. Screen: gene on vs off, paired seeds"]
+    S --> M["4. Merge: the best idea joins the trunk"]
+    M --> T["5. Tune: switches and constants, no LLM"]
+    T --> K["6. Knock out: each idea off, the top ideas in pairs, fresh seeds"]
+    K --> X["7. Generalise: the same knockouts on held-out instance sizes"]
+    X -->|"read by the next inventors"| L
 ```
 
 1. **Invent.** K headless agent sessions each get a copy of the current solver, the problem statement and the
