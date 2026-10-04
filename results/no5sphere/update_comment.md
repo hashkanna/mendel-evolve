@@ -28,7 +28,7 @@ At n = 13, 14, 18 the searches equal the public values (36, 38, 48) and do not e
 
 For n = 33 to 40 I found no published point sets, so the only public baseline is the monotone closure of the n = 32 value. Sets from the same searches: 86, 90, 91, 94, 96, 99, 102, 104 points. Far fewer runs were made at these sizes, so I would read them as under-searched rather than hard.
 
-Certificates, with 0-based coordinates in `{0,...,n-1}^3` and the seed, CPU budget and solver configuration of the run that found each one: https://github.com/hashkanna/mendel-evolve/tree/b8d6f668243bcde36188f31e933f9a7268cbe1d7/results/no5sphere/certificates
+Certificates, with 0-based coordinates in `{0,...,n-1}^3` and the seed, CPU budget and solver configuration of the run that found each one: https://github.com/hashkanna/mendel-evolve/tree/5a3b966885e4dcfb7066e16be5108e72883ce42f/results/no5sphere/certificates
 
 **Verification.** Every set passes three independent exact-integer checks over every 5-subset, with zero degenerate 5-subsets and minimum |det| = 2 in each:
 
@@ -81,7 +81,7 @@ What we measured about why, for anyone searching these sizes. All comparisons us
 - Ten other modifications tested the same way gave nothing resolved above +0.03 points.
 - A caution we learned the hard way: comparing two searches that ran on different machines can show differences of 0.1 points that are not real. Identical runs on different containers differed by 0.06 on the mean.
 
-Variant B was proposed by an LLM inside an evolutionary pipeline and rejected by that pipeline's own quick screening (48 paired runs of 45 CPU-seconds), which could not resolve effects of this size. As 0thernet reported for their pipeline, the evolutionary layer is not what found these: the sets come from a fixed local search, a symmetry constraint, one refill trick and compute. Per-run scores and the scripts behind these numbers: https://github.com/hashkanna/mendel-evolve/tree/b8d6f668243bcde36188f31e933f9a7268cbe1d7/results/no5sphere/paired_scores.json and https://github.com/hashkanna/mendel-evolve/tree/b8d6f668243bcde36188f31e933f9a7268cbe1d7/results/no5sphere/paired_effects.py.
+Variant B was proposed by an LLM inside an evolutionary pipeline and rejected by that pipeline's own quick screening (48 paired runs of 45 CPU-seconds), which could not resolve effects of this size. As 0thernet reported for their pipeline, the evolutionary layer is not what found these: the sets come from a fixed local search, a symmetry constraint, one refill trick and compute. Per-run scores and the scripts behind these numbers: https://github.com/hashkanna/mendel-evolve/tree/5a3b966885e4dcfb7066e16be5108e72883ce42f/results/no5sphere/paired_scores.json and https://github.com/hashkanna/mendel-evolve/tree/5a3b966885e4dcfb7066e16be5108e72883ce42f/results/no5sphere/paired_effects.py.
 
 **Disclosure.** These came out of a hackathon project, MendelEvolve (London AI x Science Hackathon, 3 to 4 October 2026). The search code, the checkers and this post were produced with an AI coding agent (Claude) under my direction. No search code from other contributors was read or used; the prose descriptions in this thread were read, and published certificates were used only to validate the checkers. I take responsibility for the claim; it rests on the published coordinates and the exact checkers, not on trust in model output.
 
