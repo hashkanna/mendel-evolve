@@ -123,6 +123,28 @@ flowchart TD
 The contract between a problem, a solver and the run state is in [PROTOCOL.md](PROTOCOL.md). Solvers can be
 written in any language; the two shipped ones are C and Python.
 
+### The loop on a real run: circle packing
+
+The task: place 26 circles in a unit square so that the sum of their radii is as large as possible. The best
+known value is 2.635983. Run `cp-fable-1`, open it in the dashboard with `uv run mendel serve`.
+
+1. **Start.** The seed solver is OpenEvolve's own initial program, which puts the circles in rings: score 0.96.
+   Its few constants (circles per ring, ring radii, margin) are its first switches.
+2. **Invent.** Over 8 generations, Claude agents each added one idea behind a switch: 17 ideas in all.
+3. **Gate and screen.** 10 failed the invariance gate (they changed the solver's behaviour even when switched
+   off), 5 were rejected at screening, and 1 was pruned after its knockout showed nothing. One was kept:
+   `slsqp_polish`, proposed in generation 2: polish all centres and radii together with a constrained optimiser.
+4. **Tune.** A classical optimiser set the ring constants and the polish's own settings, with no LLM calls.
+5. **Knock out.** Switching `slsqp_polish` off, on seeds never used for tuning, costs **1.67** [1.67, 1.68]:
+   without it the solver never moves the circles from their starting rings. On held-out sizes (24 to 32
+   circles) it costs 1.5 to 1.9, so it is labelled `general`.
+6. **Result.** **2.635983, the best known value**, reached after 8 LLM calls ($10.95); the whole run used 50
+   calls ($26.07). The ledger names the one idea that did it.
+
+In the dashboard, **Knock out** repeats step 5 live in about five seconds: the switch goes off and the champion's
+score drops to what the solver scores without the idea. Run `cp-haiku-4` shows the same with four kept ideas, one
+of which carries the result (2.36 with it, 0.56 without it) while the others change nothing.
+
 ## Install
 
 Requires Python 3.11+, [uv](https://docs.astral.sh/uv/) and a C compiler.
