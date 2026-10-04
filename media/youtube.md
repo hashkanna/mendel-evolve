@@ -1,5 +1,12 @@
 # Text for the YouTube uploads
 
+**Uploaded on 4 October 2026 to the Kannappan Sirchabesan channel, Unlisted:**
+four minutes https://youtu.be/zJbiS09MMh8 · two minutes https://youtu.be/BWDx5ijEeTc.
+The uploads are 10 MB copies (the browser tool that uploaded them caps files at 10 MB); the full-quality files
+are `media/mendelevolve_4min.mp4` and `media/mendelevolve_2min.mp4`. Custom thumbnails were not applied: the
+channel needs YouTube's one-off phone verification before it accepts them, and before links in descriptions
+become clickable.
+
 Upload as **Unlisted** (anyone with the link can watch; it does not appear on the channel) and answer
 "No, it's not made for kids". Switch to Public afterwards if you want it on the channel.
 Thumbnails: `media/thumbnail_4min.png` and `media/thumbnail_2min.png` (1280x720; rebuild with
