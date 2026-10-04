@@ -181,8 +181,7 @@ svg .pt { fill: var(--ink); }
 .switch.on { background: var(--pos); border-color: var(--pos); }
 .switch.on::after { left: auto; right: 1.5px; background: #fff; }
 .switch.gone { border-style: dashed; }
-.switch.testing { border-color: var(--neg); box-shadow: 0 0 0 3px rgba(255, 92, 108, .25); }
-.switch.testing::after { background: var(--neg); }
+
 .c-bar svg { display: block; }
 .l1 { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .gname { font: 600 12.5px var(--mono); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -738,6 +737,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
   // A saved snapshot embeds its data here and the page then runs read-only, without a server.
   const SNAP = obj(window.MENDEL_SNAPSHOT).state ? window.MENDEL_SNAPSHOT : null;
   const S = {
+    knockedOut: new Set(),   // ideas the viewer has switched off with a live knockout
     runs: [], run: null, wanted: new URLSearchParams(location.search).get('run'),
     state: null, stateText: '', bodyKey: '', genes: [],
     live: {}, liveText: '{}', pending: null, localError: null, dismissed: null, liveTimer: 0, stripKey: '',
@@ -1637,7 +1637,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
   }
   function liveStrip(g, info, plotW) {
     const stop = (e) => e.stopPropagation();
-    const close = h('button', { class: 'st-x', 'aria-label': 'Dismiss', tip: 'Dismiss', onclick: (e) => { e.stopPropagation(); S.dismissed = S.liveText; S.localError = null; renderLedger(); } }, '×');
+    const close = h('button', { class: 'st-x', 'aria-label': 'Dismiss', tip: 'Dismiss and switch the idea back on', onclick: (e) => { e.stopPropagation(); S.dismissed = S.liveText; S.localError = null; S.knockedOut.delete(g.name); renderLedger(); } }, '×');
     if (info.status === 'error') {
       return h('div', { class: 'strip error', 'data-gene': g.name, onclick: stop },
         h('div', { class: 'st-err' }, 'The knockout of ' + g.name + ' did not finish. ', info.error || 'No result came back.', info.detail ? h('small', { text: info.detail }) : null), close);
@@ -1674,13 +1674,15 @@ body.snap #idea-form, body.snap #run-select { display: none; }
   function ledgerRow(g, sc, dim, plotW) {
     const info = stripInfo(g.name), busy = knockoutBusy();
     const on = g.status === 'active';
-    const testing = on && !!info && info.status === 'running' && info.wasOn !== false;
+    const testing = on && S.knockedOut.has(g.name);   // switched off by a live knockout, until switched back on
     let action;
     if (dim || DIM.has(g.status) || g.status === 'queued' || g.derived) action = statusChip(g);
     else if (on && S.readonly) action = null;
     else if (on) {
       const mine = info && info.status === 'running';
-      action = h('button', { class: 'btn', disabled: busy, tip: mine ? null : 'Switch this idea off and re-run the solver on paired seeds, live',
+      if (testing && !mine) action = h('button', { class: 'btn', tip: 'Turn this idea back on and close the result',
+        onclick: (e) => { e.stopPropagation(); switchBackOn(g.name); } }, 'Switch back on');
+      else action = h('button', { class: 'btn', disabled: busy, tip: mine ? null : 'Switch this idea off and re-run the solver on paired seeds, live',
         onclick: (e) => { e.stopPropagation(); knockOut(g.name); } }, mine ? [h('span', { class: 'spin' }), 'Running'] : 'Knock out');
     } else action = h('span', { class: 'muted', style: { fontSize: '11px' }, tip: (STATUS[g.status] || [])[1] || null, text: (STATUS[g.status] || [g.status || 'proposed'])[0] });
     const val = g.m
@@ -1696,8 +1698,8 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       onclick: () => openDrawer(g.name), onkeydown: (e) => { if (e.target === row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openDrawer(g.name); } },
     },
       // while its live knockout runs, the switch shows off: that is what the test does
-      h('div', { class: 'c-sw' }, h('span', { class: 'switch' + (on && !testing ? ' on' : '') + (testing ? ' testing' : '') + (dim ? ' gone' : ''),
-        tip: testing ? 'Switched off for this test; it goes back on when the result is in' : (STATUS[g.status] || [])[1] || 'Status: ' + (g.status || 'not set yet') })),
+      h('div', { class: 'c-sw' }, h('span', { class: 'switch' + (on && !testing ? ' on' : '') + (dim ? ' gone' : ''),
+        tip: testing ? 'Switched off by the live knockout' : (STATUS[g.status] || [])[1] || 'Status: ' + (g.status || 'not set yet') })),
       h('div', { class: 'l1' }, h('span', { class: 'gname', text: g.name }), authorBadge(g.author),
         g.kind === 'choice' && g.value != null ? h('span', { class: 'muted', style: { fontSize: '11px' }, text: '= ' + str(g.value) }) : null),
       h('div', { class: 'c-bar', tip: measureTip(srcTitle, g.m, srcTip) },
@@ -1757,8 +1759,14 @@ body.snap #idea-form, body.snap #run-select { display: none; }
   }
   const stripKey = () => [S.pending ? S.pending.gene : '', S.live.gene || '', S.live.status || '', arr(S.live.pairs).length, S.live.t || '', S.dismissed === S.liveText, S.localError ? S.localError.gene : ''].join('|');
 
+  function switchBackOn(name) {
+    S.knockedOut.delete(name);
+    if (S.live.gene === name) S.dismissed = S.liveText;
+    renderLedger();
+  }
   async function knockOut(name) {
     if (knockoutBusy() || !S.run || S.readonly) return;
+    S.knockedOut = new Set([name]);   // one idea at a time: any other goes back on
     S.pending = { gene: name, since: Date.now(), prevT: S.live.gene === name ? S.live.t : undefined, saw: false };
     S.dismissed = S.liveText;      // fold away the previous result; this run's updates will differ
     S.localError = null;
@@ -2028,6 +2036,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
     renderDrawer();
   }
   function selectRun(id) {
+    S.knockedOut = new Set();
     if (id === S.run) return;
     S.run = id; S.state = null; S.stateText = ''; S.bodyKey = ''; S.live = {}; S.liveText = '{}';
     S.pending = null; S.localError = null; S.dismissed = null; S.liveSeen = false; S.ideas = []; S.drawer = null; V.key = null;
