@@ -12,3 +12,13 @@ exact/*.log
 exact/__pycache__/
 baselines/openevolve/runs/
 HANDOFF.md
+
+# rendered videos and their intermediate files (the script and README in media/ are tracked)
+media/*.mp4
+media/*.webm
+media/*.aiff
+media/*.wav
+media/*.m4a
+media/frames/
+media/work/
+media/tmp/
