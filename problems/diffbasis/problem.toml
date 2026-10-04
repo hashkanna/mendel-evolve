@@ -1,0 +1,52 @@
+name = "diffbasis"
+title = "Difference bases (Tao et al. problem 6.7; EinsteinArena problem 19)"
+direction = "min"
+# EinsteinArena's minImprovement for problem 19: a new best must be lower by at least this much.
+# mendel.campaign reads this top-level key; it must stay above the first [table].
+min_improvement = 1e-9
+statement = """Find a set B of non-negative integers whose positive differences b - b' cover every integer
+1, 2, ..., v, and make the ratio
+
+    score = |B|^2 / v
+
+as small as possible, where v is the LARGEST integer such that all of 1..v are differences of B. Lower is
+better. Differences beyond the first missing one do not count, and B may extend beyond v.
+
+An instance is {"n": N}. A solution is a list of non-negative integers; after removing duplicates and
+adding 0 (the arena always adds 0), it must have exactly N elements. The evaluator is exact: |B| and v
+are integers and the score is the rational |B|^2 / v rounded once to a double, which is precisely what
+the public EinsteinArena verifier returns. A set in which 1 is not a difference is invalid.
+
+Facts worth knowing:
+- The leaderboard is one number for every |B| <= 2000. All instances here are compared with it,
+  although small N cannot reach it: the best ratio for a given N falls slowly as N grows.
+- Translating B does not change its differences, so only the gaps between sorted elements matter.
+- Classical complete rulers (all differences 1..L with max element L, e.g. Wichmann's construction)
+  reach a ratio of about 3. Sets that are allowed to stick out beyond v do better: the best published
+  set (360 elements, max element 55033, v = 49109) scores 129600/49109 = 2.6390274695...
+- A pair-count argument gives |B|(|B|-1)/2 >= v, so the score is always above 2 for large sets.
+
+Source: Georgiev, Gomez-Serrano, Tao, Wagner, "Mathematical exploration and discovery at scale",
+arXiv:2511.02864, problem 6.7; verifier: https://einsteinarena.com/api/problems/difference-bases"""
+
+[instances]
+train   = [{ n = 40 }, { n = 64 }]
+heldout = [{ n = 32 }, { n = 52 }, { n = 80 }]
+gate    = [{ n = 12 }, { n = 20 }]
+
+# Best value on the EinsteinArena leaderboard for problem 19, read 2026-10-03T21:40:17Z (see records.json):
+# 2.639027469506608 = 129600/49109, a 360-element set by AlphaEvolve (two later submissions tie it with the
+# same set). The leaderboard does not separate sizes, so it is the reference for every n; it is not a
+# per-size optimum, and only large n can approach it.
+[best_known]
+n12 = 2.639027469506608
+n20 = 2.639027469506608
+n32 = 2.639027469506608
+n40 = 2.639027469506608
+n52 = 2.639027469506608
+n64 = 2.639027469506608
+n80 = 2.639027469506608
+n128 = 2.639027469506608
+n200 = 2.639027469506608
+n360 = 2.639027469506608
+n500 = 2.639027469506608
