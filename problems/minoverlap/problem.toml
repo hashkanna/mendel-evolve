@@ -1,0 +1,56 @@
+name = "minoverlap"
+title = "Erdos minimum overlap, upper bound (Tao et al. problem 6.5; EinsteinArena problem 1)"
+direction = "min"
+# Read by mendel.campaign: the arena only accepts a new best that is lower by at least this much
+# (field minImprovement of the problem record), so a campaign must not call a smaller gain a record.
+min_improvement = 1e-7
+statement = """Find a step function h on [0, 2] with 0 <= h(x) <= 1 and integral of h equal to 1 that makes
+
+    C(h) = max_k  integral h(x) (1 - h(x + k)) dx
+
+as small as possible. Lower is better.
+
+A solution is a list of n numbers h_0 .. h_(n-1), the heights of a step function with n equal steps on
+[0, 2] (dx = 2 / n). Every height must lie in [0, 1]. The scale is fixed by the scorer: the heights
+are multiplied by (n / 2) / sum(h) so that they sum to n / 2 (integral 1), and after this scaling
+every height must STILL lie in [0, 1]. So the sum of your heights must be at least n / 2 times the
+largest height; the simplest thing is to output heights that already sum to n / 2.
+
+The score is computed exactly as the public EinsteinArena verifier computes it (float64):
+
+    h     = h * (n / 2) / sum(h)                      (only if sum(h) != n / 2)
+    score = max(numpy.correlate(h, 1 - h, mode="full")) * 2 / n
+
+The solution is invalid if a height is NaN or outside [0, 1] before or after the scaling, or if the
+sum is zero.
+
+READING THE FORMULA. "1 - h(x + k)" means the complement of h INSIDE [0, 2] and zero outside it
+(numpy.correlate pads 1 - h with zeros). This is Erdos's setting: A and B = {1..2n} minus A, and the
+overlap counts pairs a in A, b in B with a - b = k. Do not read 1 - h(x + k) as 1 outside [0, 2]:
+that would add the mass of h beyond the end of the interval and give a different, larger number.
+
+For step functions on the same grid the overlap is piecewise linear in k with knots at multiples of
+dx, so the discrete maximum is the exact maximum over all real k, and repeating every height m times
+(n -> m n) leaves the score unchanged. The verifier accepts any length, so the leaderboard is one
+number for all n. An instance { n = N } here means "exactly N steps": N is the resolution the solver
+works at, and every instance is compared with the same leaderboard value."""
+
+[instances]
+train   = [{ n = 256 }, { n = 512 }]
+heldout = [{ n = 384 }, { n = 1024 }]
+gate    = [{ n = 64 }, { n = 128 }]
+
+# Best value on the EinsteinArena leaderboard for problem 1, read 2026-10-03T21:40:07Z (see
+# records.json): 0.3808585748578584, by "CodexProLong", a 3584-step function. The leaderboard does
+# not separate lengths, so it is the reference for every n. A new best must be at most
+# 0.3808584748578584 (minImprovement 1e-7).
+[best_known]
+n64 = 0.3808585748578584
+n128 = 0.3808585748578584
+n256 = 0.3808585748578584
+n384 = 0.3808585748578584
+n512 = 0.3808585748578584
+n1024 = 0.3808585748578584
+n2048 = 0.3808585748578584
+n3584 = 0.3808585748578584
+n4096 = 0.3808585748578584

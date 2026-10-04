@@ -1,0 +1,49 @@
+{
+ "t": "2026-10-03T23:11:55",
+ "wall_seconds": 906.0,
+ "time_per_run": 300.0,
+ "seeds": 16,
+ "config": {
+  "symmetric": false,
+  "coarse_to_fine": true,
+  "lp_polish": true,
+  "init_noise": 0.3,
+  "beta0": 50.0,
+  "beta_growth": 2.0,
+  "stage_iters": 300,
+  "step0": 0.05,
+  "coarse_factor": 4,
+  "coarse_fraction": 0.4,
+  "polish_fraction": 0.3,
+  "polish_window": 0.01,
+  "polish_radius": 0.05
+ },
+ "rows": [
+  {
+   "instance": "n512",
+   "runs": 16,
+   "valid_runs": 16,
+   "best_known": 0.3808585748578584,
+   "value": 0.3809903878330488,
+   "mean": 0.3812767389457794,
+   "verified": true,
+   "certificate": "runs/minoverlap-campaign-c2f-lp/certificates/n512_0p3809903878330488.json",
+   "errors": [],
+   "independent_check": "pass",
+   "record": false
+  },
+  {
+   "instance": "n1024",
+   "runs": 16,
+   "valid_runs": 16,
+   "best_known": 0.3808585748578584,
+   "value": 0.3812340052793916,
+   "mean": 0.38140097919032917,
+   "verified": true,
+   "certificate": "runs/minoverlap-campaign-c2f-lp/certificates/n1024_0p3812340052793916.json",
+   "errors": [],
+   "independent_check": "pass",
+   "record": false
+  }
+ ]
+}
