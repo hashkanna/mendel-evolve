@@ -1,0 +1,814 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>MendelEvolve film</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=block">
+<style>html,body{margin:0;background:#04060B;overflow:hidden}canvas{display:block}</style>
+<script src="data/film_data.js"></script>
+<script src="data/timeline.js"></script>
+</head><body><canvas id="c" width="1920" height="1080"></canvas>
+<script>
+"use strict";
+// Every frame is a pure function of t (seconds), so frames can be rendered in any order, in parallel.
+const W = 1920, H = 1080;
+const BG = '#04060B', INK = '#E9EEF8', MUTED = '#8C97AD', DIM = '#4A5468', GRID = '#1C2436';
+const BLUE = '#6EA8FE', ORANGE = '#F0A35E', TEAL = '#5EE6C8', RED = '#FF5C6C';
+const SANS = "'IBM Plex Sans'", MONO = "'JetBrains Mono'";
+
+const main = document.getElementById('c').getContext('2d');
+function canvas(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+const S = canvas(W, H), sx = S.getContext('2d');           // composited scenes
+const L = canvas(W, H), lx = L.getContext('2d');           // one scene at a time
+const B1 = canvas(480, 270), b1 = B1.getContext('2d');     // bloom, near
+const B2 = canvas(240, 135), b2 = B2.getContext('2d');     // bloom, wide
+const G = canvas(W, H), gx = G.getContext('2d');           // glitch scratch
+const T1 = canvas(W, H), t1 = T1.getContext('2d');
+const OFF = canvas(W, H), ox = OFF.getContext('2d');       // offscreen helper
+
+// ---------------------------------------------------------------- helpers
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const E = {
+  out: t => 1 - Math.pow(1 - t, 3), in: t => t * t * t,
+  inOut: t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+  expo: t => t >= 1 ? 1 : 1 - Math.pow(2, -10 * t),
+  back: t => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); },
+};
+const P = (lt, a, d) => clamp((lt - a) / d);                 // progress of a d-second move starting at a
+const win = (lt, a, b, f = 0.4) => Math.min(P(lt, a, f), 1 - P(lt, b - f, f)); // 0 -> 1 -> 0 window
+function rnd(i) { let x = Math.imul((i | 0) ^ 0x9E3779B9, 0x85EBCA6B); x ^= x >>> 13; x = Math.imul(x, 0xC2B2AE35); x ^= x >>> 16; return (x >>> 0) / 4294967296; }
+function font(c, size, weight = 600, mono = false) { c.font = `${weight} ${size}px ${mono ? MONO : SANS}`; }
+function text(c, s, x, y, o = {}) {
+  c.save(); font(c, o.size || 48, o.weight || 600, o.mono);
+  c.fillStyle = o.color || INK; c.globalAlpha *= (o.alpha ?? 1);
+  c.textAlign = o.align || 'left'; c.textBaseline = o.base || 'alphabetic';
+  c.letterSpacing = (o.ls || 0) + 'px';
+  c.fillText(s, x, y); c.restore();
+}
+function measure(c, s, size, weight = 600, mono = false, ls = 0) { c.save(); font(c, size, weight, mono); c.letterSpacing = ls + 'px'; const w = c.measureText(s).width; c.restore(); return w; }
+// words rise into place one after another
+function reveal(c, s, x, y, lt, t0, o = {}) {
+  const size = o.size || 64, weight = o.weight || 600, words = s.split(' ');
+  c.save(); font(c, size, weight, o.mono); c.letterSpacing = (o.ls || 0) + 'px'; c.textBaseline = 'alphabetic';
+  const space = c.measureText(' ').width, total = c.measureText(s).width;
+  let cx = o.align === 'center' ? x - total / 2 : o.align === 'right' ? x - total : x;
+  const out = o.out !== undefined ? 1 - E.inOut(P(lt, o.out, 0.5)) : 1;
+  words.forEach((w, i) => {
+    const p = E.out(P(lt, t0 + i * (o.stagger ?? 0.07), o.dur || 0.6));
+    const ww = c.measureText(w).width;
+    if (p > 0) {
+      c.globalAlpha = p * out * (o.alpha ?? 1);
+      c.fillStyle = (o.colors && o.colors[i]) || o.color || INK;
+      c.fillText(w, cx, y + (1 - p) * (o.rise ?? 28));
+    }
+    cx += ww + space;
+  });
+  c.restore();
+}
+function rrect(c, x, y, w, h, r) { c.beginPath(); c.roundRect(x, y, w, h, r); }
+function line(c, x1, y1, x2, y2) { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke(); }
+function hexA(hex, a) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }
+const fmt = (v, d = 2) => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(d);
+const comma = n => Math.round(n).toLocaleString('en-GB');
+
+// glow sprites, drawn once
+const SPR = {};
+function sprite(color) {
+  if (SPR[color]) return SPR[color];
+  const c = canvas(128, 128), x = c.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, '#ffffff'); g.addColorStop(0.12, color); g.addColorStop(0.35, hexA(color, 0.35)); g.addColorStop(1, hexA(color, 0));
+  x.fillStyle = g; x.fillRect(0, 0, 128, 128); return SPR[color] = c;
+}
+function glow(c, x, y, r, color, a = 1) { c.save(); c.globalAlpha *= a; c.globalCompositeOperation = 'lighter'; c.drawImage(sprite(color), x - r, y - r, 2 * r, 2 * r); c.restore(); }
+
+// toggle switch
+function toggle(c, x, y, on, o = {}) {
+  const w = o.w || 64, h = o.h || 32, col = o.color || BLUE;
+  c.save(); c.globalAlpha *= (o.alpha ?? 1);
+  rrect(c, x, y, w, h, h / 2); c.fillStyle = on > 0.5 ? hexA(col, 0.25 + 0.3 * on) : '#1A2130'; c.fill();
+  c.strokeStyle = on > 0.5 ? col : '#38425A'; c.lineWidth = 2; c.stroke();
+  const kx = x + h / 2 + (w - h) * on;
+  c.beginPath(); c.arc(kx, y + h / 2, h / 2 - 5, 0, 7); c.fillStyle = on > 0.5 ? '#ffffff' : '#7D879C'; c.fill();
+  if (on > 0.5) glow(c, kx, y + h / 2, h * 0.9, col, 0.5 * on);
+  c.restore();
+}
+function pill(c, label, x, y, on, o = {}) {        // a gene: name plus its switch
+  const size = o.size || 24, tw = measure(c, label, size, 500, true), w = tw + 36 + 64 + 18, h = size + 24;
+  const cx = o.center ? x - w / 2 : x;
+  c.save(); c.globalAlpha *= (o.alpha ?? 1);
+  rrect(c, cx, y, w, h, 12); c.fillStyle = o.fill || 'rgba(10,15,26,0.92)'; c.fill();
+  c.strokeStyle = o.stroke || GRID; c.lineWidth = 2; c.stroke();
+  text(c, label, cx + 18, y + h / 2 + size * 0.36, { size, weight: 500, mono: true, color: o.textColor || INK });
+  toggle(c, cx + tw + 36, y + (h - 30) / 2, on, { w: 60, h: 30, color: o.color || BLUE });
+  c.restore();
+  return { x: cx, w, h };
+}
+function check(c, x, y, s, p, color = TEAL) {   // a tick drawn on with progress p
+  c.save(); c.strokeStyle = color; c.lineWidth = s * 0.16; c.lineCap = 'round'; c.lineJoin = 'round';
+  const pts = [[x - s * 0.42, y], [x - s * 0.12, y + s * 0.3], [x + s * 0.45, y - s * 0.35]];
+  c.beginPath(); c.moveTo(...pts[0]);
+  const a = clamp(p * 2), b = clamp(p * 2 - 1);
+  c.lineTo(lerp(pts[0][0], pts[1][0], a), lerp(pts[0][1], pts[1][1], a));
+  if (b > 0) c.lineTo(lerp(pts[1][0], pts[2][0], b), lerp(pts[1][1], pts[2][1], b));
+  c.stroke(); c.restore();
+}
+function label(c, s, x, y, o = {}) { text(c, s.toUpperCase(), x, y, { size: o.size || 22, weight: 600, mono: true, color: o.color || BLUE, ls: 3, alpha: o.alpha ?? 1, align: o.align }); }
+
+let SC = null;   // current scene: {start, end}
+const B = id => TL.beats[id].t - SC.start;     // beat start, scene-local
+const D = id => TL.beats[id].dur;
+const BW = (id, frac) => B(id) + D(id) * frac; // a point inside a beat
+
+// ---------------------------------------------------------------- scene: open (the code river)
+const CODE = FILM.code.filter(l => l.trim().length > 6);
+function river(c, lt, alpha = 1, speed = 1) {
+  c.save(); c.translate(W / 2, H / 2); c.rotate(-0.16); c.translate(-W / 2, -H / 2);
+  const N = 90;
+  for (let i = 0; i < N; i++) {
+    const z = 0.35 + 1.25 * rnd(i * 7 + 1);              // depth
+    const s = 1 / z, lane = rnd(i * 13 + 5) * (W + 900) - 450;
+    const v = 70 * s * speed, span = H + 600;
+    const y = ((rnd(i * 3 + 9) * span - lt * v) % span + span) % span - 300;
+    const cyc = 2.2 + 3.5 * rnd(i * 11), ph = rnd(i * 17) * cyc, k = Math.floor((lt + ph) / cyc), f = ((lt + ph) % cyc) / cyc;
+    const del = f < 0.16, add = f >= 0.16 && f < 0.42;
+    const str = CODE[(i * 7 + k * 13) % CODE.length].trim();
+    const size = 21 * s, a = alpha * clamp(1.15 - z * 0.62) * (0.55 + 0.45 * rnd(i));
+    let color = '#5B7FB8';
+    if (del && rnd(i * 5 + k) < 0.55) color = RED; else if (add && rnd(i * 5 + k) < 0.55) color = TEAL;
+    text(c, str, lane, y, { size, weight: 500, mono: true, color, alpha: a * (color === RED ? 0.95 : color === TEAL ? 0.95 : 0.7) });
+    if (color === RED) { c.save(); c.strokeStyle = RED; c.globalAlpha = a * 0.8; c.lineWidth = Math.max(1, 2 * s); line(c, lane, y - size * 0.32, lane + measure(c, str, size, 500, true) * (f / 0.16), y - size * 0.32); c.restore(); }
+  }
+  c.restore();
+}
+function darkPool(c, x, y, rx, ry, a) {
+  c.save(); c.translate(x, y); c.scale(rx / ry, 1);
+  const g = c.createRadialGradient(0, 0, 0, 0, 0, ry); g.addColorStop(0, `rgba(4,6,11,${a})`); g.addColorStop(1, 'rgba(4,6,11,0)');
+  c.fillStyle = g; c.fillRect(-ry, -ry, 2 * ry, 2 * ry); c.restore();
+}
+function sceneOpen(c, lt) {
+  river(c, lt + 6, E.inOut(P(lt, 0, 2.2)));
+  darkPool(c, W / 2, H / 2, 900, 300, 0.85);
+  const b1 = B('b1'), b2 = B('b2');
+  reveal(c, 'AI can now evolve algorithms.', W / 2, H / 2 + 22, lt, b1, { size: 84, weight: 600, align: 'center', out: b2 - 0.2 });
+  // the loop every evolutionary coding agent runs
+  const steps = ['rewrite', 'score', 'keep the best'];
+  const a = E.out(P(lt, b2 + 0.3, 0.8));
+  if (a > 0) {
+    const cyc = Math.floor((lt - b2) / 0.9) % 3;
+    const xs = [W / 2 - 330, W / 2, W / 2 + 330];
+    steps.forEach((s, i) => {
+      const on = i === cyc;
+      c.save(); c.globalAlpha = a;
+      rrect(c, xs[i] - 140, H / 2 - 44, 280, 88, 44);
+      c.fillStyle = on ? hexA(BLUE, 0.22) : 'rgba(12,17,28,0.9)'; c.fill();
+      c.strokeStyle = on ? BLUE : '#2A3448'; c.lineWidth = 2; c.stroke(); c.restore();
+      text(c, s, xs[i], H / 2 + 12, { size: 34, weight: 600, align: 'center', color: on ? INK : MUTED, alpha: a });
+      if (on) glow(c, xs[i], H / 2, 160, BLUE, 0.25 * a);
+      if (i < 2) { c.save(); c.globalAlpha = a * 0.7; c.strokeStyle = MUTED; c.lineWidth = 3; line(c, xs[i] + 150, H / 2, xs[i] + 180, H / 2); c.restore(); }
+    });
+    // return arrow under the loop
+    c.save(); c.globalAlpha = a * 0.5; c.strokeStyle = MUTED; c.lineWidth = 2.5; c.setLineDash([8, 10]); c.lineDashOffset = -lt * 30;
+    c.beginPath(); c.moveTo(xs[2], H / 2 + 52); c.quadraticCurveTo(xs[1], H / 2 + 170, xs[0], H / 2 + 52); c.stroke(); c.restore();
+    label(c, 'evolutionary coding agents', W / 2, H / 2 - 110, { align: 'center', alpha: a });
+  }
+}
+
+// ---------------------------------------------------------------- scene: problem
+function sceneProblem(c, lt) {
+  const b3 = B('b3'), b4 = B('b4'), b5 = B('b5');
+  river(c, lt + 18, 0.35 * (1 - E.inOut(P(lt, b5, 1.0))), 0.6);
+  const cardA = E.out(P(lt, 0, 0.9)) * (1 - 0.82 * E.inOut(P(lt, b5 - 0.2, 0.9)));
+  const x0 = 170, y0 = 170, cw = 980, ch = 700;
+  c.save(); c.globalAlpha = cardA;
+  rrect(c, x0, y0, cw, ch, 20); c.fillStyle = 'rgba(8,12,21,0.94)'; c.fill(); c.strokeStyle = '#26304A'; c.lineWidth = 2; c.stroke();
+  for (let i = 0; i < 3; i++) { c.beginPath(); c.arc(x0 + 34 + i * 26, y0 + 32, 7, 0, 7); c.fillStyle = ['#3A4357', '#3A4357', '#3A4357'][i]; c.fill(); }
+  text(c, 'program.py · generation 412', x0 + cw - 30, y0 + 40, { size: 20, mono: true, weight: 500, color: DIM, align: 'right' });
+  const lines = CODE.slice(40, 58);
+  const del = [3, 7, 11, 14], tdel = b4 + 0.2, tadd = b4 + 1.6;
+  let yy = y0 + 100;
+  lines.forEach((ln, i) => {
+    const isDel = del.includes(i);
+    let col = '#9FB0CC', a = 1, tag = null;
+    if (isDel) {
+      const pd = P(lt, tdel + del.indexOf(i) * 0.15, 0.35), pa = P(lt, tadd + del.indexOf(i) * 0.25, 0.4);
+      if (pd > 0 && pa <= 0) { col = RED; a = 1 - 0.55 * pd; }
+      if (pa > 0) { col = TEAL; a = 0.45 + 0.55 * pa; tag = pa; }
+    }
+    // scanning highlight during b3: which line did it?
+    const scan = (lt - b3 - 2.4) * 7;
+    if (scan > 0 && lt < b4) { const d = Math.abs(scan % lines.length - i); if (d < 1) { c.fillStyle = hexA(BLUE, 0.16 * (1 - d)); c.fillRect(x0 + 2, yy - 24, cw - 4, 34); } }
+    text(c, String(i + 101).padStart(4, ' '), x0 + 30, yy, { size: 20, mono: true, weight: 400, color: DIM });
+    text(c, ln.slice(0, 66), x0 + 100, yy, { size: 21, mono: true, weight: 500, color: col, alpha: a });
+    if (col === RED) { c.save(); c.strokeStyle = RED; c.lineWidth = 2; c.globalAlpha = a; line(c, x0 + 100, yy - 7, x0 + 100 + Math.min(760, measure(c, ln.slice(0, 66), 21, 500, true)), yy - 7); c.restore(); }
+    if (tag) { c.save(); c.globalAlpha = tag; rrect(c, x0 + cw - 170, yy - 24, 140, 32, 8); c.fillStyle = hexA(TEAL, 0.18); c.fill(); c.restore(); text(c, 're-added', x0 + cw - 100, yy - 1, { size: 18, mono: true, color: TEAL, align: 'center', alpha: tag }); }
+    yy += 32.5;
+  });
+  c.restore();
+  // question, then the statistic
+  const qa = E.out(P(lt, b3 + 2.6, 0.7)) * (1 - E.inOut(P(lt, b4 - 0.3, 0.5)));
+  if (qa > 0) {
+    reveal(c, 'Which idea', 1240, 470, lt, b3 + 2.6, { size: 76, weight: 700 });
+    reveal(c, 'produced', 1240, 560, lt, b3 + 2.9, { size: 76, weight: 700 });
+    reveal(c, 'the result?', 1240, 650, lt, b3 + 3.2, { size: 76, weight: 700, color: BLUE });
+    c.save(); c.globalAlpha = 1 - qa; c.restore();
+  }
+  const sa = E.out(P(lt, b4 + 0.4, 0.6)) * (1 - E.inOut(P(lt, b5 - 0.3, 0.6)));
+  if (sa > 0) {
+    const v = Math.round(30 * E.out(P(lt, b4 + 0.4, 1.6)));
+    text(c, `≈${v}%`, 1240, 560, { size: 190, weight: 700, color: TEAL, alpha: sa });
+    text(c, 'of the lines they add', 1246, 640, { size: 36, weight: 500, color: INK, alpha: sa });
+    text(c, 'had been deleted before', 1246, 688, { size: 36, weight: 500, color: MUTED, alpha: sa });
+  }
+  const ta = E.out(P(lt, b5 + 0.1, 0.8));
+  if (ta > 0) {
+    darkPool(c, W / 2, H / 2, 1000, 330, 0.9 * ta);
+    reveal(c, 'Darwin without Mendel', W / 2, H / 2 + 10, lt, b5 + 0.1, { size: 112, weight: 700, align: 'center', stagger: 0.12 });
+    reveal(c, 'selection, but no genes', W / 2, H / 2 + 92, lt, b5 + 1.6, { size: 46, weight: 500, align: 'center', color: MUTED, stagger: 0.09 });
+  }
+}
+
+// ---------------------------------------------------------------- scene: genes (the helix)
+const GENES = ['centrosymmetric', 'slsqp_polish', 'kick_escalate', 'layer_ruin', 'region_kick', 'tent_cache',
+               'guided_ruin', 'far_pick', 'sym_insert', 'multi_recreate', 'load_ruin', 'best_restart'];
+const KO = 1;  // slsqp_polish is the gene knocked out on screen
+function helix(c, lt, a, rungs, opt = {}) {
+  const cy = opt.cy ?? 560, amp = opt.amp ?? 120, lam = 560, x0 = 120, x1 = 1800, rot = lt * 0.7;
+  const pts = [];
+  for (let x = x0; x <= x1; x += 9) {
+    const th = (x - x0) / lam * Math.PI * 2 + rot;
+    pts.push([x, cy + amp * Math.sin(th), Math.cos(th), 0]);
+    pts.push([x, cy + amp * Math.sin(th + Math.PI), Math.cos(th + Math.PI), 1]);
+  }
+  pts.sort((p, q) => p[2] - q[2]);
+  const shown = opt.reveal ?? 1;
+  for (const [x, y, z, s] of pts) {
+    if ((x - x0) / (x1 - x0) > shown) continue;
+    const d = (z + 1) / 2;
+    glow(c, x, y, 7 + 9 * d, s ? TEAL : BLUE, a * (0.25 + 0.75 * d));
+  }
+  // rungs
+  rungs.forEach(r => {
+    const th = (r.x - x0) / lam * Math.PI * 2 + rot;
+    const ya = cy + amp * Math.sin(th), yb = cy + amp * Math.sin(th + Math.PI);
+    r.ya = ya; r.yb = yb;
+    if (r.a <= 0) return;
+    c.save(); c.globalAlpha = a * r.a; c.lineWidth = 4; c.lineCap = 'round';
+    if (r.broken > 0) {
+      const gap = 18 + 40 * r.broken, mid = (ya + yb) / 2, dir = Math.sign(yb - ya) || 1;
+      c.strokeStyle = RED; line(c, r.x, ya, r.x, mid - dir * gap / 2); line(c, r.x, mid + dir * gap / 2, r.x, yb);
+    } else {
+      const g = c.createLinearGradient(r.x, ya, r.x, yb); g.addColorStop(0, BLUE); g.addColorStop(1, TEAL);
+      c.strokeStyle = g; line(c, r.x, ya, r.x, yb);
+    }
+    c.restore();
+  });
+}
+function sceneGenes(c, lt) {
+  const b6 = B('b6'), b7 = B('b7'), b8 = B('b8');
+  // title card
+  const ta = E.out(P(lt, 0.2, 0.9)) * (1 - E.inOut(P(lt, b6 - 0.3, 0.7)));
+  if (ta > 0) {
+    c.save(); c.globalAlpha = ta;
+    font(c, 150, 700); c.textAlign = 'center'; c.letterSpacing = '-2px';
+    const sweep = (lt - 0.6) / 1.6, tw = c.measureText('MendelEvolve').width;
+    const g = c.createLinearGradient(W / 2 - tw / 2, 0, W / 2 + tw / 2, 0);
+    const s = clamp(sweep, -0.2, 1.2);
+    g.addColorStop(0, INK); g.addColorStop(clamp(s - 0.12), INK); g.addColorStop(clamp(s), '#ffffff'); g.addColorStop(clamp(s + 0.001), BLUE); g.addColorStop(1, BLUE);
+    c.fillStyle = sweep < 0 ? BLUE : g; c.fillText('MendelEvolve', W / 2, H / 2 + 30);
+    c.restore();
+    c.save(); c.globalAlpha = ta; c.strokeStyle = BLUE; c.lineWidth = 2;
+    const lw = 560 * E.inOut(P(lt, 0.7, 1.2)); line(c, W / 2 - lw, H / 2 + 80, W / 2 + lw, H / 2 + 80); c.restore();
+    reveal(c, 'every idea is a gene', W / 2, H / 2 + 150, lt, 1.3, { size: 44, weight: 500, align: 'center', color: MUTED });
+    if (sweep > 0 && sweep < 1.2) glow(c, W / 2 - tw / 2 + tw * sweep, H / 2 - 20, 260, BLUE, 0.35 * (1 - Math.abs(sweep - 0.5)));
+  }
+  const ha = E.out(P(lt, b6 - 0.2, 1.0));
+  if (ha <= 0) return;
+  const n = GENES.length, xs = GENES.map((_, i) => 230 + i * (1460 / (n - 1)));
+  const firstWave = 9;
+  const appear = i => i < firstWave ? b6 + 0.8 + i * 0.32 : b7 + 0.6 + (i - firstWave) * 0.45;
+  const koT = BW('b8', 0.62);
+  const rungs = xs.map((x, i) => ({ x, a: E.out(P(lt, appear(i), 0.5)), broken: i === KO ? E.out(P(lt, koT, 0.6)) : 0 }));
+  helix(c, lt, ha, rungs, { reveal: E.inOut(P(lt, b6 - 0.2, 1.6)) });
+  const kr = rungs[KO]; if (kr.broken > 0) glow(c, kr.x, (kr.ya + kr.yb) / 2, 150, RED, 0.7 * kr.broken * (0.75 + 0.25 * Math.sin(lt * 6)));
+  // tuning and recombination during b7: switches flicker, then settle
+  const tuneA = P(lt, BW('b7', 0.45), 0.2) * (1 - P(lt, BW('b7', 0.95), 0.2));
+  GENES.forEach((g, i) => {
+    const r = rungs[i]; if (r.a <= 0) return;
+    const up = i % 2 === 0, py = up ? 300 : 780, h = 48;
+    let on = 1;
+    if (tuneA > 0) { const k = Math.floor(lt * 6 + i * 3); on = rnd(k * 31 + i) < 0.6 ? 1 : 0; }
+    if (i === KO) on = 1 - E.inOut(P(lt, koT - 0.35, 0.3));
+    const anchor = up ? Math.min(r.ya, r.yb) : Math.max(r.ya, r.yb);
+    c.save(); c.globalAlpha = r.a * 0.5; c.strokeStyle = i === KO && lt > koT - 0.35 ? RED : '#33405C'; c.lineWidth = 1.5; c.setLineDash([3, 5]);
+    line(c, r.x, up ? py + h : py, r.x, anchor); c.restore();
+    const isKO = i === KO && lt > koT - 0.35;
+    pill(c, g, r.x, py + (1 - r.a) * (up ? -20 : 20), on, { center: true, size: 21, alpha: r.a, stroke: isKO ? RED : i >= firstWave && lt < appear(i) + 1.2 ? ORANGE : GRID, color: BLUE });
+    if (lt > appear(i) && lt < appear(i) + 0.5) glow(c, r.x, (r.ya + r.yb) / 2, 90, i >= firstWave ? ORANGE : BLUE, 1 - P(lt, appear(i), 0.5));
+    // a tuned constant under some genes
+    if (tuneA > 0 && i % 3 === 0) text(c, (0.1 + rnd(Math.floor(lt * 8) + i) * 0.8).toFixed(3), r.x, up ? py - 14 : py + 80, { size: 20, mono: true, color: ORANGE, align: 'center', alpha: tuneA * r.a });
+  });
+  // the language model: sparks to the new genes
+  const ma = E.out(P(lt, b7 - 0.1, 0.6)) * (1 - E.inOut(P(lt, b8, 0.6)));
+  if (ma > 0) {
+    const mx = W / 2, my = 150;
+    glow(c, mx, my, 120, ORANGE, 0.55 * ma);
+    c.save(); c.globalAlpha = ma; c.beginPath(); c.arc(mx, my, 34, 0, 7); c.fillStyle = '#1B1408'; c.fill(); c.strokeStyle = ORANGE; c.lineWidth = 3; c.stroke(); c.restore();
+    label(c, 'language model · invents', mx + 60, my + 8, { color: ORANGE, alpha: ma });
+    for (let i = firstWave; i < n; i++) {
+      const p = P(lt, appear(i) - 0.55, 0.55); if (p <= 0 || p >= 1) continue;
+      const tx = xs[i], ty = i % 2 === 0 ? 300 : 780, e = E.inOut(p);
+      const qx = lerp(mx, tx, 0.5), qy = my - 40;
+      const x = (1 - e) * (1 - e) * mx + 2 * (1 - e) * e * qx + e * e * tx, y = (1 - e) * (1 - e) * my + 2 * (1 - e) * e * qy + e * e * ty;
+      glow(c, x, y, 40, ORANGE, 0.9); glow(c, x, y, 12, '#ffffff', 0.9);
+    }
+    const sa = E.out(P(lt, BW('b7', 0.45), 0.5)) * (1 - E.inOut(P(lt, b8, 0.5)));
+    label(c, 'classical search · tunes and recombines', W / 2, 980, { align: 'center', color: TEAL, alpha: sa });
+  }
+  // knockout readout
+  const ka = E.out(P(lt, koT, 0.5));
+  if (ka > 0) {
+    label(c, 'knockout · fresh seeds', W / 2, 160, { align: 'center', color: RED, alpha: ka });
+    reveal(c, 'what does the solver lose?', W / 2, 225, lt, koT + 0.2, { size: 52, weight: 600, align: 'center' });
+  }
+}
+
+// ---------------------------------------------------------------- scene: circle packing
+const CP = FILM.cp;
+function cpScoreAt(time) {   // the solver's own trace, best-so-far against seconds
+  let s = CP.trace[0][1]; for (const [t, v] of CP.trace) if (t <= time) s = v; return s;
+}
+function scenePacking(c, lt) {
+  const b9 = B('b9'), b10 = B('b10'), b11 = B('b11'), b12 = B('b12');
+  const sq = 820, X = 170, Y = 130;
+  const evoA = b9 + 2.4, evoB = b10 + 0.05;              // the climb plays the solver's 10-second trace
+  const knock = BW('b11', 0.56), backA = knock + 0.15, backB = knock + 1.6;
+  let climb = 0;
+  let score = CP.off_score;
+  if (lt >= evoA) {
+    const tt = clamp((lt - evoA) / (evoB - evoA)) * 10;
+    score = lt >= evoB ? CP.best_score : Math.min(cpScoreAt(tt), CP.best_score);
+    if (lt >= evoB) score = CP.best_score;
+    climb = (score - CP.off_score) / (CP.best_score - CP.off_score);
+    climb = lerp(climb, 1, E.inOut(P(lt, evoB - 0.6, 0.6)));
+  }
+  const back = E.inOut(P(lt, backA, backB - backA));
+  const m = climb * (1 - back);
+  if (lt >= backA) score = lerp(CP.best_score, CP.off_score, back);
+  // the square
+  const sa = E.out(P(lt, 0, 0.8));
+  c.save(); c.globalAlpha = sa; c.strokeStyle = '#3A4766'; c.lineWidth = 2;
+  const per = 4 * sq * E.inOut(P(lt, 0, 1.2));
+  c.setLineDash([per, 4 * sq]); c.strokeRect(X, Y, sq, sq); c.restore();
+  // circles
+  const red = clamp(1 - Math.abs(lt - knock - 0.4) / 0.9) * (lt > knock ? 1 : 0);
+  CP.off.forEach((o, i) => {
+    const b = CP.best[i];
+    const pop = E.back(P(lt, 0.5 + i * 0.04, 0.5));
+    if (pop <= 0) return;
+    const x = lerp(o[0], b[0], m), y = lerp(o[1], b[1], m), r = lerp(o[2], b[2], m) * pop;
+    const px = X + x * sq, py = Y + (1 - y) * sq, pr = Math.max(0.5, r * sq);
+    const col = red > 0.05 ? RED : (m > 0.98 && lt < knock ? TEAL : BLUE);
+    c.save(); c.beginPath(); c.arc(px, py, pr, 0, 7);
+    c.fillStyle = hexA(col, 0.10 + 0.08 * m); c.fill(); c.strokeStyle = col; c.lineWidth = 2.2; c.stroke(); c.restore();
+  });
+  // the best-known flash
+  const flash = P(lt, b10 - 0.05, 0.9);
+  if (flash > 0 && flash < 1) glow(c, X + sq / 2, Y + sq / 2, 700, TEAL, 0.35 * (1 - flash));
+  // panel
+  const PX = 1120;
+  label(c, 'circles in a square · n = 26', PX, 170, { alpha: sa });
+  text(c, 'sum of radii', PX, 235, { size: 32, weight: 500, color: MUTED, alpha: sa });
+  const scol = lt > knock ? (back > 0.5 ? RED : INK) : (m > 0.98 ? TEAL : INK);
+  text(c, score.toFixed(6), PX - 6, 365, { size: 132, weight: 600, mono: true, color: scol, alpha: sa });
+  text(c, 'best known  2.635983', PX, 418, { size: 28, weight: 500, mono: true, color: DIM, alpha: sa });
+  const startA = E.out(P(lt, b9 + 0.8, 0.6)) * (1 - E.inOut(P(lt, evoA + 0.2, 0.5)));
+  if (startA > 0) label(c, "OpenEvolve's initial program · no hints", X, Y - 30, { color: MUTED, alpha: startA, size: 20 });
+  const bk = E.back(P(lt, b10 - 0.05, 0.5)) * (1 - E.inOut(P(lt, knock - 0.4, 0.4)));
+  if (bk > 0) {
+    c.save(); c.translate(PX + 190, 480); c.scale(bk, bk); c.globalAlpha = clamp(bk);
+    rrect(c, -190, -32, 380, 60, 30); c.fillStyle = hexA(TEAL, 0.16); c.fill(); c.strokeStyle = TEAL; c.lineWidth = 2; c.stroke(); c.restore();
+    text(c, 'BEST KNOWN VALUE', PX + 190, 489, { size: 24, weight: 700, mono: true, color: TEAL, align: 'center', ls: 2, alpha: clamp(bk) });
+  }
+  // the switches of the champion
+  const rows = [['inner_count', '12'], ['outer_radius', '0.399'], ['clip_margin', '0.130'], ['slsqp_polish', null]];
+  rows.forEach(([g, v], i) => {
+    const ry = 545 + i * 58, ra = E.out(P(lt, b9 + 1.2 + i * 0.12, 0.5));
+    if (v !== null) {
+      text(c, g, PX, ry + 30, { size: 26, mono: true, weight: 500, color: MUTED, alpha: ra * (lt > b11 ? 0.45 : 1) });
+      text(c, v, PX + 420, ry + 30, { size: 26, mono: true, weight: 500, color: ORANGE, alpha: ra * (lt > b11 ? 0.45 : 1) });
+    } else {
+      const on = m > 0.02 || (lt >= evoA - 0.5 && lt < knock) ? (lt < knock - 0.05 ? E.out(P(lt, evoA - 0.5, 0.3)) : 1 - E.inOut(P(lt, knock - 0.05, 0.25))) : 0;
+      const spot = E.out(P(lt, b11, 0.5));
+      if (spot > 0) { c.save(); c.globalAlpha = spot; rrect(c, PX - 18, ry - 8, 600, 62, 14); c.fillStyle = hexA(lt > knock ? RED : BLUE, 0.13); c.fill(); c.strokeStyle = lt > knock ? RED : BLUE; c.lineWidth = 2; c.stroke(); c.restore(); }
+      text(c, g, PX, ry + 30, { size: 26, mono: true, weight: 600, color: INK, alpha: ra });
+      toggle(c, PX + 420, ry + 4, on, { w: 72, h: 36, alpha: ra, color: BLUE });
+    }
+  });
+  // the effect
+  const ea = P(lt, b12 + 0.2, 0.45);
+  if (ea > 0) {
+    const s = lerp(1.6, 1, E.expo(ea));
+    c.save(); c.translate(PX - 6, 905); c.scale(s, s); c.globalAlpha = clamp(ea * 1.5);
+    font(c, 140, 700, true); c.fillStyle = ORANGE; c.fillText('−1.67', 0, 0); c.restore();
+    if (ea < 1) glow(c, PX + 200, 860, 380, ORANGE, 0.5 * (1 - ea));
+    const ca = E.out(P(lt, b12 + 0.9, 0.6));
+    text(c, 'lost without this one gene', PX, 962, { size: 32, weight: 600, color: INK, alpha: ca });
+    text(c, 'fresh seeds · interval [1.67, 1.68]', PX, 1002, { size: 22, weight: 500, mono: true, color: MUTED, alpha: ca });
+  }
+}
+
+// ---------------------------------------------------------------- scene: problem 60, no five on a sphere
+const P60 = FILM.p60;
+function proj(p, yaw, pitch, cx, cy, sc, dist) {
+  const [x, y, z] = p;
+  const x1 = x * Math.cos(yaw) + z * Math.sin(yaw), z1 = -x * Math.sin(yaw) + z * Math.cos(yaw);
+  const y2 = y * Math.cos(pitch) - z1 * Math.sin(pitch), z2 = y * Math.sin(pitch) + z1 * Math.cos(pitch);
+  const s = dist / (dist + z2);
+  return [cx + x1 * sc * s, cy - y2 * sc * s, z2, s];
+}
+const g2c = v => [v[0] / 31 - 0.5, v[2] / 31 - 0.5, v[1] / 31 - 0.5];   // grid -> cube, z up
+function sceneSphere(c, lt) {
+  const b13 = B('b13'), b14 = B('b14'), b15 = B('b15');
+  const shrink = E.inOut(P(lt, b14 - 0.2, 1.2));
+  const cx = 960, cy = 560, sc = lerp(600, 820, shrink);
+  const yaw = 0.7 + lt * 0.22, pitch = 0.42 + 0.06 * Math.sin(lt * 0.5), dist = 2.6;
+  const ca = E.out(P(lt, 0, 1.0)) * (1 - 0.75 * shrink);
+  // cube edges
+  const corners = [];
+  for (let i = 0; i < 8; i++) corners.push(proj([(i & 1) - 0.5, ((i >> 1) & 1) - 0.5, ((i >> 2) & 1) - 0.5], yaw, pitch, cx, cy, sc, dist));
+  c.save(); c.globalAlpha = ca; c.strokeStyle = '#34405E'; c.lineWidth = 2;
+  for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) { const d = i ^ j; if (d === 1 || d === 2 || d === 4) line(c, corners[i][0], corners[i][1], corners[j][0], corners[j][1]); }
+  c.restore();
+  // faint lattice
+  c.save(); c.globalAlpha = ca * 0.5; c.fillStyle = '#2B3650';
+  for (let i = 0; i < 32; i += 3) for (let j = 0; j < 32; j += 3) for (let k = 0; k < 32; k += 3) {
+    const q = proj(g2c([i, j, k]), yaw, pitch, cx, cy, sc, dist); c.fillRect(q[0] - 1, q[1] - 1, 2, 2);
+  }
+  c.restore();
+  // the 85 points
+  const pts = P60.points.map((p, i) => ({ i, q: proj(g2c(p), yaw, pitch, cx, cy, sc, dist) })).sort((a, b) => b.q[2] - a.q[2]);
+  const sphereT0 = BW('b13', 0.48), per = 1.9;
+  const si = Math.floor((lt - sphereT0) / per), sp = ((lt - sphereT0) % per) / per;
+  const activeS = lt >= sphereT0 && lt < b14 - 0.2 && si < P60.spheres.length ? P60.spheres[si] : null;
+  for (const { i, q } of pts) {
+    const a = E.out(P(lt, 0.4 + i * 0.022, 0.4)) * (1 - 0.8 * shrink);
+    if (a <= 0) continue;
+    const d = clamp(1 - q[2]);
+    const hot = activeS && activeS.idx.includes(i);
+    glow(c, q[0], q[1], (hot ? 30 : 14 + 8 * d) * q[3], hot ? ORANGE : BLUE, a * (0.4 + 0.6 * d));
+  }
+  if (activeS) {
+    const sa = Math.min(E.out(clamp(sp * 4)), 1 - E.in(clamp((sp - 0.75) * 4)));
+    const C3 = g2c(activeS.c), R = activeS.r / 31;
+    c.save(); c.lineWidth = 1.6;
+    const rings = 9;
+    for (let k = 1; k < rings; k++) {               // latitude
+      const phi = -Math.PI / 2 + Math.PI * k / rings;
+      let prev = null;
+      for (let s = 0; s <= 48; s++) {
+        const th = s / 48 * Math.PI * 2;
+        const p = proj([C3[0] + R * Math.cos(phi) * Math.cos(th), C3[1] + R * Math.sin(phi), C3[2] + R * Math.cos(phi) * Math.sin(th)], yaw, pitch, cx, cy, sc, dist);
+        if (prev) { c.globalAlpha = sa * (0.12 + 0.5 * clamp(0.6 - p[2])); c.strokeStyle = ORANGE; line(c, prev[0], prev[1], p[0], p[1]); }
+        prev = p;
+      }
+    }
+    for (let k = 0; k < 8; k++) {                   // longitude
+      const th = Math.PI * k / 8; let prev = null;
+      for (let s = 0; s <= 48; s++) {
+        const phi = s / 48 * Math.PI * 2;
+        const p = proj([C3[0] + R * Math.cos(phi) * Math.cos(th), C3[1] + R * Math.sin(phi), C3[2] + R * Math.cos(phi) * Math.sin(th)], yaw, pitch, cx, cy, sc, dist);
+        if (prev) { c.globalAlpha = sa * (0.08 + 0.4 * clamp(0.6 - p[2])); c.strokeStyle = ORANGE; line(c, prev[0], prev[1], p[0], p[1]); }
+        prev = p;
+      }
+    }
+    c.restore();
+    const la = E.out(P(lt, sphereT0, 0.6)) * (1 - E.inOut(P(lt, b14 - 0.6, 0.5)));
+    label(c, 'four points fix a sphere', 120, 150, { color: ORANGE, alpha: la });
+    text(c, 'no fifth point lies on it', 120, 205, { size: 40, weight: 600, alpha: la });
+  }
+  const ha = E.out(P(lt, 0.3, 0.8)) * (1 - E.inOut(P(lt, b14 - 0.4, 0.5)));
+  label(c, 'problem 60 · Tao and co-authors', 120, 950, { alpha: ha });
+  text(c, 'n = 32: 85 points in the 32 × 32 × 32 grid, no five on a sphere (published: 82)', 120, 1000, { size: 30, weight: 500, color: MUTED, alpha: ha });
+  // records
+  const ra = E.out(P(lt, b14, 0.7));
+  if (ra > 0) {
+    reveal(c, '17 new lower bounds', W / 2, 250, lt, b14 + 0.1, { size: 92, weight: 700, align: 'center', stagger: 0.1 });
+    text(c, 'larger sets than any published, with no five points on a sphere', W / 2, 310, { size: 30, weight: 500, color: MUTED, align: 'center', alpha: ra });
+    const recs = P60.records, tw = 150, th = 132, gap = 14;
+    recs.forEach((r, i) => {
+      const row = i < 9 ? 0 : 1, col = row ? i - 9 : i, nrow = row ? 8 : 9;
+      const x = W / 2 - (nrow * tw + (nrow - 1) * gap) / 2 + col * (tw + gap), y = 380 + row * (th + gap);
+      const p = E.back(P(lt, b14 + 0.5 + i * 0.13, 0.45));
+      if (p <= 0) return;
+      c.save(); c.translate(x + tw / 2, y + th / 2); c.scale(p, p); c.translate(-tw / 2, -th / 2); c.globalAlpha = clamp(p);
+      rrect(c, 0, 0, tw, th, 14); c.fillStyle = 'rgba(10,16,28,0.95)'; c.fill(); c.strokeStyle = hexA(BLUE, 0.6); c.lineWidth = 2; c.stroke();
+      text(c, `n = ${r.n}`, 14, 30, { size: 19, mono: true, weight: 500, color: MUTED });
+      text(c, `+${r.new - r.old}`, tw - 14, 30, { size: 19, mono: true, weight: 700, color: TEAL, align: 'right' });
+      text(c, String(r.new), tw / 2, 88, { size: 50, weight: 700, color: INK, align: 'center' });
+      text(c, `was ${r.old}`, tw / 2, 118, { size: 18, mono: true, weight: 500, color: DIM, align: 'center' });
+      c.restore();
+      const f = P(lt, b14 + 0.5 + i * 0.13, 0.5); if (f > 0 && f < 1) glow(c, x + tw / 2, y + th / 2, 120, BLUE, 0.5 * (1 - f));
+    });
+  }
+  // three checkers
+  const names = ['evaluate.py', 'verify.py', 'third_check.py'];
+  names.forEach((nm, i) => {
+    const t0 = b15 + 0.5 + i * 0.45, a = E.out(P(lt, t0, 0.5));
+    if (a <= 0) return;
+    const pw = measure(c, nm, 24, 600, true) + 110, x = W / 2 - 470 + i * 340 + (300 - pw) / 2 + 120, y = 760;
+    c.save(); c.globalAlpha = a; rrect(c, x - 120, y - 40, pw, 80, 40); c.fillStyle = hexA(TEAL, 0.12); c.fill(); c.strokeStyle = TEAL; c.lineWidth = 2; c.stroke(); c.restore();
+    check(c, x - 78, y, 34, P(lt, t0 + 0.1, 0.4));
+    text(c, nm, x - 44, y + 9, { size: 24, mono: true, weight: 600, color: INK, alpha: a });
+  });
+  const la = E.out(P(lt, b15 + 0.3, 0.6));
+  label(c, 'three independent exact checkers', W / 2, 870, { align: 'center', color: TEAL, alpha: la });
+}
+
+// ---------------------------------------------------------------- scene: problem 59, no isosceles triangle
+const P59 = FILM.p59;
+const ISO = P59.points;
+function sceneIso(c, lt) {
+  const b16 = B('b16'), b17 = B('b17'), b18 = B('b18');
+  const cell = 26, X = 200, Y = 128;
+  const at = (p) => [X + p[1] * cell + cell / 2, Y + p[0] * cell + cell / 2];
+  // grid
+  for (let i = 0; i < 32; i++) for (let j = 0; j < 32; j++) {
+    const a = E.out(P(lt, 0.1 + (i + j) * 0.018, 0.4));
+    if (a <= 0) continue;
+    c.fillStyle = hexA('#3A4766', a); c.fillRect(X + j * cell + cell / 2 - 1.5, Y + i * cell + cell / 2 - 1.5, 3, 3);
+  }
+  // triangles being checked
+  const chkA = BW('b18', 0.0), chkB = BW('b18', 0.62);
+  if (lt > chkA && lt < chkB + 0.6) {
+    const f = Math.floor(lt * 30);
+    c.save(); c.lineWidth = 1.4;
+    for (let back = 0; back < 6; back++) for (let k = 0; k < 7; k++) {
+      const fr = f - back, h = fr * 7 + k;
+      const i = Math.floor(rnd(h * 3 + 1) * 58), j = Math.floor(rnd(h * 3 + 2) * 58), m = Math.floor(rnd(h * 3 + 3) * 58);
+      if (i === j || j === m || i === m) continue;
+      const A = at(ISO[i]), Bp = at(ISO[j]), Cp = at(ISO[m]);
+      c.globalAlpha = 0.5 * (1 - back / 6) * (1 - P(lt, chkB, 0.6)); c.strokeStyle = TEAL;
+      c.beginPath(); c.moveTo(...A); c.lineTo(...Bp); c.lineTo(...Cp); c.closePath(); c.stroke();
+    }
+    c.restore();
+  }
+  // the 58 points
+  ISO.forEach((p, i) => {
+    const t0 = b16 + 0.4 + i * 0.045, a = E.back(P(lt, t0, 0.4));
+    if (a <= 0) return;
+    const [x, y] = at(p);
+    glow(c, x, y, 26 * a, BLUE, 0.9);
+    c.beginPath(); c.arc(x, y, 5.5 * clamp(a), 0, 7); c.fillStyle = '#ffffff'; c.fill();
+  });
+  // panel
+  const PX = 1160;
+  const pa = E.out(P(lt, 0.3, 0.7));
+  label(c, 'problem 59 · 32 × 32 grid', PX, 190, { alpha: pa });
+  text(c, 'no three points form', PX, 250, { size: 36, weight: 500, color: MUTED, alpha: pa });
+  text(c, 'an isosceles triangle', PX, 296, { size: 36, weight: 500, color: MUTED, alpha: pa });
+  const shown = Math.min(58, Math.floor(clamp((lt - b16 - 0.4) / (58 * 0.045)) * 58));
+  const big = E.out(P(lt, b16 + 0.3, 0.5));
+  text(c, String(shown), PX - 8, 470, { size: 170, weight: 700, color: shown === 58 ? INK : MUTED, alpha: big });
+  text(c, 'points', PX + 210, 470, { size: 40, weight: 500, color: MUTED, alpha: big });
+  // stated optimum
+  const s1 = E.out(P(lt, b17, 0.6));
+  if (s1 > 0) {
+    text(c, '56', PX, 640, { size: 110, weight: 700, color: DIM, alpha: s1 });
+    text(c, 'stated optimal in two papers', PX + 150, 615, { size: 28, weight: 500, color: MUTED, alpha: s1 });
+    const st = E.inOut(P(lt, BW('b17', 0.9), 0.4));
+    if (st > 0) { c.save(); c.strokeStyle = RED; c.lineWidth = 7; c.lineCap = 'round'; line(c, PX - 10, 605, PX - 10 + 150 * st, 590); c.restore(); }
+  }
+  // the check
+  const ca = E.out(P(lt, chkA, 0.5));
+  if (ca > 0) {
+    const n = 30856 * E.inOut(P(lt, chkA + 0.1, chkB - chkA - 0.1));
+    label(c, 'triples checked', PX, 760, { color: TEAL, alpha: ca });
+    text(c, comma(n), PX - 4, 850, { size: 96, weight: 600, mono: true, color: INK, alpha: ca });
+    text(c, 'isosceles found: 0', PX, 900, { size: 30, weight: 600, mono: true, color: TEAL, alpha: ca });
+  }
+  const va = E.out(P(lt, BW('b18', 0.72), 0.6));
+  if (va > 0) {
+    c.save(); c.globalAlpha = va; rrect(c, PX - 10, 950, 610, 70, 35); c.fillStyle = hexA(TEAL, 0.14); c.fill(); c.strokeStyle = TEAL; c.lineWidth = 2; c.stroke(); c.restore();
+    check(c, PX + 34, 985, 30, P(lt, BW('b18', 0.74), 0.4));
+    text(c, "DeepMind's verifier accepts it", PX + 70, 995, { size: 30, weight: 600, color: INK, alpha: va });
+  }
+}
+
+// ---------------------------------------------------------------- scene: measured twice
+const FO = FILM.forest;
+function sceneTwice(c, lt) {
+  const b19 = B('b19'), b20 = B('b20'), b21 = B('b21'), b22 = B('b22'), b23 = B('b23');
+  const X0 = 700, X1 = 1760, vx = v => X0 + (v + 0.5) / 1.0 * (X1 - X0);
+  const rowY = i => 232 + i * 50;
+  const axA = E.out(P(lt, 0.2, 1.0));
+  // headline
+  const h1 = E.out(P(lt, b19, 0.6)) * (1 - E.inOut(P(lt, b20 - 0.2, 0.5)));
+  if (h1 > 0) reveal(c, 'The knockouts, on our own records', W / 2, 140, lt, b19, { size: 60, weight: 700, align: 'center', out: b20 - 0.2 });
+  const recP = E.inOut(P(lt, BW('b21', 0.25), 1.6));
+  const hq = E.out(P(lt, b20, 0.5)) * (1 - recP);
+  const hr = recP;
+  if (hq > 0) { label(c, 'quick screen · 48 pairs · 45 seconds', W / 2, 130, { align: 'center', color: MUTED, alpha: hq, size: 26 }); }
+  if (hr > 0) { label(c, 'record scale · 600 paired runs · same container', W / 2, 130, { align: 'center', color: BLUE, alpha: hr, size: 26 }); }
+  // axis
+  c.save(); c.globalAlpha = axA;
+  c.strokeStyle = '#26304A'; c.lineWidth = 1.5;
+  for (let v = -0.4; v <= 0.41; v += 0.2) { line(c, vx(v), 205, vx(v), rowY(FO.length - 1) + 30); text(c, (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1), vx(v), rowY(FO.length - 1) + 72, { size: 22, mono: true, weight: 500, color: DIM, align: 'center' }); }
+  c.strokeStyle = '#7D879C'; c.setLineDash([6, 6]); c.lineWidth = 2; line(c, vx(0), 195, vx(0), rowY(FO.length - 1) + 34); c.restore();
+  text(c, 'effect of switching the idea on (points)', vx(0), rowY(FO.length - 1) + 112, { size: 24, weight: 500, color: MUTED, align: 'center', alpha: axA });
+  // the band a quick screen cannot see inside
+  const band = E.out(P(lt, BW('b20', 0.5), 0.7)) * (1 - recP);
+  if (band > 0) {
+    c.save(); c.globalAlpha = band * 0.5; c.fillStyle = hexA(RED, 0.12); c.fillRect(vx(-0.2), 205, vx(0.2) - vx(-0.2), rowY(FO.length - 1) + 30 - 205); c.restore();
+    text(c, 'too weak to see a fifth of a point', vx(0), 190, { size: 26, weight: 600, color: RED, align: 'center', alpha: band });
+  }
+  const champA = E.out(P(lt, b22, 0.5)), starP = P(lt, b23, 0.01), moveP = E.inOut(P(lt, BW('b23', 0.62), 1.0)), secP = E.out(P(lt, BW('b23', 0.85), 0.6));
+  FO.forEach((r, i) => {
+    const y = rowY(i), ra = E.out(P(lt, b20 + 0.2 + i * 0.09, 0.4));
+    const focus = lt > b23 ? (r.kind === 'star' ? 1 : 0.3) : lt > b22 ? (r.kind === 'champion' ? 1 : 0.4) : 1;
+    const nameCol = r.kind === 'star' && lt > b23 ? ORANGE : r.kind === 'champion' && lt > b22 ? TEAL : INK;
+    text(c, r.name, X0 - 40, y + 8, { size: 24, mono: true, weight: 500, color: nameCol, align: 'right', alpha: Math.max(ra, recP) * focus * (r.kind === 'control' ? recP : 1) });
+    // the interval shown: quick, morphing to record scale
+    let q = r.quick, rc = r.rec;
+    let v, lo, hi, col, a;
+    if (q) { v = lerp(q[0], rc[0], recP); lo = lerp(q[1], rc[1], recP); hi = lerp(q[2], rc[2], recP); a = ra; }
+    else { v = rc[0]; lo = rc[1]; hi = rc[2]; a = recP; }
+    if (r.kind === 'star') { // the engine's own verdict stays visible as a ghost
+      if (recP > 0 && q) {
+        c.save(); c.globalAlpha = 0.5 * recP * (lt > b23 ? 1 : 0.6);
+        c.beginPath(); c.arc(vx(q[0]), y, 8, 0, 7); c.strokeStyle = MUTED; c.lineWidth = 2; c.stroke(); c.restore();
+      }
+    }
+    col = recP > 0.5 ? BLUE : '#7D879C';
+    if (r.kind === 'champion' && lt > b22) col = TEAL;
+    if (r.kind === 'star' && lt > b23) col = ORANGE;
+    c.save(); c.globalAlpha = a * focus; c.strokeStyle = col; c.lineWidth = 4; c.lineCap = 'round';
+    line(c, vx(lo), y, vx(hi), y); c.restore();
+    if (!(r.kind === 'star' && lt > b23)) { c.save(); c.globalAlpha = a * focus; c.beginPath(); c.arc(vx(v), y, 9, 0, 7); c.fillStyle = col; c.fill(); c.restore(); }
+    if (r.kind === 'champion' && champA > 0) {
+      glow(c, vx(v), y, 50, TEAL, champA * 0.8);
+      text(c, '+0.24', vx(hi) + 20, y + 9, { size: 28, weight: 700, mono: true, color: TEAL, alpha: champA * focus });
+    }
+    if (r.kind === 'star' && lt > b23) {
+      // rejected at the quick screen, then measured properly
+      const rj = E.back(P(lt, b23 + 1.4, 0.4)) * (1 - E.inOut(P(lt, BW('b23', 0.6), 0.4)));
+      if (rj > 0) {
+        c.save(); c.translate(vx(-0.04), y - 46); c.rotate(-0.08); c.scale(rj, rj);
+        rrect(c, -86, -22, 172, 44, 6); c.strokeStyle = RED; c.lineWidth = 3; c.stroke();
+        text(c, 'REJECTED', 0, 10, { size: 24, weight: 700, mono: true, color: RED, align: 'center', ls: 3 }); c.restore();
+      }
+      const x = lerp(vx(q[0]), vx(rc[0]), moveP);
+      c.save(); c.strokeStyle = ORANGE; c.lineWidth = 5; c.lineCap = 'round'; c.globalAlpha = moveP;
+      line(c, vx(rc[1]), y, vx(rc[2]), y); c.restore();
+      glow(c, x, y, 60, ORANGE, 0.9); c.beginPath(); c.arc(x, y, 10, 0, 7); c.fillStyle = '#fff'; c.fill();
+      if (secP > 0) {
+        const r2 = r.rec2, y2 = y + 28;
+        c.save(); c.globalAlpha = secP; c.strokeStyle = ORANGE; c.lineWidth = 4; c.lineCap = 'round'; line(c, vx(r2[1]), y2, vx(r2[2]), y2);
+        c.beginPath(); c.arc(vx(r2[0]), y2, 9, 0, 7); c.fillStyle = ORANGE; c.fill(); c.restore();
+        text(c, 'second experiment', vx(r2[2]) + 18, y2 + 7, { size: 20, mono: true, weight: 500, color: ORANGE, alpha: secP });
+      }
+    }
+  });
+  // the closing number
+  const na = E.out(P(lt, BW('b23', 0.66), 0.7));
+  if (na > 0) {
+    darkPool(c, W / 2, 1000, 900, 110, 0.9 * na);
+    text(c, '+0.19 to +0.31', 380, 1032, { size: 80, weight: 700, mono: true, color: ORANGE, alpha: na });
+    text(c, 'the idea the engine threw away', 1110, 1016, { size: 34, weight: 600, color: INK, alpha: na });
+  }
+}
+
+// ---------------------------------------------------------------- scene: close
+let WORDPTS = null;
+function wordPoints() {
+  if (WORDPTS) return WORDPTS;
+  ox.clearRect(0, 0, W, H); font(ox, 190, 700); ox.letterSpacing = '-3px'; ox.textAlign = 'center'; ox.fillStyle = '#fff';
+  ox.fillText('MendelEvolve', W / 2, 520);
+  const d = ox.getImageData(0, 0, W, H).data, pts = [];
+  for (let y = 300; y < 600; y += 5) for (let x = 200; x < 1720; x += 5) if (d[(y * W + x) * 4 + 3] > 128) pts.push([x, y]);
+  ox.clearRect(0, 0, W, H);
+  return WORDPTS = pts;
+}
+function sceneClose(c, lt) {
+  const b24 = B('b24'), b25 = B('b25');
+  const pts = wordPoints();
+  const conv = E.inOut(P(lt, 0.1, 2.6)), solid = E.out(P(lt, 2.3, 0.9));
+  pts.forEach(([x, y], i) => {
+    const r1 = rnd(i * 2 + 1), r2 = rnd(i * 2 + 2);
+    const ang = r1 * Math.PI * 2 + lt * 0.4, rad = 300 + 700 * r2;
+    const sx0 = W / 2 + Math.cos(ang) * rad * 1.4, sy0 = H / 2 + Math.sin(ang) * rad * 0.6;
+    const e = clamp(conv * 1.15 - r2 * 0.15);
+    const px = lerp(sx0, x, e), py = lerp(sy0, y, e);
+    const a = (1 - solid * 0.85) * (0.4 + 0.6 * e);
+    if (i % 2 === 0) glow(c, px, py, 9, i % 7 === 0 ? TEAL : BLUE, a);
+    else { c.fillStyle = hexA(i % 5 === 0 ? TEAL : BLUE, a); c.fillRect(px - 1.5, py - 1.5, 3, 3); }
+  });
+  if (solid > 0) {
+    c.save(); c.globalAlpha = solid; font(c, 190, 700); c.letterSpacing = '-3px'; c.textAlign = 'center';
+    const g = c.createLinearGradient(400, 0, 1520, 0); g.addColorStop(0, INK); g.addColorStop(0.55, INK); g.addColorStop(1, BLUE);
+    c.fillStyle = g; c.fillText('MendelEvolve', W / 2, 520); c.restore();
+  }
+  reveal(c, 'Evolve ideas, not programs.', W / 2, 650, lt, BW('b24', 0.18), { size: 56, weight: 600, align: 'center' });
+  reveal(c, 'Then measure them at the scale that matters.', W / 2, 725, lt, BW('b24', 0.45), { size: 44, weight: 500, align: 'center', color: MUTED });
+  const ua = E.out(P(lt, b25, 0.7));
+  text(c, 'github.com/hashkanna/mendel-evolve', W / 2, 860, { size: 34, mono: true, weight: 500, color: INK, align: 'center', alpha: ua });
+  text(c, 'hashkanna.github.io/mendel-evolve', W / 2, 910, { size: 34, mono: true, weight: 500, color: BLUE, align: 'center', alpha: ua });
+  label(c, 'London AI × Science Hackathon · October 2026', W / 2, 1000, { align: 'center', color: DIM, alpha: E.out(P(lt, b25 + 0.6, 0.7)), size: 20 });
+}
+
+const DRAW = { open: sceneOpen, problem: sceneProblem, genes: sceneGenes, packing: scenePacking, sphere: sceneSphere, iso: sceneIso, twice: sceneTwice, close: sceneClose };
+
+// ---------------------------------------------------------------- post: bloom, glitch, vignette, grain
+const VIG = canvas(W, H);
+{ const v = VIG.getContext('2d'), g = v.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 1.05); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.72)'); v.fillStyle = g; v.fillRect(0, 0, W, H); }
+const GRAIN = [];
+for (let k = 0; k < 6; k++) {
+  const g = canvas(256, 256), x = g.getContext('2d'), im = x.createImageData(256, 256);
+  for (let i = 0; i < 256 * 256; i++) { const v = Math.floor(rnd(k * 99991 + i) * 255); im.data[i * 4] = im.data[i * 4 + 1] = im.data[i * 4 + 2] = v; im.data[i * 4 + 3] = 255; }
+  x.putImageData(im, 0, 0); GRAIN.push(g);
+}
+function glitchAmount(t) {
+  const sc = TL.scenes.find(s => s.id === 'packing'), b = TL.beats.b11;
+  const k = b.t + b.dur * 0.56;
+  return clamp(1 - Math.abs(t - k - 0.12) / 0.32);
+}
+function applyGlitch(amt, t) {
+  gx.clearRect(0, 0, W, H); gx.drawImage(main.canvas, 0, 0);
+  // channel split
+  t1.globalCompositeOperation = 'source-over'; t1.clearRect(0, 0, W, H);
+  main.save(); main.fillStyle = '#000'; main.fillRect(0, 0, W, H);
+  main.globalCompositeOperation = 'lighter';
+  const sh = 16 * amt, cols = ['#ff0000', '#00ff00', '#0000ff'], dx = [sh, 0, -sh];
+  for (let k = 0; k < 3; k++) {
+    t1.globalCompositeOperation = 'source-over'; t1.drawImage(G, 0, 0);
+    t1.globalCompositeOperation = 'multiply'; t1.fillStyle = cols[k]; t1.fillRect(0, 0, W, H);
+    main.drawImage(T1, dx[k], 0);
+  }
+  main.restore();
+  // displaced slices
+  gx.drawImage(main.canvas, 0, 0);
+  const f = Math.floor(t * 30);
+  for (let k = 0; k < 14; k++) {
+    if (rnd(f * 17 + k) > amt) continue;
+    const y = rnd(f * 31 + k) * H, h = 6 + rnd(f * 7 + k) * 70, dxx = (rnd(f * 13 + k) - 0.5) * 160 * amt;
+    main.drawImage(G, 0, y, W, h, dxx, y, W, h);
+  }
+  main.save(); main.globalAlpha = 0.18 * amt; main.fillStyle = RED; main.fillRect(0, 0, W, H); main.restore();
+}
+
+function renderFrame(t) {
+  sx.globalCompositeOperation = 'source-over'; sx.globalAlpha = 1; sx.fillStyle = BG; sx.fillRect(0, 0, W, H);
+  const scenes = TL.scenes;
+  for (let k = 0; k < scenes.length; k++) {
+    const s = scenes[k];
+    if (t < s.start || t >= s.end) continue;
+    SC = s; const lt = t - s.start, dur = s.end - s.start;
+    lx.setTransform(1, 0, 0, 1, 0, 0); lx.globalAlpha = 1; lx.globalCompositeOperation = 'source-over';
+    lx.fillStyle = BG; lx.fillRect(0, 0, W, H);
+    // background: a faint blueprint dot grid that drifts
+    lx.save(); lx.globalAlpha = 0.5; lx.fillStyle = '#0E1422';
+    const off = (lt * 6) % 48;
+    for (let y = -48 + off; y < H; y += 48) for (let x = 0; x < W; x += 48) lx.fillRect(x, y, 2, 2);
+    lx.restore();
+    const zoom = 1.035 - 0.035 * E.out(clamp(lt / dur));   // a slow push-in
+    lx.save(); lx.translate(W / 2, H / 2); lx.scale(zoom, zoom); lx.translate(-W / 2, -H / 2);
+    DRAW[s.id](lx, lt);
+    lx.restore();
+    const fin = k === 0 ? 1 : E.inOut(clamp(lt / TL.xfade));
+    sx.globalAlpha = fin; sx.drawImage(L, 0, 0); sx.globalAlpha = 1;
+    if (k > 0 && lt < TL.xfade + 0.3) {             // a soft light sweep marks the cut
+      const p = E.inOut(clamp(lt / (TL.xfade + 0.3))), x = lerp(-600, W + 600, p);
+      sx.save(); sx.globalCompositeOperation = 'lighter'; sx.globalAlpha = 0.22 * Math.sin(Math.PI * p);
+      const g = sx.createLinearGradient(x - 380, 0, x + 380, 0);
+      g.addColorStop(0, 'rgba(110,168,254,0)'); g.addColorStop(0.5, 'rgba(160,200,255,1)'); g.addColorStop(1, 'rgba(110,168,254,0)');
+      sx.fillStyle = g; sx.translate(x, H / 2); sx.transform(1, 0, -0.35, 1, 0, 0); sx.translate(-x, -H / 2); sx.fillRect(x - 400, -200, 800, H + 400); sx.restore();
+    }
+  }
+  // compose with bloom
+  main.globalCompositeOperation = 'source-over'; main.globalAlpha = 1; main.filter = 'none';
+  main.drawImage(S, 0, 0);
+  b1.filter = 'brightness(0.85) contrast(2.0) blur(3px)'; b1.clearRect(0, 0, 480, 270); b1.drawImage(S, 0, 0, 480, 270); b1.filter = 'none';
+  b2.filter = 'blur(4px)'; b2.clearRect(0, 0, 240, 135); b2.drawImage(B1, 0, 0, 240, 135); b2.filter = 'none';
+  main.globalCompositeOperation = 'lighter';
+  main.globalAlpha = 0.55; main.drawImage(B1, 0, 0, W, H);
+  main.globalAlpha = 0.45; main.drawImage(B2, 0, 0, W, H);
+  main.globalAlpha = 1; main.globalCompositeOperation = 'source-over';
+  const ga = glitchAmount(t); if (ga > 0) applyGlitch(ga, t);
+  main.drawImage(VIG, 0, 0);
+  // grain
+  const f = Math.floor(t * 30), gr = GRAIN[f % GRAIN.length];
+  main.save(); main.globalAlpha = 0.07; main.globalCompositeOperation = 'overlay';
+  const ox0 = Math.floor(rnd(f) * 256), oy0 = Math.floor(rnd(f + 7) * 256);
+  for (let y = -oy0; y < H; y += 256) for (let x = -ox0; x < W; x += 256) main.drawImage(gr, x, y);
+  main.restore();
+  // fade in from black, fade out to black
+  const fade = Math.min(clamp(t / 0.8), clamp((TL.total - t) / 1.4));
+  if (fade < 1) { main.save(); main.globalAlpha = 1 - fade; main.fillStyle = '#000'; main.fillRect(0, 0, W, H); main.restore(); }
+}
+window.renderFrame = renderFrame;
+
+(async () => {
+  await Promise.all(['400 40px "IBM Plex Sans"', '500 40px "IBM Plex Sans"', '600 40px "IBM Plex Sans"', '700 40px "IBM Plex Sans"',
+    '400 40px "JetBrains Mono"', '500 40px "JetBrains Mono"', '600 40px "JetBrains Mono"', '700 40px "JetBrains Mono"'].map(f => document.fonts.load(f)));
+  await document.fonts.ready;
+  wordPoints();
+  window.READY = true;
+})();
+</script></body></html>

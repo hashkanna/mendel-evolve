@@ -164,3 +164,21 @@ Captions:
 - One frame per shot (three for the dashboard, two for each scrolling page) is in `media/frames/`; each was looked at for borders, cut-off text and captions covering content.
 - Every scene's picture starts before its voice and ends after it (asserted when this file is written).
 - The slide footnotes sit under the caption band while a caption is showing; they are visible only in the gaps between scenes.
+
+## The film (`media/film/`)
+
+A three-minute motion-graphics version, every frame drawn in code from the real data: the circle packing
+climbing from 0.959 to 2.635983 and falling back when `slsqp_polish` is knocked out (the solver's own runs), the
+85-point set for problem 60 with spheres through four of its points, the 58-point set for problem 59 and the
+record-scale effect table. The narration is in `media/film/script.py`, one Gemini clip per sentence, and the
+visuals are cued to those sentences. The score and the effects are synthesised in `build_film.py`.
+
+    python3 media/film/build_film.py voice
+    uv run --with numpy --with scipy python media/film/build_film.py data FOLDER   # FOLDER holds cp_on.json, cp_off.json
+    python3 media/film/build_film.py timeline
+    uv run --with playwright python media/film/build_film.py render 6
+    uv run --with numpy --with scipy python media/film/build_film.py audio
+    python3 media/film/build_film.py mux          # media/mendelevolve_film.mp4
+
+`cp_on.json` and `cp_off.json` come from running the circle-packing champion
+(`runs/cp-fable-1/trunk/gen002/solver.py`, seed 1000, 10 seconds) with `slsqp_polish` on and off.
