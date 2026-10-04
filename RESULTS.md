@@ -32,14 +32,14 @@ new relative to the public sources we found, with no claim of optimality or guar
 We equal the published value at n = 13, 14, 18, 19, 20, 22 and 27. For n = 33 to 40, where no sets are
 published (the n = 32 set implies 82 because C is non-decreasing), the search gives 86, 90, 91, 94, 96, 98, 100, 103.
 
-Each of the 13 sets was checked over every 5-subset by three independent exact integer methods:
+Each of the 21 sets (the 13 above and those for n = 33 to 40) was checked over every 5-subset by three
+independent exact integer methods:
 
 - `problems/no5sphere/evaluate.py`: vectorised int64 determinants;
 - `problems/no5sphere/verify.py`: Bareiss elimination on each 5x5 matrix in Python integers;
 - `results/no5sphere/third_check.py`: sphere coefficients from 4x4 cofactors, then one dot product per point.
 
-The n = 33 to 40 sets passed the first two. Reproduce:
-`python results/no5sphere/third_check.py results/no5sphere/certificates/n23_61.json`
+Reproduce: `python results/no5sphere/third_check.py results/no5sphere/certificates/n23_61.json`
 
 ### How they were found, stated plainly
 
@@ -52,23 +52,62 @@ for every size from 13 to 32, and 40 seeds at 720 CPU-seconds for 33 to 40: abou
 This is the phenomenon that "Evolution or Illusion?" and "What Do Evolutionary Coding Agents Evolve?"
 describe: a strong model's first program plus compute already reaches the frontier.
 
+### What the `centrosymmetric` switch is worth, on the statistic that finds records
+
+Both variants of the seed solver ran on the same seeds and budgets (2,550 runs each over n = 13 to 32), so the
+switch can be knocked out at record-search scale:
+
+| over the 13 record sizes, 1,600 paired runs | switch off | switch on | difference, 95% interval |
+|---|---|---|---|
+| runs that beat the published value | 136 (8.5%) | 262 (16.4%) | +7.9 points [+6.1, +9.6] |
+| mean score, averaged over sizes | | | +0.22 points [+0.19, +0.26] |
+
+- The switch moves the average run by a fifth of a point and doubles the rate of record-beating runs. It gives
+  the top value at 10 of the 13 sizes and equals the plain solver at the other three (n = 26, 29, 31).
+- Without the switch the seed solver still beats the published value at 8 of the 13 sizes (60, 63, 68, 72, 76,
+  78, 80 and 83 points at n = 23, 24, 26, 28, 29, 30, 31 and 32).
+- Per-run scores are in [search_scores.json](results/no5sphere/search_scores.json); reproduce the table with
+  `python results/no5sphere/tail_effect.py`.
+
 ## Problem 60: what the evolved ideas are worth
 
-The engine ran 8 generations on this problem (run `p60`): 37 ideas, 10 from Fable 5.1 inventors and 27 from
-Sonnet 5.5, each gated for invariance and screened with paired seeds on n = 17, 20, 23 and 26 at 45 CPU-seconds.
+The engine ran seven full generations on this problem (run `p60`) and was stopped during the eighth. 34 ideas
+were screened, 8 from Fable 5.1 inventors and 26 from Sonnet 5.5. Each passed the invariance gate and was
+screened on 48 seed pairs (n = 17, 20, 23 and 26, 12 seeds each, 45 CPU-seconds per run).
 
-- No idea has a positive effect whose 95% interval excludes zero. Two were merged on their point estimates
-  (`fresh_first`, `kick_escalate`) and measure as no effect on seeds the selection never saw.
-- Several are clearly harmful at screening, for example `axis_symmetry` -0.67, `old_first` -0.67 and
-  `revisit_tabu` -0.46 points.
-- Where the gain came from (mean over training sizes): seed solver 54.90, tuning 0.0, ideas +0.10, which is
-  inside the noise.
+- No idea has a positive effect whose 95% interval excludes zero.
+- Of the 30 ideas in the final ledger, five are measured as harmful (interval below zero): `axis_symmetry`
+  -0.67, `revisit_tabu` -0.46, `dead_memo` -0.27, `load_ruin` -0.21 and `sphere_bounds` -0.10 points. 23 are
+  unresolved: their intervals span zero, so they were shown neither to help nor to hurt. The four ideas of the
+  interrupted eighth generation all screened negative (-0.10 to -0.67).
+- Two were merged on their point estimates. On seeds the selection never saw, `fresh_first` measures -0.10
+  [-0.29, +0.08] and the tuner switched it off again; `kick_escalate` measures +0.04 [-0.04, +0.13].
+- Champion against seed solver, mean over the training sizes: 54.90 against 55.00. How that +0.10 splits into
+  tuning and ideas: pending (the end-of-run decomposition is being measured).
 
-So on this problem evolution added nothing we can measure, and the ledger says so. One limitation showed up
-clearly: the seed's own `centrosymmetric` switch measures -0.01 [-0.19, +0.17] on the mean at this budget, yet
-every one of the 13 records was found with it on. The engine optimises the mean over seeds at a short budget;
-a record is the best of hundreds of longer runs. Selecting on a best-of-k statistic is the first thing we would
-change.
+So on this problem evolution added nothing we can measure. That sentence needs three qualifications, and each
+one is a limit of the framework as it stands.
+
+1. **The screen cannot see effects of the size that matter here.** 48 pairs at 45 seconds resolve about
+   +-0.2 points. The seed's own `centrosymmetric` switch measured -0.01 [-0.19, +0.17] in the engine. Over 1,600
+   pairs at record-search budgets it is worth +0.22 [+0.19, +0.26] and doubles the rate of record-beating runs
+   (previous section). An LLM idea as valuable as that switch would have been screened out as "not positive".
+   The default tolerance for the `neutral` label (0.5% of the champion's mean, 0.27 points here) is wider than
+   that effect too.
+2. **One kept idea was almost never exercised.** `kick_escalate` changes only the second and later kicks in a
+   row that fail to improve the best set. At the champion's tuned patience (30,531 iterations) that needs about
+   61,000 iterations after the last improvement. Of the 5,763 stored 45-second runs, 319 were long enough,
+   nearly all at n = 17, and 1 of 2,941 at n >= 21. In most pairs both arms of its knockout ran the same code,
+   and its knockout on the held-out sizes is exactly zero in all 32 pairs. Its "+0.04" is the noise between
+   two runs of one program under a CPU-time budget, not a small benefit. The engine now records, for every
+   screening and knockout, how many pairs differed at all, and the dashboard says when none did.
+3. **The budget is short of convergence at the larger sizes.** At n = 26 half of the 45-second runs were still
+   improving after 20 seconds. A screen at that budget measures how fast an idea climbs, not where a long
+   search ends, and records come from long searches.
+
+Two experiments that address this are running and will be reported here: every ledger idea screened again at
+record-search scale (600 runs per idea, with a control arm), and the evolved champion run on the same seeds
+and budgets as the seed solver's record searches. Results: pending.
 
 ## Problem 59: a 58-point set at n = 32, where 56 is reported as the best
 
