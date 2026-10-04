@@ -93,7 +93,9 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 - **Why should we believe the records?** Three independent exact checkers over every 5-subset (int64 determinants,
   Bareiss elimination, cofactor-plus-dot-product), all 21 sets re-checked on Sunday, certificates public. All
   13 are on DeepMind's record thread with provenance and the checker output
-  (https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530). For problem 59, DeepMind's own notebook verifier accepts the sets.
+  (https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530). For problem 59, DeepMind's own notebook verifier accepts the sets, the same
+  definition reproduces every published value from n = 4 to 10 by exhaustive search, and the result is raised on
+  their repository as issue 10 (https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/10).
 - **Reusable?** Five problem packs in the repo (C and Python solvers) and a protocol document. Five Devin
   sessions given only the README and the protocol each added a new benchmark, with solver, gate, attribution run
   and a verified record search, in about 20 to 45 minutes. Their reports named three gaps in the docs, all fixed.

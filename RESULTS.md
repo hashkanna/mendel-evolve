@@ -144,7 +144,8 @@ What we claim: f(32) >= 58, so 56 is not optimal at n = 32. What we do not know:
 optimality proofs actually stop. At n = 32 the solver ends at 58 in 15 of 200 runs and at 56 in the other 185,
 so 56 is a very common endpoint, which may be why it looked like the optimum. At n = 64 and n = 100 longer
 searches equal the published 112 and 164 ([n64_112.json](results/noisosceles/certificates/n64_112.json))
-without exceeding them. The text prepared for DeepMind's repository is in
+without exceeding them. We raised it on DeepMind's repository on 4 October 2026 as a discrepancy to be
+explained ([issue 10](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/10)); the text is in
 [results/noisosceles/announcement.md](results/noisosceles/announcement.md).
 
 On this problem the seed solver's own switches matter a great deal, and more together than apart
