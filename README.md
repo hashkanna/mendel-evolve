@@ -10,12 +10,13 @@ They are Darwin without Mendel: selection, but no genes.
 
 In Mendel every idea is a **gene**: a named switch in the solver with a stated hypothesis.
 
-- An LLM agent only **invents** genes. It never tunes constants and never re-tests old ideas.
+- An LLM agent only **invents** genes. It does not tune constants and it measures nothing.
 - Classical search **recombines** genes and **tunes** their constants, with no LLM calls.
-- **Knockouts** (switching one idea off, with paired seeds) give a measured effect for every idea, an
-  interaction map, and a per-idea test of whether it generalises to instance sizes it was not selected on.
-- The resulting **ledger** is what the next inventors read, so the search does not repeat itself, and it is
-  also the explanation of the result.
+- **Knockouts** (switching one idea off, with paired seeds) give a measured effect with an interval for each
+  idea in the solver, an interaction map for the leading ideas, and a test of whether each kept idea
+  generalises to instance sizes it was not selected on.
+- The resulting **ledger** is what the next inventors read, and it is the explanation of the result. Whether
+  reading it makes the inventors search better is a separate question, tested in [RESULTS.md](RESULTS.md).
 
 Built at the London AI x Science Hackathon, 3-4 October 2026, for the track "AI Automated Discovery of
 Algorithms". Everything here was written during the event.

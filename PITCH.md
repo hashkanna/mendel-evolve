@@ -22,7 +22,7 @@ but no genes. MendelEvolve evolves ideas instead of programs, and measures what 
    Then we do what geneticists do: knock each gene out, singly and in pairs, on seeds the tuner never saw, and
    measure what the solver loses. That gives a causal effect per idea, an interaction map, and a test of whether
    each idea generalises to instance sizes it was never selected on. The ledger of measured effects is what the
-   next inventors read, so the search stops repeating itself, and it is also the explanation of the result.
+   next inventors read, and it is the explanation of the result.
 3. **What it did in a weekend.** Apparently new lower bounds at 14 sizes of Tao et al.'s problem 60, and first
    point sets for eight more sizes, each verified by three independent exact checkers. On problem 59, two 58-point
    sets in the 32 x 32 grid where the literature states that the optimum is 56. On circle packing, Fable inventors took
@@ -161,7 +161,7 @@ Live demo pages: https://hashkanna.github.io/mendel-evolve/
 Short description: MendelEvolve is an autoresearch framework that evolves ideas instead of programs. Every
 LLM-proposed idea becomes a named, switchable gene with a stated hypothesis; the LLM only invents, classical
 search recombines and tunes, and knockouts (singly, in pairs, on fresh seeds and held-out instance sizes) give a
-causal effect per idea. The ledger of measured effects steers the next inventors and explains the result. During
+causal effect per idea. The ledger of measured effects is what the next inventors read, and it explains the result. During
 the hackathon it produced apparently new lower bounds at 14 sizes of Tao et al.'s problem 60 (verified by three
 independent exact checkers), 58-point isosceles-free sets in the 32 x 32 grid where 56 was reported, and the
 best known circle packing value from OpenEvolve's initial program with no hints. Its knockouts also say where
