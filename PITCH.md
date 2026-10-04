@@ -120,8 +120,7 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
   thing we would change, and the record-rate analysis in `RESULTS.md` is that statistic computed after the fact.
 - **Why should we believe the records?** Three independent exact checkers over every 5-subset (int64 determinants,
   Bareiss elimination, cofactor-plus-dot-product), every set checked all three ways, certificates public.
-  Thirteen of the 17 sizes are on DeepMind's record thread with provenance and the checker output, seven of them
-  at earlier values; the text with all 17 is ready and goes up as an edit of that comment
+  All 17 sizes are on DeepMind's record thread with provenance and the checker output
   (https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530). For problem 59, DeepMind's own notebook verifier accepts the sets, the same
   definition reproduces every published value from n = 4 to 10 by exhaustive search, and the result is raised on
   their repository as issue 10 (https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/10).

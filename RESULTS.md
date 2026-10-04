@@ -35,9 +35,10 @@ new relative to the public sources we found, with no claim of optimality or guar
 | 32 | **85** | 82 | [n32_85.json](results/no5sphere/certificates/n32_85.json) | seed solver with the LLM idea multi_recreate with centrosymmetric |
 <!-- records:end -->
 
-Thirteen of these sizes were posted on the record thread on 4 October 2026
-([comment](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530)), seven of them at earlier, lower values, after three (n = 21, 23, 26) the day before. The
-text with the whole current table is [results/no5sphere/update_comment.md](results/no5sphere/update_comment.md).
+All 17, and the sets for n = 33 to 40, are posted on the record thread
+([comment](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/6#issuecomment-5974924530), first posted on 4 October 2026 with 13 sizes and edited the same day as the deeper
+searches finished; three sizes had been posted the day before). The text is
+[results/no5sphere/update_comment.md](results/no5sphere/update_comment.md), written by `scripts/make_thread_update.py`.
 
 We equal the published value at n = 13, 14 and 18. For n = 33 to 40, where no sets are
 published (the n = 32 set implies 82 because C is non-decreasing), the searches give 86, 90, 91, 94, 96, 99, 102, 104.
