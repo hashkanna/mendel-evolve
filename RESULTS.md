@@ -232,8 +232,20 @@ benchmark from Tao et al.'s repository and to write down what was unclear. All f
 [#2](https://github.com/hashkanna/mendel-evolve/pull/2) flat polynomials,
 [#3](https://github.com/hashkanna/mendel-evolve/pull/3) difference bases,
 [#4](https://github.com/hashkanna/mendel-evolve/pull/4) Erdos minimum overlap,
-[#5](https://github.com/hashkanna/mendel-evolve/pull/5) ring loading. Each contains a `USABILITY.md` with its
-findings. We have not yet reviewed them.
+[#5](https://github.com/hashkanna/mendel-evolve/pull/5) ring loading. Each contains a `USABILITY.md`.
+
+- **What worked.** All five wrote a problem pack and a solver (C or Python) that `mendel score` accepted,
+  checked the solver's switches with the invariance gate, ran the attribution engine, and ran a record search
+  on Modal (about $0.02 to $0.15 each) whose certificates passed an independent checker. The sessions took
+  between about 20 and 45 minutes each, much of it waiting for runs. None found a record.
+- **What was hard, in all five reports.** `verify.py`, `records.json` and `min_improvement` were not
+  documented, so every session read `mendel/campaign.py` to find the contract. `mendel gate SOLVER SOLVER`
+  always fails, and nothing said how to check a seed solver's own switches. The README's one-generation
+  example never ran the tuner. All three are now fixed in `README.md` and `PROTOCOL.md`.
+- **What they found that is still open.** The engine's own record check ignores `min_improvement`, so for
+  decimal scores it can log a polished tie as a record (one session saw this; the record searches do apply
+  the margin). Seed switches that are off in the champion are measured as knock-ins and get no generality
+  label. `mendel run` prints no progress.
 
 ## Exact small cases of problem 60
 

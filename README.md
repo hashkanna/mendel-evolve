@@ -69,9 +69,11 @@ Optional: the [Claude Code CLI](https://claude.com/claude-code) for the idea inv
 ## Run
 
 ```bash
-# 1. No LLM, no cloud: tune and attribute the seed solver of the toy problem (about 10 seconds).
+# 1. No LLM, no cloud: tune and attribute the seed solver of the toy problem. Tuning runs only in
+#    generations divisible by --tune-every (default 2), so a one-generation run needs --tune-every 1.
 uv run mendel run --solver tests/fixtures/solvers/toy --problem tests/fixtures/problems/toy \
-    --run-id toy --generations 1 --k 0 --iters 150 --seeds 3 --heldout-seeds 2 --tune-trials 16
+    --run-id toy --generations 1 --k 0 --iters 150 --seeds 3 --heldout-seeds 2 --tune-trials 16 \
+    --tune-every 1
 
 # 2. With the inventor: two new ideas per generation.
 uv run mendel run --solver tests/fixtures/solvers/toy --problem tests/fixtures/problems/toy \
@@ -105,9 +107,12 @@ uv run python -m mendel.campaign --solver runs/p60/trunk/gen012 --problem proble
 
 ### Adding a problem
 
-A problem pack is two files, `problem.toml` and `evaluate.py`. A solver is a program that accepts
-`--config --instance --seed (--time | --iters) --out`, plus a `genes.json` and a three-line `mendel.toml`.
-See [PROTOCOL.md](PROTOCOL.md); `tests/fixtures` has the smallest complete example.
+A problem pack needs two files, `problem.toml` and `evaluate.py`. The packs in `problems/` also have a
+`verify.py`, most a `records.json`, and some a `selftest.py` and a `published/` directory; PROTOCOL.md says
+what reads them. A solver is a program that accepts `--config --instance --seed (--time | --iters) --out`,
+plus a `genes.json` and a three-line `mendel.toml`. See [PROTOCOL.md](PROTOCOL.md), which also says how to
+check a new solver's switches with `mendel gate`. `tests/fixtures` has the smallest complete example and
+`problems/no5sphere` has every optional file.
 
 ## Results
 
@@ -134,9 +139,9 @@ The first two record searches on problem 60 (480 runs of 120 CPU-seconds) cost a
 
 **Trust.** Evaluators are exact and live outside the inventor's reach. The inventor agent can edit only its
 sandbox copy and run three harness commands; it cannot run arbitrary shell commands. The engine re-runs the
-gate itself rather than believing the agent. The campaign runner re-checks every remote result locally and
-again with an independent checker before writing a certificate, and does not announce a tie with a published
-value as a record.
+gate itself rather than believing the agent. The campaign runner re-checks every remote result locally,
+writes a certificate only for a result that passes, runs the pack's independent `verify.py` on it when there
+is one, and does not announce a tie with a published value as a record.
 
 **Honest attribution.** Knockouts use seeds the tuner never saw, because measuring a selected configuration
 on the seeds that selected it biases every effect upward. Intervals are reported and an effect whose interval
@@ -146,6 +151,9 @@ spans zero is labelled inconclusive.
 - An idea that needs a whole-program rewrite does not fit behind a switch.
 - Leave-one-out effects depend on context; pairwise knockouts only cover the top ideas.
 - Integer-valued objectives make small effects hard to see without many seeds.
+- Generality labels and pairwise interactions exist only for ideas that are on in the champion. Seed
+  switches start off, so until a merge or the tuner turns one on it is measured as a knock-in (on versus
+  off) and has no label.
 - Solvers are LLM-written code that runs on your machine in the sandbox tools; use the Modal executor, or a
   container, if that matters to you.
 
