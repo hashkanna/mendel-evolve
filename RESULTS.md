@@ -81,6 +81,8 @@ switch can be knocked out at record-search scale:
 
 - The switch moves the average run by a fifth of a point and doubles the rate of record-beating runs. It gives
   the top value at 10 of the 13 sizes and equals the plain solver at the other three (n = 26, 29, 31).
+- The same-container test in the next section agrees: +0.13 [+0.06, +0.20] on the mean, and 34% of runs above
+  the published value against 10%, at n = 23, 26, 28 and 31.
 - Without the switch the seed solver still beats the published value at 8 of the 13 sizes (60, 63, 68, 72, 76,
   78, 80 and 83 points at n = 23, 24, 26, 28, 29, 30, 31 and 32).
 - Per-run scores are in [search_scores.json](results/no5sphere/search_scores.json); reproduce the table with
@@ -107,40 +109,65 @@ interrupted and run again, 39 screenings were made. Each idea passed the invaria
 
 On these numbers alone the conclusion would be that evolution added nothing. It is not the right conclusion.
 
-### A final test at record scale: the evolved solver is better
+### A final test at record scale: the evolved solver is better, and so is one rejected idea
 
-The champion (the seed solver's constants as tuned by the engine, its switch `guided_ruin` turned on, and the
-LLM idea `kick_escalate`) was frozen and run on the same seeds and budgets as the seed solver's record
-searches: 2,550 runs per arm over n = 13 to 32. The engine never used these seeds, and 12 of the 20 sizes were
-never used by it at all, so this is a test on data that could not have steered the search.
+The test that settles it runs every arm on the same seeds with **all arms of a seed in one container**, so
+that hardware cancels: 150 fresh seeds at each of n = 23, 26, 28 and 31, 240 CPU-seconds per run, 600 paired
+runs per arm. The engine never used these seeds, and n = 31 is a size it never saw at all. Two identical arms in
+this design differ in 1% of pairs, by +0.00 [-0.00, +0.01] points on average: that is the noise floor.
 
-| 13 record sizes, 1,600 paired runs per arm | runs above the published value | difference, 95% interval | mean score, 95% interval |
+| arm, against its baseline | engine's quick screen (48 pairs, 45 s) | at record scale: mean difference, 95% interval | runs above the published value |
 |---|---|---|---|
-| evolved against seed | 218 (13.6%) against 136 (8.5%) | +5.1 points [+3.5, +6.8] | +0.20 [+0.17, +0.24] |
-| evolved against seed, both with `centrosymmetric` on | 318 (19.9%) against 262 (16.4%) | +3.5 points [+1.5, +5.4] | +0.08 [+0.04, +0.12] |
+| `centrosymmetric` on, against the seed solver | -0.01 [-0.19, +0.17] | **+0.13 [+0.06, +0.20]** | 34% against 10% |
+| evolved champion, against the seed solver | +0.10 | **+0.24 [+0.18, +0.29]** | 21% against 10% |
+| evolved champion with `centrosymmetric`, against the control | | **+0.12 [+0.04, +0.22]** | 40% against 34% |
+| `multi_recreate` (Fable 5.1, generation 1, rejected), against the control | -0.04 [-0.23, +0.12] | **+0.19 [+0.11, +0.28]** | 44% against 34% |
+| the same idea in a second experiment on other seeds | | **+0.31 [+0.22, +0.39]** | 51% against 35% |
+| `layer_balance` (rejected) | -0.15 [-0.33, +0.04] | +0.08 [-0.01, +0.17] | 38% against 34% |
+| `incidence_index` (rejected) | +0.00 [-0.06, +0.06] | +0.03 [+0.02, +0.05] | 35% against 34% |
+| `kick_escalate` (kept by the engine) | +0.02 [-0.08, +0.12] | -0.02 [-0.07, +0.04] | 32% against 34% |
+| seven more ideas (`best_restart`, `load_ruin`, `dead_memo`, `tent_cache`, `antipode_bias`, `far_pick`, `sym_insert`) | -0.27 to -0.02 | -0.06 to +0.03, every interval spans zero | 32% to 37% against 34% |
 
-- Over all 20 sizes the picture is the same: 8.6% against 5.3% (+3.3 points [+2.3, +4.2]) without the switch,
-  12.5% against 10.3% (+2.2 points [+1.0, +3.5]) with it.
-- The evolved solver was the first to reach 44 at n = 16, 71 at n = 27 and 81 at n = 31. Deeper searches with
-  the seed solver have since matched or passed all three (44, 72 and 82), so those sets are not evidence for
-  the evolved solver by themselves; the rates in the table are.
-- The engine's own measurement of the same champion against the same seed solver was +0.10, inside its noise.
-  At 1,600 pairs and record budgets it is +0.20 with an interval that excludes zero, and the rate of
-  record-beating runs is up by 60%.
-- Which part of the champion carries this (the tuned constants, `guided_ruin`, or the LLM idea
-  `kick_escalate`) is being measured by knocking each one out at the same scale. Results: pending.
-- Source of the evolved solver: [results/no5sphere/evolved_solver](results/no5sphere/evolved_solver). Per-run
-  scores of all four arms: [search_scores.json](results/no5sphere/search_scores.json), table from
-  `python results/no5sphere/tail_effect.py`.
+The control is the seed solver with `centrosymmetric` on; each idea is switched on in that configuration.
+Chart: [docs/record-scale.html](https://hashkanna.github.io/mendel-evolve/record-scale.html). Table and data:
+`python results/no5sphere/paired_effects.py` ([scores](results/no5sphere/paired_scores.json)); the driver is
+`scripts/paired_search.py`.
+
+- **The evolved champion is better than the seed solver**: a quarter of a point on the mean and twice the
+  share of record-beating runs. The engine's own measurement of the same comparison was +0.10, inside its noise.
+- **Where the champion's gain comes from: the tuning.** Knocking out its parts at record scale (1,600 runs per
+  arm over 13 sizes, arms in separate containers) gives +0.17 [+0.14, +0.20] for the tuned constants alone, and
+  +0.02 or less for the seed switch `guided_ruin` and for the LLM idea `kick_escalate`. So it is the classical
+  half of the loop that improved the solver, not an idea the engine kept.
+- **One LLM idea is worth more than anything the engine kept, and the engine rejected it.** `multi_recreate`
+  (refill the same hole several times and keep the best refill) was proposed by a Fable inventor in the first
+  generation and screened out at -0.04. At record scale it is worth +0.19 and +0.31 in two experiments. It does
+  not stack with the engine's tuning: the champion's constants on top of it give +0.22, the plain idea +0.31.
+- **The other ideas do nothing we can resolve**, including two that the engine had measured as harmful.
+  `incidence_index` has a small real effect (+0.03, in 3% of pairs).
+- **A first pass got this wrong, and it is worth saying how.** We first ran each of the 30 ideas as its own
+  search (`results/no5sphere/deep_screen.py`), so each arm had its own containers. That pass put four more
+  ideas at +0.11 to +0.16 with intervals clear of zero. A control against an identical earlier search then
+  showed -0.06 [-0.10, -0.03] between two runs of one program: container hardware alone moves the mean by
+  that much. In the same-container test those four effects are gone. The engine keeps both arms of a pair in
+  one container for this reason; the first pass did not. The 19 ideas that were not re-tested had first-pass
+  readings between -0.10 and +0.08, apart from the two clearly harmful ones (`axis_symmetry` -0.41,
+  `revisit_tabu` -0.33).
+
+Earlier and larger, but with arms in separate containers and on different nights: over the 13 record sizes
+(1,600 paired runs per arm) the evolved champion had 13.6% of runs above the published value against 8.5% for
+the seed solver, and a mean difference of +0.20 [+0.17, +0.24]. It agrees with the table above. Source of the
+evolved solver: [results/no5sphere/evolved_solver](results/no5sphere/evolved_solver).
 
 ### Why the engine could not see it
 
 Each of these is a limit of the framework as it stands.
 
-1. **Power.** 48 pairs at 45 seconds resolve about +-0.2 points. The effects that matter here are that size:
-   `centrosymmetric` is worth +0.22 at record scale and measured -0.01 [-0.19, +0.17] in the engine; the whole
-   evolved champion is worth +0.20 and measured +0.10. The default tolerance for the `neutral` label (0.5% of
-   the champion's mean, 0.27 points here) is wider than both.
+1. **Power.** 48 pairs at 45 seconds resolve about +-0.2 points. The effects that matter here are that size or
+   smaller: `centrosymmetric` is worth +0.13 to +0.22 at record scale and measured -0.01 [-0.19, +0.17] in the
+   engine; the evolved champion is worth +0.24 and measured +0.10; `multi_recreate` is worth +0.19 to +0.31 and
+   measured -0.04. The default tolerance for the `neutral` label (0.5% of the champion's mean, 0.27 points
+   here) is wider than all of them.
 2. **Activation.** `kick_escalate` changes only the second and later kicks in a row that fail to improve the
    best set. At the champion's tuned patience (30,531 iterations) that needs about 61,000 iterations after the
    last improvement. Of the 5,763 stored 45-second runs, 319 were long enough, nearly all at n = 17, and 1 of
@@ -151,35 +178,6 @@ Each of these is a limit of the framework as it stands.
    budget measures how fast an idea climbs, not where a long search ends, and records come from long searches.
 4. **Statistic.** The engine selects on the mean. Records are in the tail: a change worth a fifth of a point
    on the mean moves the rate of record-beating runs by a half or more.
-
-### Every ledger idea again, at record scale (first pass)
-
-Each of the 30 ideas was switched on in the seed configuration with `centrosymmetric` on and run on 150 seeds
-at n = 23, 26, 28 and 31 for 240 CPU-seconds: 600 runs per idea, paired by seed with a control arm that runs
-the seed solver itself. Full table: `python results/no5sphere/deep_screen.py`
-([scores](results/no5sphere/deep_screen_scores.json)). 29 of the 30 had finished when this was written.
-
-| idea | engine screen (48 pairs, 45 s) | at record scale: mean difference, 95% interval | runs above published: idea against control |
-|---|---|---|---|
-| `multi_recreate` (Fable 5.1, generation 1, rejected) | -0.04 [-0.23, +0.12] | **+0.33 [+0.25, +0.41]** | 49.2% against 31.2% |
-| `load_ruin` (rejected as harmful) | -0.21 [-0.38, -0.04] | +0.16 [+0.07, +0.24] | 39.3% against 31.2% |
-| `layer_balance` (rejected) | -0.15 [-0.33, +0.04] | +0.15 [+0.06, +0.23] | 40.5% against 31.2% |
-| `best_restart` (rejected) | -0.06 [-0.23, +0.08] | +0.12 [+0.05, +0.19] | 38.8% against 31.2% |
-| `kick_escalate` (kept) | +0.02 [-0.08, +0.12] | +0.11 [+0.05, +0.17] | 37.3% against 31.2% |
-| `revisit_tabu` (rejected as harmful) | -0.46 [-0.67, -0.25] | -0.33 [-0.41, -0.25] | 20.2% against 31.2% |
-| `axis_symmetry` (rejected as harmful) | -0.67 [-0.90, -0.44] | -0.41 [-0.49, -0.33] | 11.0% against 31.2% |
-
-- **One rejected idea is worth more than anything the engine kept.** `multi_recreate`, proposed by a Fable
-  inventor in the first generation and screened out at -0.04, is worth a third of a point at record scale and
-  takes the share of record-beating runs from 31% to 49%. That is more than `centrosymmetric` (+0.22) and
-  more than the whole evolved champion (+0.20).
-- The two ideas the engine measured as clearly harmful are clearly harmful here too.
-- **A caution on the small effects.** In this first pass each arm ran in its own containers. Comparing the
-  control arm with an earlier search of the same program on the same seeds gives -0.06 [-0.10, -0.03]: two
-  runs of one program differ by that much through hardware alone. Effects under about a tenth of a point in
-  this table should not be read yet. A second experiment in which every arm of a seed shares one container
-  (the top ideas, both controls and the evolved champion, on fresh seeds) is running. Results: pending.
-
 
 ## Does showing inventors the ledger help? A first ablation
 

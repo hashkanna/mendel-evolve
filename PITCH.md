@@ -1,7 +1,7 @@
 # MendelEvolve: pitch, demo flow, video scripts, submission email
 
-Updated Sunday 01:20. Three results are still running and marked [pending]: the deep screen of every idea, the
-evolved solver at record budgets, and the ledger ablation. Every other number is from `RESULTS.md`.
+Updated Sunday 04:00. Every number is from `RESULTS.md`. The record count (16 sizes) can still rise while the
+last searches finish; check the table at the top of `RESULTS.md` before recording.
 
 ## One line
 
@@ -28,15 +28,16 @@ but no genes. MendelEvolve evolves ideas instead of programs, and measures what 
    sets in the 32 x 32 grid where the literature states that the optimum is 56. On circle packing, Fable inventors took
    OpenEvolve's own starting program to the best known value with no hints, and the ledger names the one idea
    that did it: knock it out and the score falls by 1.67.
-4. **The honest part, which is the point.** We turned the knockouts on our own records. Eleven came from the
-   hand-written seed solver: one of its switches doubles the share of runs that beat the published value (16.4%
-   against 8.5% over 1,600 paired runs). The engine's quick screens said evolution added nothing. That was a
-   measurement too weak to see a fifth of a point, so we froze the evolved solver and tested it at record scale
-   on seeds it had never seen: 13.6% of its runs beat the published value against 8.5% for the seed solver, and
-   it produced three of our best sets. Which evolved component carries that, and whether any of the 30 LLM
-   ideas helps on its own: [pending]. And on a program that OpenEvolve itself evolved, one switch, the optimiser
-   its prompt recommends by name, carries 99% of the gain. A framework that tells you where a result came from,
-   and when its own measurement was too weak to know, is what this field is missing.
+4. **The honest part, which is the point.** We turned the knockouts on our own records. The engine's quick
+   screens said evolution had added nothing. That measurement was too weak to see a fifth of a point, so we
+   repeated the knockouts at record scale: 600 paired runs per arm, every pair in one container, seeds the
+   engine never saw. Three things showed up that the quick screens had missed. One switch of the hand-written
+   seed solver takes the share of record-beating runs from 10% to 34%. The solver the engine evolved is worth a
+   quarter of a point over the seed solver, all of it from tuning. And one idea from an LLM inventor,
+   `multi_recreate`, which the engine had rejected in its first generation, is worth more than anything it kept:
+   +0.19 to +0.31 points. On a program that OpenEvolve itself evolved, one switch, the optimiser its prompt
+   recommends by name, carries 99% of the gain. A framework that tells you where a result came from, and
+   catches itself when its own measurement was too weak, is what this field is missing.
 
 ## The 90-second live demo
 
@@ -60,6 +61,9 @@ drop the rest.
 5. **Explain another system's result**, 15 s. Open `explain-oe-two-phase-seed3`: OpenEvolve's evolved program cut
    into five switches, bookend check passed bit for bit, SLSQP alone 99% of the gain, two components do nothing.
 
+   Optional seventh, 15 s, if there is time: https://hashkanna.github.io/mendel-evolve/record-scale.html, every
+   tested idea measured twice. Point at `multi_recreate`: orange (quick screen) sits on zero, blue (record
+   scale) is clear of it. Say: "The engine threw this idea away. A proper knockout says it is the best one."
 6. **One verified construction**, 15 s. Open https://hashkanna.github.io/mendel-evolve/problem59-n32.html: 58
    points in the 32 x 32 grid with no isosceles triangle, where the literature states 56. The page checks every
    triple in the browser as it loads: 58 points, 30,856 triples, 0 violations. Say: "These coordinates are the
@@ -99,14 +103,18 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 - **What did your method itself discover?** On circle packing, the idea that carries the result: Fable
   inventors proposed an SLSQP polish with no hint, and its knockout costs 1.67 on training sizes and on held-out
   sizes. On problem 59, a map of which of the seed solver's switches matter and that two of them are worth more
-  together (+3.69). On problem 60, a solver that beats the seed solver at record scale (13.6% of runs above the
-  published value against 8.5%, on seeds the engine never used) and two of the 16 record sets; whether that
-  is the tuning, a seed switch or the LLM idea is [pending].
+  together (+2.81). On problem 60, two things, both visible only at record scale: a tuned solver that beats the
+  seed solver by +0.24 [0.18, 0.29], and an LLM idea, `multi_recreate`, worth +0.19 to +0.31 that the engine
+  itself had rejected. Ten other ideas tested the same way show nothing.
 - **Is "no idea helped" just an underpowered test?** It was, and we measured by how much. The engine's screen
-  (48 seed pairs, 45 seconds) resolves about 0.2 points. The switch that finds our records is worth 0.22 on the
-  mean, so that screen could not have seen it; nor could it see that the evolved champion as a whole is worth
-  0.20. We reran every idea at 600 paired runs with a control arm: [pending]. The engine now also reports, for each knockout, how many seed pairs differed at all: one kept idea
-  (`kick_escalate`) turned out never to have executed in its own knockout.
+  (48 seed pairs, 45 seconds) resolves about 0.2 points, and everything that matters here is that size or
+  smaller. At 600 paired runs in shared containers the noise floor is 0.01, and one of the eleven ideas we
+  re-tested is clearly positive. The engine now also reports, for each knockout, how many seed pairs differed at
+  all: one kept idea (`kick_escalate`) turned out almost never to have executed in its own knockout.
+- **Did you get anything wrong along the way?** Yes, and it is in `RESULTS.md`. Our first deep screen ran each
+  idea in its own containers and made four more ideas look helpful by 0.11 to 0.16. A same-program control
+  showed that container hardware alone moves the mean by 0.06, and in the shared-container test those four
+  effects vanished. Pairing has to include the machine.
 - **So is the mean the wrong objective?** For record hunting, yes. A record is the best of hundreds of long runs;
   the engine selects on the mean of a few short ones. Selecting on the rate of runs above a target is the first
   thing we would change, and the record-rate analysis in `RESULTS.md` is that statistic computed after the fact.
@@ -135,8 +143,8 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
 1:50 Screen: explain page. "We pointed it at a program OpenEvolve evolved. One switch is 99% of the gain."
 2:15 Screen: records strip on problem 60, then the DeepMind thread. "Apparently new lower bounds at 16 sizes, three
      independent exact checkers each, posted with provenance. And the knockouts say where they came from: one
-     switch of the seed solver doubles the record rate, and the evolved solver adds 60% more. [pending: which
-     evolved component]"
+     switch of the seed solver triples the record rate, the engine's tuning adds a quarter of a point, and one
+     LLM idea the engine had thrown away turns out to be the best single change." Show record-scale.html.
 2:40 Screen: problem 59 point set. "58 points where the literature says 56 is optimal. We raised it as a
      discrepancy to be understood, not a correction."
 3:00 "What it cost": the efficiency tile. LLM calls, dollars, evaluations, cost per kept idea.

@@ -80,12 +80,12 @@
 
   <h2>Where those records came from</h2>
   <p>Eleven from the hand-written seed solver, two (n = 16, 19) from the solver the engine evolved, and three
-  (n = 23, 26, 31) from searches that ran the seed solver with one LLM idea switched on.
-  Knockouts at record scale measure both. One of the seed solver's own switches (build the set from antipodal
-  pairs) doubles the share of runs that beat the published value: 262 of 1,600 with it, 136 without. The evolved
-  champion, frozen and run on seeds the engine never used, raises that share by a further 60% over the seed
-  solver: 218 against 136 of 1,600. The engine's short screens saw neither effect, so every idea is being
-  screened again at record-search scale; see
+  (n = 23, 26, 31) from searches that ran the seed solver with one LLM idea switched on. Which search found a
+  set says little, so we ran knockouts at record scale, with every arm of a seed in one container. One of the
+  seed solver's own switches takes the share of record-beating runs from 10% to 34%. The engine's evolved
+  champion is worth a quarter of a point over the seed solver. And one LLM idea that the engine had rejected,
+  <code>multi_recreate</code>, is worth +0.19 to +0.31 points. The engine's short screens saw none of the three:
+  <a href="record-scale.html">the same ideas, measured twice</a>. Details in
   <a href="https://github.com/hashkanna/mendel-evolve/blob/main/RESULTS.md">RESULTS.md</a>.</p>
 
   <h2>Other results</h2>

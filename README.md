@@ -33,12 +33,16 @@ https://hashkanna.github.io/mendel-evolve/.
 - **Problem 60 of Tao et al. (no 5 points on a sphere): apparently new lower bounds at 16 grid sizes** from
   n = 15 to 32, and first point sets for n = 33 to 40. Every set passes three independent exact checkers.
 - **Where those records came from, measured.** Eleven from the hand-written seed solver, two from the solver
-  the engine evolved, and three from searches that ran the seed solver with one LLM idea switched on.
-  Knockouts at record scale put numbers on the first two. One switch of the seed solver
-  doubles the share of runs that beat the published value (262 of 1,600 with it, 136 without). The evolved
-  champion, frozen and run on seeds and sizes the engine never used, raises that share by a further 60% over
-  the seed solver (218 against 136 of 1,600). The engine's own quick screens saw neither effect, and
-  RESULTS.md says why.
+  the engine evolved, and three from searches that ran the seed solver with one LLM idea switched on. Which
+  search found a set says little, so we ran knockouts at record scale, with every arm of a seed in one
+  container (600 paired runs per arm, fresh seeds):
+  one switch of the seed solver is worth +0.13 points and takes the share of record-beating runs from 10% to
+  34%; the engine's evolved champion is worth +0.24 over the seed solver; and one LLM idea, `multi_recreate`,
+  is worth +0.19 to +0.31.
+- **What the engine's own quick screens said about those three: nothing.** They measured the switch at -0.01,
+  the champion at +0.10 inside the noise, and they rejected `multi_recreate` at -0.04. The
+  [chart](https://hashkanna.github.io/mendel-evolve/record-scale.html) shows every tested idea measured both
+  ways, and RESULTS.md says why the quick screens could not see it.
 - **Problem 59 (no isosceles triangles): 58-point sets in the 32 x 32 grid**, where 56 is reported as the best.
   DeepMind's own verifier accepts them.
 - **Circle packing, n = 26: the best known value, 2.635983**, starting from OpenEvolve's initial program with no
