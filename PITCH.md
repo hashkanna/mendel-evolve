@@ -107,7 +107,7 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
      produced the result. They are Darwin without Mendel."
 0:20 Diagram: invent, gate, screen, merge, tune, knock out, generalise. One sentence each.
 0:55 Screen: the ledger on circle packing. Read one row. Press Knock out. Watch the dots land.
-1:30 Screen: the idea box. "A person typed OpenEvolve's own hint in. It became a gene. It measured [+0.38]."
+1:30 Screen: the idea box. "A person typed OpenEvolve's own hint in. It became a gene. It measured +1.44."
 1:50 Screen: explain page. "We pointed it at a program OpenEvolve evolved. One switch is 99% of the gain."
 2:15 Screen: records strip on problem 60, then the DeepMind thread. "Apparently new lower bounds at 13 sizes, three
      independent exact checkers each, posted with provenance. And the knockout says where they came from: one
