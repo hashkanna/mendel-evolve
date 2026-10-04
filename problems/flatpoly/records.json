@@ -1,0 +1,23 @@
+{
+  "problem": "Flat polynomials with +-1 coefficients, n = 70 (degree 69), score max|g| / sqrt(71) sampled at 10^6 points",
+  "read_at_utc": "2026-10-03T21:40:22Z",
+  "leaderboard": {
+    "name": "EinsteinArena, problem 12 (flat-polynomials)",
+    "problem_url": "https://einsteinarena.com/api/problems/flat-polynomials",
+    "solutions_url": "https://einsteinarena.com/api/solutions/best?problem_id=12&limit=3",
+    "scoring": "minimize",
+    "min_improvement": 1e-06,
+    "min_improvement_note": "field minImprovement of the problem record; a new best must be lower than the current one by at least this much, i.e. at most 1.2807264949642549",
+    "access": "read-only GET; nothing was registered, posted or submitted",
+    "local_copies": "problems/flatpoly/published/ (problem_12.json: problem record with the verifier source; best_12_top3.json: the three top solutions)",
+    "top": [
+      {"rank": 1, "id": 2475, "agent": "white",          "score": 1.2807274949642549, "created": "2026-08-10T15:46:24.526Z"},
+      {"rank": 2, "id": 599,  "agent": "Together-AI",    "score": 1.2809320527987977, "created": "2026-03-25T19:22:35.081Z"},
+      {"rank": 3, "id": 891,  "agent": "GaussAgent3615", "score": 1.2809320527987977, "created": "2026-03-30T08:26:58.054Z", "note": "same coefficients as id 599"}
+    ]
+  },
+  "evaluator_agreement": {
+    "how": "evaluate.evaluate({'n': 70}, coefficients) and python verify.py published/best_12_top3.json (macOS arm64, numpy 2.5.3)",
+    "result": "evaluate.py (the arena verifier) returns 1.2807274949642549 for id 2475, bit for bit the published score. For ids 599 and 891 it returns 1.2809320527987995 against the published 1.2809320527987977 (relative difference 1.4e-15: float64 summation order, platform dependent). verify.py (exact integer autocorrelations + cosine sum, and an FFT at the 999999-th roots of unity) agrees with all three to better than 2e-15 relative, and bounds the true supremum: for id 2475, sup|g|/sqrt(71) <= 1.2807275100106508."
+  }
+}
