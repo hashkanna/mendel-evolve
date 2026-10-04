@@ -141,8 +141,56 @@ Each of these is a limit of the framework as it stands.
 4. **Statistic.** The engine selects on the mean. Records are in the tail: a change worth a fifth of a point
    on the mean moves the rate of record-beating runs by a half or more.
 
-One more experiment is running: every idea in the ledger, including the 28 that were not kept, screened again
-at record-search scale (600 runs per idea, with a control arm). Results: pending.
+### Every ledger idea again, at record scale (first pass)
+
+Each of the 30 ideas was switched on in the seed configuration with `centrosymmetric` on and run on 150 seeds
+at n = 23, 26, 28 and 31 for 240 CPU-seconds: 600 runs per idea, paired by seed with a control arm that runs
+the seed solver itself. Full table: `python results/no5sphere/deep_screen.py`
+([scores](results/no5sphere/deep_screen_scores.json)). 29 of the 30 had finished when this was written.
+
+| idea | engine screen (48 pairs, 45 s) | at record scale: mean difference, 95% interval | runs above published: idea against control |
+|---|---|---|---|
+| `multi_recreate` (Fable 5.1, generation 1, rejected) | -0.04 [-0.23, +0.12] | **+0.33 [+0.25, +0.41]** | 49.2% against 31.2% |
+| `load_ruin` (rejected as harmful) | -0.21 [-0.38, -0.04] | +0.16 [+0.07, +0.24] | 39.3% against 31.2% |
+| `layer_balance` (rejected) | -0.15 [-0.33, +0.04] | +0.15 [+0.06, +0.23] | 40.5% against 31.2% |
+| `best_restart` (rejected) | -0.06 [-0.23, +0.08] | +0.12 [+0.05, +0.19] | 38.8% against 31.2% |
+| `kick_escalate` (kept) | +0.02 [-0.08, +0.12] | +0.11 [+0.05, +0.17] | 37.3% against 31.2% |
+| `revisit_tabu` (rejected as harmful) | -0.46 [-0.67, -0.25] | -0.33 [-0.41, -0.25] | 20.2% against 31.2% |
+| `axis_symmetry` (rejected as harmful) | -0.67 [-0.90, -0.44] | -0.41 [-0.49, -0.33] | 11.0% against 31.2% |
+
+- **One rejected idea is worth more than anything the engine kept.** `multi_recreate`, proposed by a Fable
+  inventor in the first generation and screened out at -0.04, is worth a third of a point at record scale and
+  takes the share of record-beating runs from 31% to 49%. That is more than `centrosymmetric` (+0.22) and
+  more than the whole evolved champion (+0.20).
+- The two ideas the engine measured as clearly harmful are clearly harmful here too.
+- **A caution on the small effects.** In this first pass each arm ran in its own containers. Comparing the
+  control arm with an earlier search of the same program on the same seeds gives -0.06 [-0.10, -0.03]: two
+  runs of one program differ by that much through hardware alone. Effects under about a tenth of a point in
+  this table should not be read yet. A second experiment in which every arm of a seed shares one container
+  (the top ideas, both controls and the evolved champion, on fresh seeds) is running. Results: pending.
+
+
+## Does showing inventors the ledger help? A first ablation
+
+The ledger is what the next inventors read. Whether reading it makes them search better is a separate claim,
+and this tests it: the same system, model (Haiku 4.5), seed program (circle packing), budgets and settings,
+six generations of four proposals, with one difference. In the "without" arm the inventors get a note saying
+the ledger is withheld; they still see the current solver.
+
+| four runs per arm | with the ledger | without the ledger |
+|---|---|---|
+| final normalised score | 0.904, 0.853, 0.849, 0.884 (mean 0.872) | 0.908, 0.877, 0.939, 0.888 (mean 0.903) |
+| best packing at n = 26 | 2.261 to 2.392 (mean 2.326) | 2.343 to 2.490 (mean 2.402) |
+| LLM spend per run | $3.28 to $4.76 (mean $4.04) | $3.07 to $3.69 (mean $3.25) |
+| proposals reusing a name already proposed | 2, 2, 4 and 12 | 3, 3, 4 and 4 |
+
+- No benefit from the ledger shows. The difference in the final score is -0.03 against the ledger; an exact
+  permutation test over the eight runs gives p = 0.17, so at four runs per arm it is not resolved either way.
+- The ledger costs more: about a quarter more LLM spend per run, from the longer context.
+- Limits: one problem, one small model, six generations, four runs per arm. A stronger model may use the
+  ledger better than Haiku does. The ledger's value as the explanation of a result does not depend on this.
+- Data: [results/ledger_ablation.json](results/ledger_ablation.json); the runs are `abl-on-1` to `abl-on-4` and
+  `abl-off-1` to `abl-off-4`, launched with the inventor option `ledger=none`.
 
 ## Problem 59: a 58-point set at n = 32, where 56 is reported as the best
 

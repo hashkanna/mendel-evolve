@@ -80,8 +80,10 @@ Backup if the live server misbehaves: the same pages are static HTML in `docs/`.
   whose prompt names the SLSQP technique, 2.612 to 2.626, for $7.01 to $7.60 per seed in all. That baseline is
   three seeds; with the hint it costs about the same as our Haiku run with the same hint ($7.60 for 2.620) and
   passes 2.6 early (seed 1 after $2.94). Say so if asked.
-- Does showing inventors the measured ledger help? Same model, seed program and budgets, with and without the
-  ledger: [pending].
+- Does showing inventors the measured ledger help? We tested it: same model (Haiku), seed program and budgets,
+  four runs with the ledger and four without. No benefit shows (mean final score 0.872 with, 0.903 without,
+  not resolved at four runs each), and the ledger costs about a quarter more per run. Its value so far is as
+  the explanation, not as a search heuristic. Say this plainly if asked.
 - Every evaluation is cached by solver version, config, instance, seed and budget; paired arms run in the same
   container; 100 Modal containers running 8 to 16 jobs each.
 

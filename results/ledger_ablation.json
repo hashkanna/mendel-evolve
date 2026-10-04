@@ -1,0 +1,87 @@
+{
+ "note": "Ledger ablation: Haiku 4.5 inventors on circle packing, 6 generations, 4 proposals per generation; identical settings except that the off arm withholds LEDGER.md from the inventors.",
+ "with_ledger": {
+  "abl-on-1": {
+   "final": 0.9042297883577803,
+   "n26": 2.3916402484197663,
+   "usd": 3.879285,
+   "calls": 24,
+   "proposals": 24,
+   "repeats": 4,
+   "kept": 2,
+   "gate_fail": 0
+  },
+  "abl-on-2": {
+   "final": 0.852794628937166,
+   "n26": 2.3036783716830165,
+   "usd": 3.278224,
+   "calls": 24,
+   "proposals": 24,
+   "repeats": 2,
+   "kept": 4,
+   "gate_fail": 0
+  },
+  "abl-on-3": {
+   "final": 0.849110316120194,
+   "n26": 2.2608074700748797,
+   "usd": 4.759926,
+   "calls": 34,
+   "proposals": 34,
+   "repeats": 12,
+   "kept": 4,
+   "gate_fail": 9
+  },
+  "abl-on-4": {
+   "final": 0.8836479407055344,
+   "n26": 2.346035024125012,
+   "usd": 4.238197,
+   "calls": 24,
+   "proposals": 23,
+   "repeats": 2,
+   "kept": 2,
+   "gate_fail": 0
+  }
+ },
+ "without_ledger": {
+  "abl-off-1": {
+   "final": 0.9084656238989348,
+   "n26": 2.4247174210383236,
+   "usd": 3.069856,
+   "calls": 24,
+   "proposals": 24,
+   "repeats": 4,
+   "kept": 4,
+   "gate_fail": 0
+  },
+  "abl-off-2": {
+   "final": 0.8773736844142013,
+   "n26": 2.349597140590033,
+   "usd": 3.134415,
+   "calls": 24,
+   "proposals": 24,
+   "repeats": 3,
+   "kept": 4,
+   "gate_fail": 0
+  },
+  "abl-off-3": {
+   "final": 0.9390979238464379,
+   "n26": 2.49006715980779,
+   "usd": 3.113168,
+   "calls": 24,
+   "proposals": 24,
+   "repeats": 4,
+   "kept": 3,
+   "gate_fail": 0
+  },
+  "abl-off-4": {
+   "final": 0.8875157124679253,
+   "n26": 2.3432003463014643,
+   "usd": 3.686226,
+   "calls": 24,
+   "proposals": 24,
+   "repeats": 3,
+   "kept": 3,
+   "gate_fail": 0
+  }
+ }
+}

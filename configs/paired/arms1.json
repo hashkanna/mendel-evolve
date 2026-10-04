@@ -1,0 +1,145 @@
+[
+ {
+  "name": "seed",
+  "solver": "solvers/no5sphere",
+  "config": {}
+ },
+ {
+  "name": "control",
+  "solver": "solvers/no5sphere",
+  "config": {
+   "centrosymmetric": true
+  }
+ },
+ {
+  "name": "control2",
+  "solver": "solvers/no5sphere",
+  "config": {
+   "centrosymmetric": true
+  }
+ },
+ {
+  "name": "evolved",
+  "solver": "runs/p60/trunk/gen005",
+  "config": {
+   "centrosymmetric": false,
+   "lookahead": false,
+   "guided_ruin": true,
+   "ruin_max": 3,
+   "accept_worse_prob": 0.013850333408982469,
+   "patience": 30531,
+   "kick_fraction": 0.74036570774508,
+   "lookahead_m": 3,
+   "fresh_first": false,
+   "fresh_first_prob": 1.0,
+   "kick_escalate": true,
+   "kick_escalate_step": 1.122478810547095
+  }
+ },
+ {
+  "name": "evolved+centro",
+  "solver": "runs/p60/trunk/gen005",
+  "config": {
+   "centrosymmetric": true,
+   "lookahead": false,
+   "guided_ruin": true,
+   "ruin_max": 3,
+   "accept_worse_prob": 0.013850333408982469,
+   "patience": 30531,
+   "kick_fraction": 0.74036570774508,
+   "lookahead_m": 3,
+   "fresh_first": false,
+   "fresh_first_prob": 1.0,
+   "kick_escalate": true,
+   "kick_escalate_step": 1.122478810547095
+  }
+ },
+ {
+  "name": "multi_recreate",
+  "solver": "runs/p60/proposals/gen001/1/sandbox/solver",
+  "config": {
+   "centrosymmetric": true,
+   "multi_recreate": true
+  }
+ },
+ {
+  "name": "load_ruin",
+  "solver": "runs/p60/proposals/gen003/2/sandbox/solver",
+  "config": {
+   "centrosymmetric": true,
+   "load_ruin": true
+  }
+ },
+ {
+  "name": "layer_balance",
+  "solver": "runs/p60/proposals/gen001/0/sandbox/solver",
+  "config": {
+   "centrosymmetric": true,
+   "layer_balance": true
+  }
+ },
+ {
+  "name": "best_restart",
+  "solver": "runs/p60/proposals/gen004/1/sandbox/solver",
+  "config": {
+   "centrosymmetric": true,
+   "best_restart": true
+  }
+ },
+ {
+  "name": "tent_cache",
+  "solver": "runs/p60/proposals/gen002/4/sandbox/solver",
+  "config": {
+   "centrosymmetric": true,
+   "tent_cache": true
+  }
+ },
+ {
+  "name": "incidence_index",
+  "solver": "runs/p60/proposals/gen002/0/sandbox/solver",
+  "config": {
+   "centrosymmetric": true,
+   "incidence_index": true
+  }
+ },
+ {
+  "name": "sym_insert",
+  "solver": "runs/p60/proposals/gen006/3/sandbox/solver",
+  "config": {
+   "centrosymmetric": true,
+   "sym_insert": true
+  }
+ },
+ {
+  "name": "far_pick",
+  "solver": "runs/p60/proposals/gen005/3/sandbox/solver",
+  "config": {
+   "centrosymmetric": true,
+   "far_pick": true
+  }
+ },
+ {
+  "name": "kick_escalate",
+  "solver": "runs/p60/trunk/gen005",
+  "config": {
+   "centrosymmetric": true,
+   "kick_escalate": true
+  }
+ },
+ {
+  "name": "dead_memo",
+  "solver": "runs/p60/proposals/gen004/2/sandbox/solver",
+  "config": {
+   "centrosymmetric": true,
+   "dead_memo": true
+  }
+ },
+ {
+  "name": "antipode_bias",
+  "solver": "runs/p60/proposals/gen005/1/sandbox/solver",
+  "config": {
+   "centrosymmetric": true,
+   "antipode_bias": true
+  }
+ }
+]
