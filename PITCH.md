@@ -22,8 +22,8 @@ of programs, and measures what each idea is worth.
    each idea generalises to instance sizes it was never selected on. The ledger of measured effects is what the
    next inventors read, so the search stops repeating itself, and it is also the explanation of the result.
 3. **What it did in a weekend.** Apparently new lower bounds at 13 sizes of Tao et al.'s problem 60, and first
-   point sets for eight more sizes, each verified by three independent exact checkers. On problem 59, 58-point
-   sets in the 32 x 32 grid where the literature reports 56. On circle packing, Fable inventors took
+   point sets for eight more sizes, each verified by three independent exact checkers. On problem 59, two 58-point
+   sets in the 32 x 32 grid where the literature states that the optimum is 56. On circle packing, Fable inventors took
    OpenEvolve's own starting program to the best known value with no hints, and the ledger names the one idea
    that did it: knock it out and the score falls by 1.67.
 4. **The honest part, which is the point.** We turned the knockouts on our own records. They did not come from

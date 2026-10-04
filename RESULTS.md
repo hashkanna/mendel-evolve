@@ -123,26 +123,29 @@ optimality"; the AlphaEvolve paper quotes C(32) = 56.
 
 Our from-scratch solver found two different **58-point** sets at n = 32:
 [n32_58.json](results/noisosceles/certificates/n32_58.json) and
-[n32_58_seed13_iters600000.json](results/noisosceles/certificates/n32_58_seed13_iters600000.json).
+[n32_58_seed13_iters600000.json](results/noisosceles/certificates/n32_58_seed13_iters600000.json). They share no
+point and neither is an image of the other under the symmetries of the square. (A third certificate,
+`n32_58_campaign.json`, turned out to be the second set again.)
 
-Both pass four independent checks:
+Both pass four independent checks, re-run on 4 October:
 
-- `problems/noisosceles/evaluate.py` (sorted squared distances per apex);
-- `problems/noisosceles/verify.py` (perpendicular-bisector test, no distances);
-- a third check written separately (every apex has distinct squared distances to all other points, and a
-  brute-force pass over every ordered triple);
 - **DeepMind's own `verify_construction`** from the problem's notebook in their repository, run unchanged. It
-  returns True for both sets, True for their published 112-point set at n = 64, and False for a set that
-  contains three equally spaced collinear points.
+  returns True for both sets, True for their published 112-point set at n = 64, and False for one of our sets
+  with the midpoint of two of its points added.
+- a brute-force pass over every unordered triple (the three squared distances pairwise different);
+- `problems/noisosceles/evaluate.py` (sorted squared distances per apex);
+- `problems/noisosceles/verify.py` (perpendicular-bisector test, no distances).
 
-The same checkers reproduce the published values at smaller sizes: exhaustive search gives 6, 7, 9 at
-n = 4, 5, 6, and the solver's best equals the published 10, 13, 16, 18, 28 and 48 at n = 7, 8, 9, 10, 16
-and 27 without exceeding them.
+The same definition reproduces every published small value: a complete exhaustive search gives 6, 7, 9, 10,
+13, 16 and 18 at n = 4 to 10 ([exact_small.py](results/noisosceles/exact_small.py)), and the solver's best
+equals the published 28 and 48 at n = 16 and 27 in 200 of 200 runs each, without exceeding them.
 
 What we claim: f(32) >= 58, so 56 is not optimal at n = 32. What we do not know: where the published
-optimality proofs actually stop. The solver found 58 in 2 of 20 short runs and 56 in the rest, and a later
-200-seed search produced a third, different 58-point set. At n = 64 and n = 100 longer searches equal the
-published 112 and 164 ([n64_112.json](results/noisosceles/certificates/n64_112.json)) without exceeding them.
+optimality proofs actually stop. At n = 32 the solver ends at 58 in 15 of 200 runs and at 56 in the other 185,
+so 56 is a very common endpoint, which may be why it looked like the optimum. At n = 64 and n = 100 longer
+searches equal the published 112 and 164 ([n64_112.json](results/noisosceles/certificates/n64_112.json))
+without exceeding them. The text prepared for DeepMind's repository is in
+[results/noisosceles/announcement.md](results/noisosceles/announcement.md).
 
 On this problem the seed solver's own switches matter a great deal, and more together than apart
 (n = 64 / n = 100, mean of 3 seeds at a short budget): base 92.3 / 141.0; `greedy_victim` alone 95.7 / 145.0;
