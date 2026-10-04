@@ -36,9 +36,11 @@
 
   <h2>Runs</h2>
   <a class="card" href="p60.html"><b>No 5 on a sphere (Tao et al., problem 60)</b>
-    <span>Main run: Fable inventors, a C solver, evaluations on Modal. Includes the record strip.</span></a>
+    <span>Seven generations with Fable and Sonnet inventors, a C solver, evaluations on Modal. The records strip
+    lists the certificates from the separate record searches.</span></a>
   <a class="card" href="p59.html"><b>No isosceles triangles in a grid (Tao et al., problem 59)</b>
-    <span>Fable inventors, a C solver, evaluations on Modal.</span></a>
+    <span>Sonnet and Fable inventors, a C solver, evaluations on Modal. The seed solver's own switches carry
+    the gain here, with a measured synergy between two of them.</span></a>
   <a class="card" href="cp-fable-1.html"><b>Circle packing, n = 26, Fable inventors</b>
     <span>Starting from OpenEvolve's initial program, no hints, scored with exact feasibility.</span></a>
   <a class="card" href="cp-haiku-hint.html"><b>Circle packing, Haiku inventors plus one typed-in idea</b>
@@ -67,7 +69,24 @@
     <tr><td>32</td><td><b>84</b></td><td>82</td></tr>
   </table>
   <p class="note">Each set is verified by three independent exact checkers over every 5-point subset.
-  Certificates and checkers are in the repository.</p>
+  Certificates and checkers are in the repository. First point sets for n = 33 to 40, where none are published:
+  86, 90, 91, 94, 96, 98, 100 and 103 points, checked the same way.</p>
+
+  <h2>Where those records came from</h2>
+  <p>From the seed solver and compute, not from evolved ideas, and the ledger says so. One of the seed solver's
+  own switches (build the set from antipodal pairs) moves the average run by a fifth of a point and doubles the
+  share of runs that beat the published value: 262 of 1,600 with it, 136 of 1,600 without, on the same seeds and
+  budgets. The engine's short screens could not see an effect that small, so every idea is being screened again
+  at record-search scale; see
+  <a href="https://github.com/hashkanna/mendel-evolve/blob/main/RESULTS.md">RESULTS.md</a>.</p>
+
+  <h2>Other results</h2>
+  <p><b>No isosceles triangles (problem 59).</b> Three 58-point sets in the 32 x 32 grid, where 56 is reported as
+  the best. DeepMind's own verifier accepts them.</p>
+  <p><b>Circle packing, n = 26.</b> Starting from OpenEvolve's initial program with no hints, Fable inventors
+  reached the best known value, 2.635983. One gene carries it: its knockout costs 1.67.</p>
+  <p><b>Explaining another system.</b> A program evolved by OpenEvolve, cut into five switches: one of them is
+  99% of the gain and two do nothing.</p>
 
   <h2>Links</h2>
   <p><a href="https://github.com/hashkanna/mendel-evolve">Source, README and results</a> ·
