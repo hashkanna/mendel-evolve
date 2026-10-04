@@ -164,13 +164,13 @@ Both pass four independent checks, re-run on 4 October:
 - `problems/noisosceles/evaluate.py` (sorted squared distances per apex);
 - `problems/noisosceles/verify.py` (perpendicular-bisector test, no distances).
 
-The same definition reproduces every published small value: a complete exhaustive search gives 6, 7, 9, 10,
+As a sanity check that this is the published definition, a complete exhaustive search gives 6, 7, 9, 10,
 13, 16 and 18 at n = 4 to 10 ([exact_small.py](results/noisosceles/exact_small.py)), and the solver's best
 equals the published 28 and 48 at n = 16 and 27 in 200 of 200 runs each, without exceeding them.
 
 What we claim: f(32) >= 58, so 56 is not optimal at n = 32. What we do not know: where the published
-optimality proofs actually stop. At n = 32 the solver ends at 58 in 15 of 200 runs and at 56 in the other 185,
-so 56 is a very common endpoint, which may be why it looked like the optimum. At n = 64 and n = 100 longer
+optimality proofs actually stop. At n = 32 the solver ends at 58 in 15 of 200 runs and at 56 in the other 185.
+At n = 64 and n = 100 longer
 searches equal the published 112 and 164 ([n64_112.json](results/noisosceles/certificates/n64_112.json))
 without exceeding them. We raised it on DeepMind's repository on 4 October 2026 as a discrepancy to be
 explained ([issue 10](https://github.com/google-deepmind/alphaevolve_repository_of_problems/issues/10)); the text is in

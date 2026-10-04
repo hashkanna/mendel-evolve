@@ -26,7 +26,7 @@ set_b = [
 
 They share no point, and neither is an image of the other under the eight symmetries of the square. Each is symmetric under the reflection y -> 31 - y, and each is maximal: no further grid point can be added. As in the published constructions, most points lie near the border.
 
-**Verification.** Each set was checked four ways, all exact integer arithmetic on squared distances:
+**Verification.** Each set passes four exact-integer checks:
 
 - `verify_construction` from `experiments/subsets_of_the_grid_with_no_isosceles_triangles/subsets_of_the_grid_with_no_isosceles_triangles.ipynb`, run unchanged: True for both. As controls, it returns True for the notebook's own `sol_64` (112 points) and False for set_a with the midpoint of two of its points added.
 - A brute-force pass over every unordered triple, requiring the three squared distances to be pairwise different.
@@ -46,9 +46,7 @@ Certificates with the seed and solver configuration of each run are in [`results
 | 64 | 112 (AlphaEvolve) | 112, not exceeded |
 | 100 | 164 (AlphaEvolve) | 164, not exceeded |
 
-The exhaustive search uses the same definition as the checkers, so the agreement at n = 4 to 10 is a check of the definition itself. The n = 16, 27 and 32 rows are 200 seeded runs of 60 CPU-seconds each. At n = 32 the value 56 is by far the most common endpoint, which may be why it looked like the optimum.
-
-One remark, offered as a question and not as a claim. The paper recalls that 112 at n = 64 was guessed from C(2n) = 2 C(n) together with C(32) = 56. If C(32) is at least 58, the same heuristic would point at 116 for n = 64. Our searches at n = 64 have reached 112 and no more.
+The agreement at n = 4 to 10 is a sanity check that the definition used here is the published one. The n = 16, 27 and 32 rows are 200 seeded runs of 60 CPU-seconds each.
 
 **How they were found, and disclosure.** These came out of a hackathon project, MendelEvolve (London AI x Science Hackathon, 3 to 4 October 2026). The search is a local search in C with a mirror-symmetry constraint, written from scratch by an AI coding agent (Claude) under my direction; the checkers and this post were AI-assisted as well. No search code from other contributors was used. I take responsibility for the claim; it rests on the coordinates above and the verifier in this repository, not on trust in model output.
 
