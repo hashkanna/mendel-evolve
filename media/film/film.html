@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=block">
 <style>html,body{margin:0;background:#04060B;overflow:hidden}canvas{display:block}</style>
 <script src="data/film_data.js"></script>
-<script src="data/timeline.js"></script>
+<script>document.write('<script src="data/timeline' + (new URLSearchParams(location.search).get("cut") ? "_" + new URLSearchParams(location.search).get("cut") : "") + '.js"><\/script>');</script>
 </head><body><canvas id="c" width="1920" height="1080"></canvas>
 <script>
 "use strict";

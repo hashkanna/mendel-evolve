@@ -1,6 +1,6 @@
 """Generate the film's score with Google's Lyria music model. The key is read as in media/tts_gemini.py and never printed.
 
-    python3 media/film/lyria.py OUT_BASENAME [MODEL]
+    python3 media/film/lyria.py OUT_BASENAME [MODEL] [PROMPT_FILE]
 
 Writes OUT_BASENAME.<ext> for whatever audio the model returns, and OUT_BASENAME.txt with any text it returns.
 """
@@ -34,7 +34,8 @@ Structure:
 def main() -> None:
     out = Path(sys.argv[1])
     model = sys.argv[2] if len(sys.argv) > 2 else "lyria-3.5"
-    body = {"contents": [{"parts": [{"text": PROMPT}]}]}
+    prompt = Path(sys.argv[3]).read_text() if len(sys.argv) > 3 else PROMPT
+    body = {"contents": [{"parts": [{"text": prompt}]}]}
     req = urllib.request.Request(f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
                                  data=json.dumps(body).encode(),
                                  headers={"x-goog-api-key": api_key(), "Content-Type": "application/json"})

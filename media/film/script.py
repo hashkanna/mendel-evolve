@@ -48,3 +48,48 @@ SCENES = [
         ("b25", "Every result, and every certificate, is public.", 0.2),
     ], 3.6),
 ]
+
+# The two-minute cut (Iterate's limit). Same beat ids, so film.html animates it unchanged.
+SCENES_SHORT = [
+    ("open", 0.8, [
+        ("b1", "AI can now evolve algorithms.", 0.4),
+        ("b2", "Systems like AlphaEvolve rewrite whole programs and keep the best.", 0.3),
+    ], 0.2),
+    ("problem", 0.3, [
+        ("b3", "But nobody can say which idea produced the result.", 0.3),
+        ("b4", "About thirty percent of the lines they add were deleted before.", 0.4),
+        ("b5", "Darwin without Mendel: selection, but no genes.", 0.3),
+    ], 0.6),
+    ("genes", 2.0, [
+        ("b6", "MendelEvolve turns every idea a model proposes into a gene: a named switch.", 0.3),
+        ("b7", "The model only invents. Classical search tunes.", 0.3),
+        ("b8", "Then, like geneticists, we knock each gene out and measure what is lost.", 0.3),
+    ], 0.6),
+    ("packing", 0.4, [
+        ("b9", "Circle packing, from OpenEvolve's own starting program.", 1.2),
+        ("b10", "It reaches the best known value.", 0.8),
+        ("b11", "Which idea did it? Knock it out.", 1.0),
+        ("b12", "It loses one point six seven. One gene carries it.", 0.3),
+    ], 0.8),
+    ("sphere", 0.4, [
+        ("b13", "Problem sixty, from Tao and co-authors: no five points on a sphere.", 0.8),
+        ("b14", "New lower bounds at seventeen sizes.", 0.6),
+        ("b15", "Each checked by three independent checkers.", 0.3),
+    ], 0.8),
+    ("iso", 0.4, [
+        ("b16", "Problem fifty-nine: fifty-eight points with no isosceles triangle.", 0.3),
+        ("b17", "Two papers state fifty-six is optimal.", 0.5),
+        ("b18", "All thirty thousand, eight hundred and fifty-six triples check out.", 0.3),
+    ], 0.8),
+    ("twice", 0.4, [
+        ("b19", "Then we knocked out our own records.", 0.3),
+        ("b20", "Quick screens said evolution added nothing.", 0.4),
+        ("b21", "At record scale, six hundred paired runs per idea:", 0.6),
+        ("b22", "the evolved solver is a quarter point better.", 0.6),
+        ("b23", "And the best idea was one the engine threw away, worth up to zero point three one.", 0.3),
+    ], 1.0),
+    ("close", 0.6, [
+        ("b24", "MendelEvolve. Evolve ideas, not programs.", 0.3),
+        ("b25", "Everything is public.", 0.2),
+    ], 2.6),
+]

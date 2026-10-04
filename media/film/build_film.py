@@ -22,7 +22,12 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 sys.path.insert(0, str(HERE))
-from script import SCENES  # noqa: E402
+import script  # noqa: E402
+
+CUT = os.environ.get("FILM_CUT", "")                 # "" is the full film, "short" the two-minute cut
+SCENES = script.SCENES_SHORT if CUT == "short" else script.SCENES
+MAX_TOTAL = 118.5 if CUT == "short" else None        # Iterate allows two minutes at most
+SUFFIX = f"_{CUT}" if CUT else ""
 
 FFMPEG, FFPROBE = "/opt/homebrew/bin/ffmpeg", "/opt/homebrew/bin/ffprobe"
 WORK = ROOT / "media" / "work" / "film"
@@ -44,7 +49,7 @@ SEC_PER_WORD = 0.43
 LOUDNESS = -17.0
 XFADE = 0.8          # scenes overlap by this much; the voice never does
 OUT = ROOT / "media" / (f"mendelevolve_film_{TAG}.mp4" if TAG else "mendelevolve_film.mp4")
-SCORE = HERE / "score_lyria.mp3"      # made by lyria.py; delete it to use the synthesised score
+SCORE = HERE / f"score_lyria{SUFFIX}.mp3"      # made by lyria.py; delete it to use the synthesised score
 LYRIA_GAIN = 1.6
 MUSIC_GAIN, FX_GAIN = 0.34, 0.4   # under a voice at about -20 dB RMS
 
@@ -86,7 +91,7 @@ def synth(bid, text):
         else:
             run(["python3", ROOT / "media" / "tts_gemini.py", tmp, text, "--voice", VOICE, "--model", TTS_MODEL, "--language", ACCENT])
         dur = wav_seconds(tmp)
-        if dur <= words * SEC_PER_WORD * 1.35 + 1.5:
+        if dur <= words * (0.6 if SOURCE == "live" else SEC_PER_WORD) * 1.35 + (2.5 if SOURCE == "live" else 1.5):  # Whisper checks the words
             tmp.rename(raw)
             return raw
         print(f"  {bid}: {dur:.1f} s for {words} words looks too long, regenerating")
@@ -155,6 +160,7 @@ def check_takes(todo):
         run(["/opt/homebrew/bin/whisper", *[w for _, w in new], "--model", "base.en", "--language", "en",
              "--output_format", "txt", "--output_dir", asr, "--fp16", "False"])
         norm = lambda t: [w for w in re.sub(r"[^a-z0-9 ]", " ", t.lower().replace("mendelevolve", "mendel evolve")
+                                               .replace("alphaevolve", "alpha evolve").replace("openevolve", "open evolve")
                                                .replace("-", " ")).split() if w not in NUMBER_WORDS and not w[0].isdigit()]
         for (scene, bid, text, pause), w in new:
             heard = (asr / (w.stem + ".txt")).read_text()
@@ -166,26 +172,30 @@ def check_takes(todo):
 
 
 # ------------------------------------------------------------------------------------------------ timeline
-def timeline():
+def timeline(squeeze=1.0):
     t = 0.0
     scenes, beat_times = [], {}
     for i, (scene, lead, items, tail) in enumerate(SCENES):
         start = t
-        t += lead
+        t += lead * squeeze
         for bid, text, pause in items:
             dur = wav_seconds(TTS / f"{key(text)}.wav")
             beat_times[bid] = {"t": round(t, 3), "dur": round(dur, 3), "text": text,
                                "wav": str((TTS / f"{key(text)}.wav").relative_to(ROOT))}
-            t += dur + pause
-        t += tail
+            t += dur + pause * squeeze
+        t += tail * squeeze
         scenes.append({"id": scene, "start": round(start, 3), "end": round(t, 3)})
         if i < len(SCENES) - 1:
             t -= XFADE   # the next scene begins under this one's last frames
     total = round(scenes[-1]["end"], 3)
     tl = {"fps": FPS, "total": total, "xfade": XFADE, "scenes": scenes, "beats": beat_times}
-    (HERE / "data" / "timeline.json").write_text(json.dumps(tl, indent=1))
-    (HERE / "data" / "timeline.js").write_text("window.TL = " + json.dumps(tl) + ";\n")
-    print(f"total {total:.1f} s, {int(total * FPS)} frames")
+    (HERE / "data" / f"timeline{SUFFIX}.json").write_text(json.dumps(tl, indent=1))
+    (HERE / "data" / f"timeline{SUFFIX}.js").write_text("window.TL = " + json.dumps(tl) + ";\n")
+    if MAX_TOTAL and total > MAX_TOTAL and squeeze > 0.35:   # tighten the gaps until the cut fits
+        return timeline(squeeze - 0.05)
+    if MAX_TOTAL and total > MAX_TOTAL:
+        raise SystemExit(f"{total:.1f} s even with tight gaps: shorten the script")
+    print(f"total {total:.1f} s, {int(total * FPS)} frames" + (f", gaps at {squeeze:.0%}" if squeeze < 1 else ""))
     for s in scenes:
         print(f"  {s['id']:8s} {s['start']:6.1f} to {s['end']:6.1f}")
 
@@ -277,7 +287,7 @@ def open_page(p):
     browser = p.chromium.launch(channel="chrome", headless=True, args=["--disable-gpu-vsync", "--force-device-scale-factor=1"])
     page = browser.new_page(viewport={"width": W, "height": H}, device_scale_factor=1)
     page.on("pageerror", lambda e: print("PAGE ERROR:", e))
-    page.goto((HERE / "film.html").as_uri())
+    page.goto((HERE / "film.html").as_uri() + (f"?cut={CUT}" if CUT else ""))
     page.wait_for_function("window.READY === true", timeout=60000)
     return browser, page
 
@@ -304,7 +314,7 @@ def render():
     import time
     from concurrent.futures import ProcessPoolExecutor
     FRAMES.mkdir(parents=True, exist_ok=True)
-    tl = json.loads((HERE / "data" / "timeline.json").read_text())
+    tl = json.loads((HERE / "data" / f"timeline{SUFFIX}.json").read_text())
     total = int(round(tl["total"] * FPS))
     workers = int(sys.argv[2]) if len(sys.argv) > 2 else 6
     step = (total + workers - 1) // workers
@@ -331,7 +341,7 @@ def audio():
     import numpy as np
     from scipy.signal import butter, fftconvolve, sosfilt
 
-    tl = json.loads((HERE / "data" / "timeline.json").read_text())
+    tl = json.loads((HERE / "data" / f"timeline{SUFFIX}.json").read_text())
     total = tl["total"]
     N = int((total + 0.5) * SR)
     rng = np.random.default_rng(3)
@@ -621,7 +631,7 @@ def mux():
         tmp.replace(OUT)
         print(OUT, f"{OUT.stat().st_size / 1e6:.1f} MB")
         return
-    tl = json.loads((HERE / "data" / "timeline.json").read_text())
+    tl = json.loads((HERE / "data" / f"timeline{SUFFIX}.json").read_text())
     frames = int(round(tl["total"] * FPS))
     missing = [f for f in range(frames) if not (FRAMES / f"f{f:05d}.jpg").exists()]
     if missing:
