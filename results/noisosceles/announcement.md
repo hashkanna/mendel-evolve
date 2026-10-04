@@ -30,16 +30,16 @@ They share no point, and neither is an image of the other under the eight symmet
 
 - `verify_construction` from `experiments/subsets_of_the_grid_with_no_isosceles_triangles/subsets_of_the_grid_with_no_isosceles_triangles.ipynb`, run unchanged: True for both. As controls, it returns True for the notebook's own `sol_64` (112 points) and False for set_a with the midpoint of two of its points added.
 - A brute-force pass over every unordered triple, requiring the three squared distances to be pairwise different.
-- [`problems/noisosceles/evaluate.py`](https://github.com/hashkanna/mendel-evolve/blob/37001da0206230d2b039669c552bb675b1c9b0c6/problems/noisosceles/evaluate.py): for each apex, sorted squared distances to all other points with no repeat.
-- [`problems/noisosceles/verify.py`](https://github.com/hashkanna/mendel-evolve/blob/37001da0206230d2b039669c552bb675b1c9b0c6/problems/noisosceles/verify.py): a perpendicular-bisector test that uses no distances.
+- [`problems/noisosceles/evaluate.py`](https://github.com/hashkanna/mendel-evolve/blob/c012959dcd6427e21fd79ddb65e8493454526556/problems/noisosceles/evaluate.py): for each apex, sorted squared distances to all other points with no repeat.
+- [`problems/noisosceles/verify.py`](https://github.com/hashkanna/mendel-evolve/blob/c012959dcd6427e21fd79ddb65e8493454526556/problems/noisosceles/verify.py): a perpendicular-bisector test that uses no distances.
 
-Certificates with the seed and solver configuration of each run are in [`results/noisosceles/certificates/`](https://github.com/hashkanna/mendel-evolve/tree/37001da0206230d2b039669c552bb675b1c9b0c6/results/noisosceles/certificates) (`n32_58.json` and `n32_58_seed13_iters600000.json`; the second is from a deterministic run and can be regenerated).
+Certificates with the seed and solver configuration of each run are in [`results/noisosceles/certificates/`](https://github.com/hashkanna/mendel-evolve/tree/c012959dcd6427e21fd79ddb65e8493454526556/results/noisosceles/certificates) (`n32_58.json` and `n32_58_seed13_iters600000.json`; the second is from a deterministic run and can be regenerated).
 
 **Agreement with the other published values.** The same solver and checkers agree with the published values everywhere else we looked, and do not exceed them:
 
 | n | published | this search |
 |---:|---:|---|
-| 4 to 10 | 6, 7, 9, 10, 13, 16, 18 | the same seven values, by a complete exhaustive search (`results/noisosceles/exact_small.py`) |
+| 4 to 10 | 6, 7, 9, 10, 13, 16, 18 | the same seven values, by a complete exhaustive search ([`exact_small.py`](https://github.com/hashkanna/mendel-evolve/blob/c012959dcd6427e21fd79ddb65e8493454526556/results/noisosceles/exact_small.py)) |
 | 16 | 28 | 28 in 200 of 200 runs |
 | 27 | 48 | 48 in 200 of 200 runs |
 | 32 | 56 | **58** in 15 of 200 runs, 56 in the other 185 |
