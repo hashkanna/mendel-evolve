@@ -181,6 +181,8 @@ svg .pt { fill: var(--ink); }
 .switch.on { background: var(--pos); border-color: var(--pos); }
 .switch.on::after { left: auto; right: 1.5px; background: #fff; }
 .switch.gone { border-style: dashed; }
+.switch.testing { border-color: var(--neg); box-shadow: 0 0 0 3px rgba(255, 92, 108, .25); }
+.switch.testing::after { background: var(--neg); }
 .c-bar svg { display: block; }
 .l1 { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .gname { font: 600 12.5px var(--mono); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1672,6 +1674,7 @@ body.snap #idea-form, body.snap #run-select { display: none; }
   function ledgerRow(g, sc, dim, plotW) {
     const info = stripInfo(g.name), busy = knockoutBusy();
     const on = g.status === 'active';
+    const testing = on && !!info && info.status === 'running' && info.wasOn !== false;
     let action;
     if (dim || DIM.has(g.status) || g.status === 'queued' || g.derived) action = statusChip(g);
     else if (on && S.readonly) action = null;
@@ -1692,7 +1695,9 @@ body.snap #idea-form, body.snap #run-select { display: none; }
       class: 'lrow' + (dim ? ' dim' : '') + (srcNote ? ' has-src' : '') + (S.drawer === g.name ? ' sel' : ''), tabindex: 0, role: 'button', 'aria-label': 'Details for ' + g.name,
       onclick: () => openDrawer(g.name), onkeydown: (e) => { if (e.target === row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openDrawer(g.name); } },
     },
-      h('div', { class: 'c-sw' }, h('span', { class: 'switch' + (on ? ' on' : '') + (dim ? ' gone' : ''), tip: (STATUS[g.status] || [])[1] || 'Status: ' + (g.status || 'not set yet') })),
+      // while its live knockout runs, the switch shows off: that is what the test does
+      h('div', { class: 'c-sw' }, h('span', { class: 'switch' + (on && !testing ? ' on' : '') + (testing ? ' testing' : '') + (dim ? ' gone' : ''),
+        tip: testing ? 'Switched off for this test; it goes back on when the result is in' : (STATUS[g.status] || [])[1] || 'Status: ' + (g.status || 'not set yet') })),
       h('div', { class: 'l1' }, h('span', { class: 'gname', text: g.name }), authorBadge(g.author),
         g.kind === 'choice' && g.value != null ? h('span', { class: 'muted', style: { fontSize: '11px' }, text: '= ' + str(g.value) }) : null),
       h('div', { class: 'c-bar', tip: measureTip(srcTitle, g.m, srcTip) },
